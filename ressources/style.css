@@ -1,0 +1,46 @@
+.lateral-navbar {
+  position: fixed;
+  top: 0;
+  left: -180px;
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  height: 100vh;
+  align-items: stretch;
+  background-color: white;
+  transition: 0.5s ease-in-out;
+  border-radius: 0 5px 5px 0;
+  padding: 25px 0px;
+  -webkit-box-shadow: 9px 2px 9px -4px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 9px 2px 9px -4px rgba(0, 0, 0, 0.5);
+  box-shadow: 9px 2px 9px -4px rgba(0, 0, 0, 0.5);
+}
+.lateral-navbar:hover {
+  left: 0px;
+  transition: 0.5s ease-in-out;
+}
+.lateral-navbar > a {
+  all: unset;
+  border: none;
+  background-color: unset;
+  cursor: pointer;
+  font-size: 24px;
+  padding: 8px;
+}
+.lateral-navbar > a:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+main {
+  padding-top: 2vh;
+}
+h1 {
+  font-size: 3em;
+}
+section {
+  max-width: 50vw;
+  margin-left: auto;
+  margin-right: auto;
+}
+hr {
+  width: 99%;
+}
