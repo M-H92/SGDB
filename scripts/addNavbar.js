@@ -1,13 +1,15 @@
 import { getNavbar } from "./navbar.js";
 
 const _linkDefinitions = [
-  { name: "Chapitre 0", url: "/chapters/chapter_0.html" },
-  { name: "Chapitre 1", url: "/chapters/chapter_1.html" },
-  { name: "Chapitre 2", url: "/chapters/chapter_2.html" },
-  { name: "Chapitre 3", url: "/chapters/chapter_3.html" },
-  { name: "Chapitre 4", url: "/chapters/chapter_4.html" },
-  { name: "Chapitre 5", url: "/chapters/chapter_5.html" },
-  { name: "Chapitre 6", url: "/chapters/chapter_6.html" },
+  { name: "Préambule", url: "/chapters/chapter_0.html" },
+  { name: "Première DB", url: "/chapters/chapter_1.html" },
+  { name: "Relations", url: "/chapters/chapter_2.html" },
+  { name: "Contraintes", url: "/chapters/chapter_3.html" },
+  // { name: "Chapitre 4", url: "/chapters/chapter_4.html" },
+  { name: "Cardinalité", url: "/chapters/chapter_5.html" },
+  { name: "Problème de dates", url: "/chapters/chapter_6.html" },
+  { name: "Propriétaires", url: "/chapters/chapter_7.html" },
+  { name: "Liens et références externes", url: "/chapters/chapter_x.html" },
 ];
 
 function configure() {
