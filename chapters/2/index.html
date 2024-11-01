@@ -17,27 +17,15 @@
       <li>Fonctions</li>
       <li>ALTER et UPDATE</li>
       <li>WHERE</li>
-      <li>Clé primaire</li>
-      <li>Clé étrangères et relations</li>
-      <li>WHERE suite</li>
       <li>Conclusion</li>
     </ol>
     <hr />
-    <!-- Ajouter un nom au chat
-     Ajouter des records
-     Prendre tout et trier par chat
-     Prendre pour un chat
-     Prendre le dernier pour un chat
-     Prendre le dernier pour chaque chat
-     Est-ce que ça fait beaucoup? 
-     Pour s'en rendre compte
-     Ajouter race
-     Ajouter date naissance
-     Ajouter sexe 
-    -->
-    <!-- 
     <h2 id="introduction">Introduction</h2>
-     -->
+    <p>Dans ce chapitre, nous allons étendre les possibilités de récupération de données avec l'utilisation de fonctions
+      ainsi que nous confronter à un problème d'identité de données au fur et à mesure que nous ajoutons des données
+      dans notre table <br>
+      Nous verrons comment résoudre se problème en ajoutant une série de mot clés à notre boite à outils SQL
+    </p>
     <h2 id="fonctions">Fonctions</h2>
     <p>
       Le simple fait de récupérer des données rend déjà les
@@ -149,15 +137,66 @@
     </p>
     <p> Sélectionnez à nouveau les informations de la table <i>weight</i> pour voir que chaque enregistrement est
       maintenant au nom de <i>Monza</i></p>
-    <!-- <h2>WHERE</h2> -->
-    <!-- Ajouter des chats et filtrer sur chats -->
-    <!-- <h2>Clé primaire</h2> -->
-    <!-- Nouvelle table de chats avec clé primaire -->
-    <!-- <h2>Clé étrangères et relations</h2> -->
-    <!-- Clé étrangère correspondante -->
-    <!-- <h2>WHERE suite</h2> -->
-    <!-- Amélio -->
-    <!-- <h2>Conclusion</h2> -->
+    <h2>WHERE</h2>
+    <p>
+      Nous pouvons maintenant insérer des enregistrements pour le chat de ma belle-soeur. Plume, le maine coon. <br>
+    </p>
+    <pre class="code-block sql">
+        INSERT INTO weight (weight, date, cat) 
+             VALUES (6.6, '2024-08-05', 'plume')
+                ,(6.7, '2024-07-03', 'plume') 
+                ,(6.5, '2024-06-02', 'plume') 
+                ,(6.6, '2024-05-10', 'plume') 
+                ,(6.4, '2024-04-02', 'plume') 
+                ,(6.4, '2024-03-06', 'plume') 
+                ,(6.5, '2024-02-03', 'plume');
+    </pre>
+    <p>
+      Sélectionnons toutes les données de notre table weight. <br>
+      Plus moyen de se tromper. Les records disposent chacun d'un nom de chat. Soit Monza, soit Plume <br>
+    </p>
+    <p>
+      Par contre, au fur et à mesure que le nombre de records augmente, il va devenir de plus en plus complexe
+      d'analyser ceux qui nous intéressent. <br>
+      Si je dois récupérer les pesées sur 1 an de mon chat, je ne dois regarder que 12 valeurs. <br>
+      Si j'ai une dizaine de chat dans ma base de données, je dois maintenant analyser 120 valeurs en faisant attention
+      à bien discerner celles qui m'intéressent <br>
+      Pour nous faciliter la tâche, nous allons déléguer ce problème de discernement des valeurs à la base de données
+      grâce au mot clé <strong>WHERE</strong>
+    </p>
+    <pre class="code-block sql">
+      SELECT * FROM weight
+      WHERE cat = 'Monza'
+    </pre>
+    <p>
+      Une rapide lecture des résultats permettra de comprendre que nous n'avons plus que les résultats pour lesquels la
+      colonne 'cat' contient la valeur 'Monza' <br>
+      Le mot clé <strong>WHERE</strong> permettant de mettre des conditions sur nos queries. <br>
+      Que ce soit sur les <strong>SELECT</strong>, mais aussi sur les <strong>UPDATE</strong> <br>
+      Et justement, si vous avez copié le code proposé ci-dessus, vous remarquerez que "Plume" est écrit avec une
+      minuscule dans chaque record. <br>
+      Essayez d'utiliser le mot clé <strong>UPDATE</strong> dans une <strong>query</strong> de type
+      <strong>UPDATE</strong> pour rectifier le tir et utiliser correctement "Plume" plutôt que "plume".
+    </p>
+    <p>
+      Tant que vous êtes dans l'expérimentation, essayez de modifier les requêtes récupérant le poids maximum, minimum
+      ou moyen à l'aide d'une clause <strong>WHERE</strong> <br>
+      Tout simplement en limitant la recherche aux chats dont le nom est 'Monza' ou 'Plume'. <br>
+      Essayez aussi la fonction <strong>COUNT</strong> qui a maintenant d'autant plus de sens que vous pouvez l'utilisez
+      en combinaison avec un <strong>WHERE</strong> <br>
+      Je vous suggère aussi de tester les limites de l'opérateur <kbd>=</kbd> lors de la comparaison de noms avec des
+      recherches sur 'Monza' et 'monza' et de le confronter à l'opérateur <strong>LIKE</strong> ou
+      <strong>ILIKE</strong> (attention, ce dernier est spécifique à
+      PGSQL)
+    </p>
+    <h2 id="conclusion">Conclusion</h2>
+    <p>
+      Dans ce chapitre, nous avons appris comment profiter des fonctions pour améliorer les résultats de nos recherches.
+      <br>
+      Nous avons aussi vu comment modifier une table existante en ajoutant des colonnes et modifier des records déjà
+      existant. <br>
+      Enfin, nous avons appris comment limiter les résultats de nos recherches avec le mot clé <strong>WHERE</strong>
+    </p>
   </main>
 </body>
 
