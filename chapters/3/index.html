@@ -11,14 +11,15 @@
 
 <body>
   <main>
-    <h1>Chapitre 3</h1>
+    <h1>Identités</h1>
     <ol>
       <li>Introduction</li>
       <li>Contraintes</li>
       <li>Problème de poids</li>
       <li>Relations</li>
       <li>Jointures (introduction)</li>
-      <li>Problème de poids</li>
+      <li>Primary key</li>
+      <li>Clé composée</li>
     </ol>
     <h2 id="contraintes">Contraintes</h2>
     <p>
@@ -308,7 +309,7 @@
       Il est même possible de faire une requête de ce genre
     <pre class="code-block sql">SELECT w.*, c.* --...</pre>. Je vous laisse imaginer le résultat
     </p>
-    <p>Avant de passez à la section suivante, je vous propose deux exercices</p>
+    <!-- <p>Avant de passez à la section suivante, je vous propose deux exercices</p>
     <p>
       D'abord, essayez de modifier encore la base de données en séparant les données dans une troisième table. <br />
       Réfléchissez bien à la manière de séparer les données de façon logique, et, si vous avez besoin d'un indice,
@@ -321,8 +322,69 @@
       <br />
       Vous devrez certainement faire une recherche internet pour trouver une solution. Mais n'hésitez pas à tester ce
       qu'il vous semblerait logique avant ça. Quitte à vous tromper. <br />
-      <!-- Ci-dessous, une solution -->
+      Ci-dessous, une solution
+    </p> -->
+    <h2 id="primary-key">Primary key</h2>
+    <p>
+      Passons un peu de temps sur le critère de jointure utilisé <br>
+      Nous avons réalisé une jointure sur le nom de notre chat <br>
+      Ceci n'est pas un hasard. Si on regarde à la table <i>cat</i>, on se rend compte que le nom du chat, dans notre
+      situation, représente <i>l'identité</i> d'un enregistrement. <br>
+      Pratiquement parlant, nous n'aurons jamais qu'un unique enregistement contenant le nom 'Monza' <br>
+      Pour représenter cette identité, nous allons utilisé une <strong>Primary key</strong> ou <strong>PK</strong> ( en
+      français, une <strong>clé primaire</strong>) <br>
     </p>
+    <p>
+      Une clé primaire est une combinaison de contraintes particulières disposant en plus d'un rôle particulier dans le
+      base de données <br>
+      Son rôle, comme expliqué ci-dessus, est celui "d'identité" de chaque record. <br>
+      Les contraintes liées à une clé primaire, elles, sont : <br>
+      <strong>Unicité</strong> une PK ne peut pas être répétée deux fois (voir ci-dessus : il n'y a qu'un seul chat
+      qui s'appelera 'Monza') <br>
+      <strong>NOT NULL</strong> une PK doit avoir une valeur (si on considère que la valeur de la PK correspond à
+      l'identité d'un record, on conçoit facilement qu'elle ne peut être null au risque de ne pas avoir d'identité pour
+      ce record)
+    </p>
+    <p>Le code suivant permet d'ajouter une clé primaire à notre table <i>cat</i></p>
+    <pre class="code-block sql">
+      ALTER TABLE cat
+      ADD PRIMARY KEY (name);
+    </pre>
+    <h2 id="cle-composee">Clé composée</h2>
+    <p>
+      Qu'en est-il de la table weighting? <br>
+      Réflechissez un peu à ce qui définit <i>"l'identité"</i> d'un record dans cette dernière table <br>
+    </p>
+    <p>
+      On ne peut pas, comme pour la table <i>cat</i>, utiliser le nom du chat. Autrement, la contrainte d'unicité va
+      nous empêcher d'encoder plusieurs records pour le même chat... Pas très pratique <br>
+      Le poids ne semble pas adapté pour définir <i>"l'identité"</i> d'un record. <br>
+      La date de pesée pourrait avoir un certain sens... Si nous n'avions qu'un chat à gérer et qu'on se limitait
+      strictement a une pesée par jour <br>
+      Nous pourrions alors parler de la pesée de 1er septembre, de la pesée du 5 aout... Sans qu'il n'y ai d'ambiguité.
+      <br>
+      Mais le fait de gérer plusieurs chat ne permet pas d'utiliser la date comme <strong>PK</strong> <br>
+      Alors que faire?
+    </p>
+    <p>
+      On va définir une clé dite <i>composée</i> (en anglais, <strong>COMPOSITE</strong> ) <br>
+      L'identité de chaque record sera défini par la date, mais aussi par le nom du chat <br>
+      Nous parlerons alors de la pesée du 1er mars de Monza ou la pesée du 4 mai de Plume <br>
+      Les contraintes seront alors appliquées sur la combinaison des deux colonnes plutôt que sur une unique colonne
+      <br>
+      1er mars et Monza ne pourront pas être répété dans un autre record <br>
+      Mais un record au 1er mars pour Plume pourra être inséré tout comme un record au 4 mai pour Monza <br>
+      Voyons comment mettre ça en place en terme de code
+    </p>
+    <pre class="code-block sql">
+      ALTER TABLE weighting
+      ADD PRIMARY KEY (name, weight);
+    </pre>
+    <!-- CREATE TABLE weighting(
+      name varchar(32),
+      date date,
+      weight numeric(3,1)
+    ); -->
     <!-- <pre>
         -- Séparation dans une nouvelle table
   
