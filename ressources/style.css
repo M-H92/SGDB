@@ -1,3 +1,16 @@
+.code-snippet {
+  background-color: rgb(230, 230, 230);
+  border: solid 1px rgb(200, 200, 200);
+  &.block {
+    padding: 12px;
+    width: fit-content;
+  }
+  &.line {
+    display: inline;
+    padding: 0 4px;
+  }
+}
+
 .lateral-navbar {
   position: fixed;
   top: 0;

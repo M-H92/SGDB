@@ -41,7 +41,7 @@
       colonne <i>cat</i> pour interdire les valeurs nulles. Appliquons la avec le
       code suivant :
     </p>
-    <pre class="code-block sql"> ALTER TABLE weight ALTER COLUMN cat SET NOT NULL; </pre>
+    <pre class="code-snippet block sql"> ALTER TABLE weight ALTER COLUMN cat SET NOT NULL; </pre>
     <p>
       Pas de surprise ici. Les différents mot-clés sont presque tous connus <br />
       Nous <i>alterons</i> la <i>table</i> <i>weight</i> pour laquelle nous <i>alterons</i> la <i>colonne</i> <i>cat</i>
@@ -202,41 +202,39 @@
       <br />
       En attendant, mettons en place ces deux tables avec le code suivant :
     </p>
-    <pre class="code-block sql">
-        CREATE TABLE weighting(
-          name varchar(32),
-          date date,
-          weight numeric(3,1)
-        );
-  
-        CREATE TABLE cat(
-          name varchar(32),
-          race varchar(32),
-          is_male boolean,
-          age int,
-          ideal_weight numeric(3,1),
-          neutered boolean
-        )
-      </pre>
+    <pre class="code-snippet block sql">
+CREATE TABLE weighting(
+  name varchar(32),
+  date date,
+  weight numeric(3,1)
+);
+
+CREATE TABLE cat(
+  name varchar(32),
+  race varchar(32),
+  is_male boolean,
+  age int,
+  ideal_weight numeric(3,1),
+  neutered boolean
+)</pre>
     <p>Et ajoutons quelques données</p>
-    <pre class="code-block sql">
-        INSERT INTO weighting (weight, date, name) 
-        VALUES (3.6, '2024-08-03', 'Monza')
-          ,(3.7, '2024-07-06', 'Monza') 
-          ,(3.5, '2024-06-01', 'Monza') 
-          ,(3.6, '2024-05-04', 'Monza') 
-          ,(3.4, '2024-04-06', 'Monza') 
-          ,(3.4, '2024-03-02', 'Monza') 
-          ,(3.5, '2024-02-03', 'Monza')
-          ,(7.5, '2024-06-03', 'Plume') 
-          ,(7.6, '2024-05-04', 'Plume') 
-          ,(7.5, '2024-04-05', 'Plume') 
-          ,(7.4, '2024-03-02', 'Plume');
-        
-        INSERT INTO cat (name, race, is_male, age, ideal_weight, neutered)
-        VALUES ('Monza', 'Persan', true, 7, 6.5, true)
-          ,('Plume', 'Maine coon', false, 5, 6, true)
-      </pre>
+    <pre class="code-snippet block sql">
+INSERT INTO weighting (weight, date, name) 
+VALUES (3.6, '2024-08-03', 'Monza')
+  ,(3.7, '2024-07-06', 'Monza') 
+  ,(3.5, '2024-06-01', 'Monza') 
+  ,(3.6, '2024-05-04', 'Monza') 
+  ,(3.4, '2024-04-06', 'Monza') 
+  ,(3.4, '2024-03-02', 'Monza') 
+  ,(3.5, '2024-02-03', 'Monza')
+  ,(7.5, '2024-06-03', 'Plume') 
+  ,(7.6, '2024-05-04', 'Plume') 
+  ,(7.5, '2024-04-05', 'Plume') 
+  ,(7.4, '2024-03-02', 'Plume');
+
+INSERT INTO cat (name, race, is_male, age, ideal_weight, neutered)
+VALUES ('Monza', 'Persan', true, 7, 6.5, true)
+  ,('Plume', 'Maine coon', false, 5, 6, true)</pre>
     <p>
       Vous devriez être en mesure d'identifier tout les éléments de ces deux requêtes, bien que certains types soient
       utilisés ici pour la première fois. <br />
@@ -258,12 +256,11 @@
       toujours pour 'Monza', les données de la table <i>cat</i>... En même temps... <br />
       Pas de panique, c'est nettement moins compliqué que ça en à l'air. Analysez plutôt le code ci-dessous :
     </p>
-    <pre class="code-block sql">
-        SELECT cat.name, cat.ideal_weight, weighting.weight, weighting.date
-        FROM cat
-        JOIN weighting ON cat.name = weighting.name
-        ORDER BY weighting.date DESC;
-    </pre>
+    <pre class="code-snippet block sql">
+SELECT cat.name, cat.ideal_weight, weighting.weight, weighting.date
+FROM cat
+JOIN weighting ON cat.name = weighting.name
+ORDER BY weighting.date DESC;</pre>
     <p>
       Tout d'abord, notons une différence sur l'écriture des noms de colonne.
       <br />
@@ -279,7 +276,8 @@
     </p>
     <p>
       Ensuite, regardons le nouveau mot clé en deux partie <br />
-    <pre class="code-block sql">JOIN table ON critère</pre> permet de <i>joindre</i> une table à la table courante sur
+    <pre class="code-snippet line sql">JOIN table ON critère</pre> permet de <i>joindre</i> une table à la table
+    courante sur
     base d'un critère.
     De faire une <strong>liaison</strong>, une <strong>jointure</strong>. <br>
     Ici, le critère est une simple égalité entre les valeurs des colonnes <i>name</i> des tables <i>cat</i> et
@@ -289,25 +287,23 @@
       Pour le plaisir de la lecture, réduisont un peu la taille de cette requête en utilisant une notion vue
       précédement, les alias, mais sur les tables.
     </p>
-    <pre class="code-block sql">
-        SELECT c.name, c.ideal_weight, w.weight, w.date 
-        FROM cat AS c 
-        JOIN weighting as w on c.name = w.name
-        ORDER BY w.date DESC;
-    </pre>
+    <pre class="code-snippet block sql">
+SELECT c.name, c.ideal_weight, w.weight, w.date 
+FROM cat AS c 
+JOIN weighting as w on c.name = w.name
+ORDER BY w.date DESC;</pre>
     <p>
       Encore mieux, nous prenoms toutes les colonnes de la table
       <i>weighting</i>. Essayons ceci :
     </p>
-    <pre class="code-block sql">
-        SELECT w.*, c.ideal_weight 
-        FROM cat as c 
-        JOIN weighting as w on c.name = w.name 
-        ORDER BY w.date DESC;
-    </pre>
+    <pre class="code-snippet block sql">
+SELECT w.*, c.ideal_weight 
+FROM cat as c 
+JOIN weighting as w on c.name = w.name 
+ORDER BY w.date DESC;</pre>
     <p>
       Il est même possible de faire une requête de ce genre
-    <pre class="code-block sql">SELECT w.*, c.* --...</pre>. Je vous laisse imaginer le résultat
+    <pre class="code-snippet block sql">SELECT w.*, c.* --...</pre>. Je vous laisse imaginer le résultat
     </p>
     <!-- <p>Avant de passez à la section suivante, je vous propose deux exercices</p>
     <p>
@@ -346,10 +342,9 @@
       ce record)
     </p>
     <p>Le code suivant permet d'ajouter une clé primaire à notre table <i>cat</i></p>
-    <pre class="code-block sql">
-      ALTER TABLE cat
-      ADD PRIMARY KEY (name);
-    </pre>
+    <pre class="code-snippet block sql">
+ALTER TABLE cat
+ADD PRIMARY KEY (name);</pre>
     <h2 id="cle-composee">Clé composée</h2>
     <p>
       Qu'en est-il de la table weighting? <br>
@@ -376,10 +371,9 @@
       Mais un record au 1er mars pour Plume pourra être inséré tout comme un record au 4 mai pour Monza <br>
       Voyons comment mettre ça en place en terme de code
     </p>
-    <pre class="code-block sql">
-      ALTER TABLE weighting
-      ADD PRIMARY KEY (name, weight);
-    </pre>
+    <pre class="code-snippet block sql">
+ALTER TABLE weighting
+ADD PRIMARY KEY (name, weight);</pre>
     <!-- CREATE TABLE weighting(
       name varchar(32),
       date date,

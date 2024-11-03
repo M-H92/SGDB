@@ -53,7 +53,7 @@
       <strong>SQL</strong> et ainsi de communiquer avec votre système de gestion de base de données.
     </p>
     <p>Dans le query tool, entrez la ligne de code suivante pour créer votre première base de données</p>
-    <pre class="code-block sql">CREATE DATABASE fat_cat_clinic;</pre>
+    <pre class="code-snippet block sql">CREATE DATABASE fat_cat_clinic;</pre>
     <p>
       Pour ceux qui parlent un peu anglais, vous comprendrez rapidement ce dont il est question ici. <br />
       Nous <i>créons</i> une <i>base de données</i> dont le nom est fat_cat_clinic. Le <kbd>;</kbd> signifiant la fin de
@@ -116,31 +116,30 @@
       <strong>query tool</strong> de
       <strong>pgAdmin</strong>
     </p>
-    <pre class="code-block sql">
-        USE fat_cat_clinic; <br />
-        CREATE TABLE weight( <br />
-          weight decimal(3,1), <br />
-          date date <br />
-        );
-      </pre>
+    <pre class="code-snippet block sql">
+USE fat_cat_clinic; <br />
+CREATE TABLE weight( <br />
+  weight decimal(3,1), <br />
+  date date <br />
+);</pre>
     <p>
       Détaillons ensemble ce code : <br />
     </p>
-    <pre class="code-block sql">USE fat_cat_clinic;</pre>
+    <pre class="code-snippet block sql">USE fat_cat_clinic;</pre>
     <p>
       permet de spécifier quelle base de données utiliser. Si vous ouvrez le <strong>query tool</strong> via la base de
       données ciblée, cette portion de
       code n'est pas nécessaire. Néanmoins, n'étant pas problèmatique et permettant de se prémunir d'éventuelles
       erreurs, il sera de bon goût de l'utiliser <br />
     </p>
-    <pre class="code-block sql">CREATE TABLE weight(</pre>
+    <pre class="code-snippet block sql">CREATE TABLE weight(</pre>
     <p>
       permet, vous l'aurez compris, de créer une <strong>table</strong> dont le nom sera <i>weight</i> la parenthèse
       permet de
       spécifier ce que
       contiendra cette table <br />
     </p>
-    <pre class="code-block sql">weight decimal(3,1)</pre>
+    <pre class="code-snippet block sql">weight decimal(3,1)</pre>
     <p>
       permet de créer, dans la table weight, une colonne weight de
       type décimal. <br />
@@ -150,7 +149,7 @@
       virgule) souhaitée. <br /> Ainsi, decimal(3,1) nous permettra d'encoder des poids en kg avec une précision à
       l'hectogramme et allant jusqu'à 99,9 kg. Nous devrions être bon pour nos chats. <br />
     </p>
-    <pre class="code-block sql">date date</pre>
+    <pre class="code-snippet block sql">date date</pre>
     <p>
       permet, comme la ligne précédente, de créer une colonne. Celle-ci sera
       de type date <br />
@@ -165,17 +164,17 @@
       avec quelques informations.
     </p>
     <p>Comme pour le point précédent, lisez attentivement ce code et exécutez le</p>
-    <pre class="code-block sql">
-        INSERT INTO weight (weight, date)
-          VALUES (3.5, '2024-01-19');
-    </pre>
-    <pre class="code-block sql">INSERT INTO weight</pre>
+    <pre class="code-snippet block sql">
+INSERT INTO weight (weight, date)
+VALUES (3.5, '2024-01-19');</pre>
+    <pre class="code-snippet block sql">INSERT INTO weight</pre>
     <p>
       permet d'insérer des données dans la table weight
     </p>
     <p>
       Les informations entre parenthèses
-    <pre class="code-block sql">(weight, date)</pre> permettent de spécifier quelles valeurs seront insérées et dans
+    <pre class="code-snippet block sql">(weight, date)</pre> permettent de spécifier quelles valeurs seront insérées et
+    dans
     quel ordre.
     <br />
     Cette information pourrait être omise tant que les valeurs insérées sont écrites dans l'ordre des colonnes de la
@@ -186,25 +185,24 @@
     <p>
       Le mot clé
     </p>
-    <pre class="code-block sql">VALUES</pre>
+    <pre class="code-snippet line sql">VALUES</pre>
     <p>
       précède les données à insérer qui sont reprises entre parenthèses
-    <pre class="code-block sql"> (3.5, '2024-01-19') </pre>.
+    <pre class="code-snippet line sql"> (3.5, '2024-01-19') </pre>.
     Notez que la date est entourées de
     <kbd>'</kbd> et au format
     <i title="years-month-day respectivement sur 4, 2 et 2 chiffres"> yyyy-MM-dd </i>
     </p>
     <p>Pour bien faire, nous allons ajouter quelques données supplémentaires avec le code suivant :</p>
-    <pre class="code-block sql">
-        INSERT INTO weight (weight, date) 
-             VALUES (3.6, '2024-08-03')
-                ,(3.7, '2024-07-06') 
-                ,(3.5, '2024-06-01') 
-                ,(3.6, '2024-05-04') 
-                ,(3.4, '2024-04-06') 
-                ,(3.4, '2024-03-02') 
-                ,(3.5, '2024-02-03');
-    </pre>
+    <pre class="code-snippet block sql">
+INSERT INTO weight (weight, date) 
+      VALUES (3.6, '2024-08-03')
+        ,(3.7, '2024-07-06') 
+        ,(3.5, '2024-06-01') 
+        ,(3.6, '2024-05-04') 
+        ,(3.4, '2024-04-06') 
+        ,(3.4, '2024-03-02') 
+        ,(3.5, '2024-02-03');</pre>
     <p>Ici, la même commande est utilisée pour insérer une série de données.</p>
     <h2 id="select-from">Lire les enregistrements</h2>
     <p>
@@ -213,18 +211,18 @@
       Nous allons donc en profiter pour faire quelques requêtes.
     </p>
     <p>La première, ci-dessous, va nous permettre de lire les informations contenues dans la table</p>
-    <pre class="code-block sql"> SELECT weight, date FROM weight; </pre>
+    <pre class="code-snippet block sql"> SELECT weight, date FROM weight; </pre>
     <p>
       Les deux mots clés à retenir ici sont
-    <pre class="code-block sql">SELECT</pre> et
-    <pre class="code-block sql">FROM</pre>. <br />
-    <pre class="code-block sql">SELECT</pre> sera suivi des colonnes à récupérer. Vous pourriez donc ne sélectionner que
-    les poids avec une requête
-    <pre class="code-block sql">SELECT weight FROM weight;</pre> <br />
-    <pre class="code-block sql">FROM</pre> permet de spécifier la table dans laquelle récupérer les données.
+    <pre class="code-snippet line sql">SELECT</pre> et
+    <pre class="code-snippet line sql">FROM</pre>. <br />
+    <pre class="code-snippet line sql">SELECT</pre> sera suivi des colonnes à récupérer. Vous pourriez donc ne
+    sélectionner que les poids avec une requête
+    <pre class="code-snippet line sql">SELECT weight FROM weight;</pre> <br />
+    <pre class="code-snippet line sql">FROM</pre> permet de spécifier la table dans laquelle récupérer les données.
     </p>
     <p>Une seconde version de cette requête sera la suivante</p>
-    <pre class="code-block sql">SELECT * FROM weight;</pre>
+    <pre class="code-snippet block sql">SELECT * FROM weight;</pre>
     <p>
       Ici, le symbole <kbd>*</kbd> sera utilisé comme <i>joker</i> pour signifier <i>toutes les colonnes</i>. <br />
       Pratique pour les tests, mais à ne pas utiliser de manière systématique dans vos projets de développement. Nous en
@@ -236,20 +234,18 @@
       Bonne nouvelle, c'est possible avec la paire de mots clés
       <code lang="sql">ORDER BY</code>.
     </p>
-    <pre class="code-block sql">
-      SELECT * FROM weight
-      ORDER BY date;
-    </pre>
+    <pre class="code-snippet block sql">
+SELECT * FROM weight
+ORDER BY date;</pre>
     <p>
       Il sera même possible de choisir l'ordre du tri en ajoutant soit
-    <pre class="code-block sql">ASC</pre> ou
-    <pre class="code-block sql">DESC</pre> après notre
-    <pre class="code-block sql">ORDER BY</pre>
+    <pre class="code-snippet line sql">ASC</pre> ou
+    <pre class="code-snippet line sql">DESC</pre> après notre
+    <pre class="code-snippet line sql">ORDER BY</pre>
     </p>
-    <pre class="code-block sql">
-      SELECT * FROM weight 
-      ORDER BY date DESC;
-    </pre>
+    <pre class="code-snippet block sql">
+SELECT * FROM weight 
+ORDER BY date DESC;</pre>
     <p>Pratique ! Et cela ne s'applique pas qu'aux dates ! Même si dans notre cas, trier par poids semble moins
       pertinent, je vous invite à essayer.</p>
     <h2 id="conclusion">Conclusion</h2>
