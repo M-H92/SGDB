@@ -21,6 +21,7 @@
       <li>Primary key</li>
       <li>Clé composée</li>
     </ol>
+    <hr />
     <h2 id="contraintes">Contraintes</h2>
     <p>
       Quand nous avions ajouté le nom de l'animal à notre table, nous avions eu un problème de <i>null</i>. <br />
@@ -178,21 +179,27 @@
       avec les différentes pesées de nos chats (poids, date et nom) <br />
       Nous aurions donc les deux tables suivantes :
     </p>
-    <p>weight</p>
-    <ul>
-      <li>weight</li>
-      <li>date</li>
-      <li>name</li>
-    </ul>
-    <p>cat</p>
-    <ul>
-      <li>name</li>
-      <li>race</li>
-      <li>is_male</li>
-      <li>age</li>
-      <li>ideal_weight</li>
-      <li>neutered</li>
-    </ul>
+    <div style="display: flex;">
+      <div style="margin-right: 64px; border: solid 1px lightgray; padding: 16px; height: fit-content;">
+        <strong>weight</strong>
+        <ul>
+          <li>name</li>
+          <li>weight</li>
+          <li>date</li>
+        </ul>
+      </div>
+      <div style="margin-right: 64px; border: solid 1px lightgray; padding: 16px; height: fit-content;">
+        <strong>cat</strong>
+        <ul>
+          <li>name</li>
+          <li>race</li>
+          <li>is_male</li>
+          <li>age</li>
+          <li>ideal_weight</li>
+          <li>neutered</li>
+        </ul>
+      </div>
+    </div>
     <p>
       Vous avez remarqué quelque chose? <br />
       C'est ça, la colonne <i>name</i> est dupliquée dans les deux tables car une pesée est liée à un chat, tout comme
