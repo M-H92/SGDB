@@ -66,3 +66,9 @@ section {
 hr {
   width: 99%;
 }
+
+@media print {
+  .print-hide {
+    display: none;
+  }
+}

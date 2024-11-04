@@ -9,6 +9,7 @@ class Navbar {
   constructor() {
     this.element = document.createElement("nav");
     this.element.classList.add("lateral-navbar");
+    this.element.classList.add("print-hide");
   }
   attach(id = undefined) {
     this.element.appendChild(document.createElement("hr"));
