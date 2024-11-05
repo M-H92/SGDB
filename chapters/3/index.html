@@ -352,6 +352,17 @@ ORDER BY w.date DESC;</pre>
     <pre class="code-snippet block sql">
 ALTER TABLE cat
 ADD PRIMARY KEY (name);</pre>
+    <p>
+    <pre class="code-snippet line sql">ALTER TABLE</pre> est connu et permet de modifier une table renseignée (cat) <br>
+    <pre class="code-snippet line sql">ADD PRIMARY KEY (name)</pre> permet d'ajouter une clé primaire en renseignant une
+    table (name)
+    </p>
+    <p class="nota-bene info">
+      Il est possible d'ajouter une clé primaire à la création d'une table plutôt que d'altérer une table pour l'y
+      ajouter. Je vous renvoi à
+      <a href="https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-PRIMARY-KEYS">la
+        documentation</a> pour cette nomenclature
+    </p>
     <h2 id="cle-composee">Clé composée</h2>
     <p>
       Qu'en est-il de la table weighting? <br>
@@ -363,7 +374,7 @@ ADD PRIMARY KEY (name);</pre>
       Le poids ne semble pas adapté pour définir <i>"l'identité"</i> d'un record. <br>
       La date de pesée pourrait avoir un certain sens... Si nous n'avions qu'un chat à gérer et qu'on se limitait
       strictement a une pesée par jour <br>
-      Nous pourrions alors parler de la pesée de 1er septembre, de la pesée du 5 aout... Sans qu'il n'y ai d'ambiguité.
+      Nous pourrions alors parler de la pesée du 1er septembre, de la pesée du 5 aout... Sans qu'il n'y ai d'ambiguité.
       <br>
       Mais le fait de gérer plusieurs chat ne permet pas d'utiliser la date comme <strong>PK</strong> <br>
       Alors que faire?
@@ -374,13 +385,54 @@ ADD PRIMARY KEY (name);</pre>
       Nous parlerons alors de la pesée du 1er mars de Monza ou la pesée du 4 mai de Plume <br>
       Les contraintes seront alors appliquées sur la combinaison des deux colonnes plutôt que sur une unique colonne
       <br>
-      1er mars et Monza ne pourront pas être répété dans un autre record <br>
+      1er mars et Monza ne pourront pas être répétés ensembles dans un autre record <br>
       Mais un record au 1er mars pour Plume pourra être inséré tout comme un record au 4 mai pour Monza <br>
       Voyons comment mettre ça en place en terme de code
     </p>
     <pre class="code-snippet block sql">
 ALTER TABLE weighting
 ADD PRIMARY KEY (name, weight);</pre>
+    <p>Ce n'est finalement pas beaucoup plus compliqué que ce que nous avons vu plus tôt</p>
+    <p>À partir de maintenant, il serait intéressant de systématiquement penser à ce qui représente l'identité d'un
+      record au moment de créer votre table. <br>
+      Il s'agit d'un élément essentiel du design des bases de données relationnelles </p>
+    <h2 id="foreign-key">Foreign key</h2>
+    <p>
+      Nous avons vu plus haut comment mettre en place une contrainte empêchant une valeur d'être <i>null</i> <br>
+      Ceci permet de ne pas encoder une pesée pour un chat qui ne serait pas défini. <br>
+      Mais rien ne nous empêche d'encoder une valeur pour un chat erroné. Par exemple, une pesée pour "Monzo" plutôt que
+      pour "Monza". <br>
+      Nous serions dans l'incapacité de récupérer toutes les données qui nous intéressent. <br>
+      C'est dans ce genre de situation que vont nous être utile les <strong>Foreign key</strong> (ou
+      <strong>FK</strong>)
+    </p>
+    <p>
+      Une <strong>FK</strong> permet de référencer un élément d'une table de telle sorte que la valeur doivent y exister
+      pour être insérer dans une autre table <br>
+      Par exemple, pour la table <i>weighting</i>, de forcer l'insertion d'une pesée faisant référence à un chat
+      existant dans la table <i>cat</i>
+    </p>
+    <pre class="code-snippet block sql">
+ALTER TABLE cat
+ADD CONSTRAINT cat_fk FOREIGN KEY (name) REFERENCES cat (name);</pre>
+    <p>
+      La nomenclature est plus complexe que pour les <strong>PK</strong>. Regardons-y ensemble. <br>
+    <pre class="code-snippet line sql">ADD CONSTRAINT cat_fk FOREIGN KEY </pre> permet d'ajouter une contrainte de type
+    <strong>FOREIGN KEY</strong> qui aura la particularité d'avoir un nom. Dans notre cas, <i>cat_fk</i> <br>
+    Nous avons ensuite le nom de la colonne consernée par la foreign key (provenant de la table altérée)
+    <pre class="code-snippet line sql">(name)</pre> et enfin,
+    <pre class="code-snippet line sql">REFERENCES cat (name)</pre> spécifiant la table et le nom de la colonne qui doit
+    être référencée par la <strong>FK</strong>
+    </p>
+    <p class="nota-bene info">Il est généralement de bon goût de suffixer le nom d'une foreign key avec les initiales
+      <strong>fk</strong>. Mais ce genre de pratique est définie en interne. Référez-vous toujours aux pratiques de
+      votre entreprise
+    </p>
+    <p>
+      Accessoirement, on comprendra que, les <strong>PK</strong> désignant l'identité d'un enregistrement et ne pouvant
+      pas être null,
+      une <strong>FK</strong> fera <i>souvent</i> référence à une <strong>PK</strong>
+    </p>
     <!-- CREATE TABLE weighting(
       name varchar(32),
       date date,
