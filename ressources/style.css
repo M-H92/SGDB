@@ -67,6 +67,26 @@ hr {
   width: 99%;
 }
 
+.nota-bene {
+  background-color: #fcfcfd;
+  border: solid 1px #e9ecef;
+  padding: 16px;
+  margin: 0px 24px;
+  border-radius: 5px;
+  &.info {
+    border: solid 1px #9ec5fe;
+    background-color: #cfe2ff;
+  }
+  &.success {
+    border: solid 1px #a3cfbb;
+    background-color: #d1e7dd;
+  }
+  &.danger {
+    border: solid 1px #dc3545;
+    background-color: #f8d7da;
+  }
+}
+
 @media print {
   .print-hide {
     display: none;
