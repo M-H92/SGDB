@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <script type="module" src="../../scripts/addNavbar.js"></script>
+  <link rel="stylesheet" href="../../ressources/style.css" />
+</head>
+
+<body>
+  <main>
+    <h1>Subqueries</h1>
+    <ol>
+      <li>Introduction</li>
+      <li>Plus lourd que la moyenne</li>
+      <li>Subquery</li>
+      <li>CRUD</li>
+      <li>Conclusion</li>
+      <hr>
+    </ol>
+    <h2 id="plus-lourd-que-la-moyenne">Plus lourd que la moyenne</h2>
+    <p>
+      Voici un petit challenge pour vous : pour la base de données fat_cat_clinic, écrire une query qui permettrait de
+      récupérer les chats plus lourd que la moyenne. <br>
+      À priori, il serait intéressant d'utiliser la table <i>weighting</i> qui contient les pesées des différents chats.
+      <br>
+      Instinctivement, vous pourriez certainement être tenté d'écrire quelque chose de ce genre :
+    </p>
+    <pre class="code-snippet block sql">
+SELECT * FROM weighting
+WHERE weight > AVG(weight)</pre>
+    <p>Et vous auriez une très bonne intuition.</p>
+    <p>Néanmoins, rappelez-vous des contraintes des fonctions d'agrégation comme <i>AVG</i>. Elles ne peuvent pas être
+      utilisées dans une clasue <i>WHERE</i> <br>
+      Dans ce genre de situation, une <strong>SUBQUERY</strong> peut être utilisée.
+    </p>
+    <p class="nota-bene info">
+      <strong> Rappel : </strong> les fonctions d'agrégations seront utilisées avec des clauses <i>HAVING</i> plutot que
+      <i>WHERE</i>
+    </p>
+    <h2 id="subquery">Subquery</h2>
+    <p>
+      Une <strong>subquery</strong> (en français, une <strong>requête imbriquée</strong>) est, comme son nom l'indique,
+      une requête imbriquée à l'intérieur d'une autre requête. <br>
+      Ceci permet de palier au problème d'utiliser des résultats de requêtes dans d'autres requêtes et peut, dans
+      certains cas, être utilisé comme substitut aux jointures. <br>
+      On pourra donc résoudre notre problème ci-dessus avec le code suivant :
+    </p>
+    <pre class="code-snippet block sql">
+SELECT * FROM weighting
+WHERE weight > (SELECT AVG(weight) FROM weighting);</pre>
+    <p>Si l'on décortique cette requête, on se rend compte que les deux composants, séparés, sont assez simple. <br>
+      D'un côté, la requête <i>interne</i> sélectionne uniquement la moyenne des pesées. <br>
+      De l'autre côté, la requête externe sélectionne les pesées pour lesquelles les valeurs sont supérieures au
+      résultat de la requête interne : la moyenne des pesées
+    </p>
+    <h2 class="crud">CRUD</h2>
+    <p>
+      Si l'utilité vient d'être démontrée pour les <i>SELECT</i>
+    </p>
+  </main>
+</body>
+
+</html>
