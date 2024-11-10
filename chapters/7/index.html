@@ -14,11 +14,11 @@
     <h1>Chapitre 7</h1>
     <ol>
       <li>Propriétaires</li>
-      <li></li>
-      <li></li>
+      <li>One to One</li>
+      <li>Cascades</li>
       <hr>
     </ol>
-    <h2>Propriétaires</h2>
+    <h2 id="proprietaire">Propriétaires</h2>
     <p>Grâce aux modifications faites lors du dernier chapitre, nous pouvons maintenant savoir si un chat est en retard
       sur un vaccin ou connaitre la date de son prochain vaccin prévu.</p>
     <p>
@@ -61,7 +61,7 @@
       <br />
       Nous allons donc utiliser un nouveau type de relation qui pourrait nous être utile
     </p>
-    <h2>One to One</h2>
+    <h2 id="one-to-one">One to One</h2>
     <p>
       La relation one to one est un peu particulière en ce sens qu'elle ne semble, au premier abord, ne pas apporter
       beaucoup plus de possibilités qu'un ajout de champs dans une table unique. <br />
@@ -108,7 +108,93 @@
       est en tout cas clair qu'une table
       <i>information_contact</i> sera destinée à ce type d'information
     </p>
-    <p></p>
+    <p>
+      Dans notre cas, la sécurité sera l'élément le plus intéressant. <br>
+      Particulièrement dans le cas de données directement en rapport avec l'utilisateur pouvant être soumises aux lois
+      sur la protection des données personnelles. <br>
+      Dans le cadre de ces lois, une entreprise doit pouvoir justifier des moyens mis en oeuvre pour limiter l'accès,
+      supprimer ou anonymiser les données des utilisateurs (plus de détails dans votre cours de 3e année) <br>
+      Séparer les informations sensibles dans une table permet de facilement restreindre l'accès à celles-ci ainsi que
+      de les supprimer facilement <br>
+    </p>
+    <p class="nota-bene info">
+      Dans la même optique, disposer d'une <i>PK</i> qui ne correspond pas au nom et prénom
+      permettra de facilement anonymiser les informations en supprimant ces champs.
+    </p>
+    <p>
+      Mettons ensemble ces deux tables en place :
+    </p>
+    <pre class="code-snippet block sql">
+CREATE TABLE owner(
+  alias varchar(32) PRIMARY KEY,
+  first_name varchar(32),
+  last_name varchar(32)
+);
+
+CREATE TABLE contact(
+  owner_alias varchar(32) PRIMARY KEY,
+  phone_number varchar(16),
+  email varchar(128),
+  street_name varchar(64),
+  street_number varchar(8),
+  town varchar(64),
+  post_code varchar(16)
+);
+
+ALTER TABLE contact
+ADD CONSTRAINT contact_owner_fk 
+FOREIGN KEY (owner_alias) REFERENCES owner (alias);
+
+ALTER TABLE cat
+ADD COLUMN owner_alias varchar(32);
+
+ALTER TABLE cat
+ADD CONSTRAINT cat_owner_fk
+FOREIGN KEY (owner_alias) REFERENCES owner (alias);</pre>
+    <p>
+      Les différents mots-clé ne devraient pas vous poser de problèmes. <br>
+      Mais quelque chose devrait vous étonner dans cette requête. Si pas à la lecture, lors de son exécution <br>
+      Nous allons revenir dessus tout de suite. Pour l'instant, notez juste que nous avons déclaré la <i>FK</i> comme
+      partant de la table <i>contact</i> vers la table
+      <i>owner</i> <br>
+      Déclaré de cette façon et dans ce sens, nous pourrons créer un propriétaire sans lui ajouter d'informations de
+      contact, mais nous ne pourrons pas créer de contacts sans utilisateur concerné
+    </p>
+    <h2 id="deja-vu">Déjà-vu</h2>
+    <p>
+      Le dernier bout de code utilisé pose un problème au moment de mettre une clé étrangère entre les chats et leurs
+      propriétaires <br>
+      Nous avons déjà eu ce genre de problème lors de l'ajout de la table chat, rappelez-vous : nous n'avons pas encore
+      de données pour les propriétaires. <br>
+    </p>
+    <p class="nota-bene ">
+      Vous avez déjà résolu un problème similaire avant. <br>
+      Essayez de résoudre celui-ci avant de passer à la suite.
+    </p>
+    <p>
+      Si ce problème est du déjà-vu et que nous savons gérer le problème de donnée cruciale manquante, la question
+      inverse peut se poser... <br>
+      Que faire quand une donnée cruciale est supprimée ? <br>
+      Idéalement, nous devrions supprimer les informations liées. <br>
+      Dans notre cas à la suppression d'un utilisateur, nous voudrions supprimer les coordonnées de contact <br>
+      Mais que faire des données des chats? Vais-je garder les informations liées au chat d'un utilisateur inexistant?
+      <br>
+      Et si je supprimer les chats sans utilisateur, que faire des données de pesées? <br>
+      Mais l'ordre des opérations est ici à prendre en considération. <br>
+      Effectivement, nous venons de rappeler qu'on ne peut avoir de <i>FK</i> référençant une donnée inexistante. <br>
+      Nosu devrions donc pour supprimer un propriétaire, <br>
+      D'abord, supprimer les pesées des chats liés à ce propriétaire <br>
+      Ensuite, supprimer les chats correspondant <br>
+      Puis, supprimer les coordonnées si elles existent <br>
+      Et enfin, supprimer le record du propriétaire... <br>
+      Pour pouvoir gérer toutes ces manipulations simplement, nous allons apprendre à utiliser une nouvelle propriété :
+      la <strong>cascade</strong>
+    </p>
+    <p class="nota-bene">
+      Vous pourriez faire toutes ces opérations à la main et, si cela vous semble un entrainement pertinent,
+      n'hésitez-pas à créer ces requêtes avant de passer à la suite
+    </p>
+    <h2 id="cascades">Cascades</h2>
   </main>
 </body>
 
