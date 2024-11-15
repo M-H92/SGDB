@@ -195,6 +195,22 @@ FOREIGN KEY (owner_alias) REFERENCES owner (alias);</pre>
       n'hésitez-pas à créer ces requêtes avant de passer à la suite
     </p>
     <h2 id="cascades">Cascades</h2>
+    <p>
+      Une cascade est un type de contrainte permettant de maintenir l'intégrité des données de références dans notre
+      base de données grâce à, comme son nom l'indique, des opérations en cascade <br>
+      Grâce à cette fonctionnalité, nous pouvons configurer nos <i>FK</i> pour réagir à la mise à jour ou
+      suppression de données dans une table en mettant à jour ou en supprimant les éléments qui référencent cette table.
+      Ce qui est parfait dans notre cas <br>
+    </p>
+    <p>
+      Deux types de cascade existent : <br>
+      <strong>ON DELETE CASCADE</strong> permet tout simplement de supprimer les informations des différentes tables.
+      <br>
+      Dans notre cas, cela semble tout indiqué. <br>
+      <strong>ON UPDATE CASCADE</strong> permet de mettre à jour les données. <br>
+      Par exemple, dans notre cas, modifier l'<i>alias</i> du propriétaire modifierait aussi les informations dans les
+      tables <i>cat</i> et <i>contact</i>
+    </p>
   </main>
 </body>
 
