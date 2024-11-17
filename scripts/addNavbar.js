@@ -1,15 +1,18 @@
 import { getNavbar } from "./navbar.js";
 
+// const baseUrl = '/.'
+const baseUrl = '/SGBD'
+
 const _linkDefinitions = [
-  { name: "Préambule", url: "/SGDB/chapters/0" },
-  { name: "Première DB", url: "/SGDB/chapters/1" },
-  { name: "Relations", url: "/SGDB/chapters/2" },
-  { name: "Identités", url: "/SGDB/chapters/3" },
-  { name: "Séance d'exercices", url: "/SGDB/chapters/4" },
-  { name: "Cardinalité", url: "/SGDB/chapters/5" },
-  { name: "Problème de dates", url: "/SGDB/chapters/6" },
-  { name: "Propriétaires", url: "/SGDB/chapters/7" },
-  { name: "Liens et références externes", url: "/SGDB/chapters/x" },
+  { name: "Préambule", url: `${baseUrl}/chapters/0` },
+  { name: "Première DB", url: `${baseUrl}/chapters/1` },
+  { name: "Relations", url: `${baseUrl}/chapters/2` },
+  { name: "Identités", url: `${baseUrl}/chapters/3` },
+  { name: "Séance d'exercices", url: `${baseUrl}/chapters/4` },
+  { name: "Cardinalité", url: `${baseUrl}/chapters/5` },
+  { name: "Problème de dates", url: `${baseUrl}/chapters/6` },
+  { name: "Propriétaires", url: `${baseUrl}/chapters/7` },
+  { name: "Liens et références externes", url: `${baseUrl}/chapters/x` },
 ];
 
 function configure() {
