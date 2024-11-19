@@ -11,14 +11,24 @@
 
 <body>
   <main>
-    <h1>Chapitre 7</h1>
+    <h1>Propriétaires</h1>
     <ol>
-      <li>Propriétaires</li>
+      <li>Introduction</li>
+      <li>Contacts</li>
       <li>One to One</li>
-      <li>Cascades</li>
+      <li>Déjà-vu</li>
+      <li>Intégrité des références</li>
+      <li>Conclusion</li>
       <hr>
     </ol>
-    <h2 id="proprietaire">Propriétaires</h2>
+    <h2 id="introduction">Introduction</h2>
+    <p>
+      Dans ce chapitre, nous allons ajouter des propriétaires et des contacts à nos chats. <br>
+      Ceci va nous poser plusieurs problèmes et questions auxquelles nous allons répondre en approfondissant nos
+      connaissances des clés étrangères <br>
+      Nous aurons aussi la possibilité d'explorer un cas pratique de cardinalité encore non exploitée dans notre cours.
+    </p>
+    <h2 id="contacts">Contacts</h2>
     <p>Grâce aux modifications faites lors du dernier chapitre, nous pouvons maintenant savoir si un chat est en retard
       sur un vaccin ou connaitre la date de son prochain vaccin prévu.</p>
     <p>
@@ -315,52 +325,52 @@ FOREIGN KEY (owner_alias) REFERENCES owner (alias);</pre>
       Ajoutons maintenant quelques données dans ces deux nouvelles tables et lions quelques chats à des propriétaires
     </p>
     <pre class="code-snippet block sql">
-      CREATE TABLE owner(
-        alias varchar(32) PRIMARY KEY,
-        first_name varchar(32),
-        last_name varchar(32)
-      );
-      
-      CREATE TABLE contact(
-        owner_alias varchar(32) PRIMARY KEY,
-        phone_number varchar(16),
-        email varchar(128),
-        street_name varchar(64),
-        street_number varchar(8),
-        town varchar(64),
-        post_code varchar(16)
-      );
-      
-      ALTER TABLE contact
-      ADD CONSTRAINT contact_owner_fk 
-      FOREIGN KEY (owner_alias) REFERENCES owner (alias) 
-        ON DELETE CASCADE 
-        ON UPDATE CASCADE;
-      
-      ALTER TABLE cat
-      ADD COLUMN owner_alias varchar(32);
-      
-      ALTER TABLE cat
-      ADD CONSTRAINT cat_owner_fk
-      FOREIGN KEY (owner_alias) REFERENCES owner (alias)
-        ON DELETE SET NULL
-        ON UPDATE CASCADE;</pre>
-    <!-- <p>
-      La cascade est une type de contrainte permettant de maintenir l'intégrité des données de références dans notre
-      base de données grâce à, comme son nom l'indique, des opérations en cascade <br>
-      Grâce à cette fonctionnalité, nous pouvons configurer nos <i>FK</i> pour réagir à la mise à jour ou
-      suppression de données dans une table en mettant à jour ou en supprimant les éléments qui référencent cette table.
-      Ce qui est parfait dans notre cas <br>
-    </p>
+INSERT INTO owner (alias, first_name, last_name)
+VALUES 
+  ('MHS', 'Marc-H', 'Sana'),
+  ('BD', 'Bob', 'Dupont'),
+  ('JD', 'Jon', 'Doe');
+
+INSERT INTO contact (owner_alias,phone_number,email,street_name,street_number,town,post_code)
+VALUES
+  ('MHS','+32477702977', 'MHS@mail.com', 'rue Collard', '8B', 'Arlon','6700'),
+  ('JD','+32477703077', 'JD@mail.com', 'rue Collard', '8C', 'Arlon','6700');
+
+UPDATE cat
+SET owner = 'MHS'
+WHERE name = 'Monza';
+
+UPDATE cat
+SET owner = 'JD'
+WHERE name = 'Java';
+
+UPDATE cat
+SET owner = 'BD'
+WHERE name = 'Rubi';
+
+SELECT o.alias, cat.name, cont.phone_number FROM owner as o 
+LEFT JOIN cat on cat.owner = o.alias
+LEFT JOIN contact as cont on cont.owner_alias = o.alias</pre>
     <p>
-      Deux types de cascade existent : <br>
-      <strong>ON DELETE CASCADE</strong> permet tout simplement de supprimer les informations des différentes tables.
-      <br>
-      Dans notre cas, cela semble tout indiqué. <br>
-      <strong>ON UPDATE CASCADE</strong> permet de mettre à jour les données. <br>
-      Par exemple, dans notre cas, modifier l'<i>alias</i> du propriétaire modifierait aussi les informations dans les
-      tables <i>cat</i> et <i>contact</i>
-    </p> -->
+      Nos chats Monza, Java et Rubi disposent maintenant d'un propriétaire. <br>
+      Faisons deux choses : supprimons L'utilisateur JD et modifions l'utilisateur BD. <br>
+      Ensuite, voyons le résultat.
+    </p>
+    <pre class="code-snippet block sql">
+DELETE FROM owner WHERE alias = 'JD';
+UPDATE owner SET alias = 'Bob D.';
+SELECT * FROM cat ORDER BY owner;
+SELECT * FROM contact;</pre>
+    <p>
+      Java n'a plus de propriétaires tandis que Rubi dispose bien d'une valeur à jour pour son owner <br>
+      Les contacts de JD ont bien été supprimés.
+    </p>
+    <h2 id="conclusion">Conclusion</h2>
+    <p>
+      Dans cette section, nous avons ajoutés des propriétaires et contacts dans notre base de données. <br>
+      Ceci nous a permis d'explorer une nouvelle cardinalité, la <i>One to One</i> ainsi que d'approfondir nos
+      connaissances sur les <strong>FK</strong> en ajoutant des options pour automatiser certaines actions
+    </p>
   </main>
 </body>
 
