@@ -1,7 +1,7 @@
 import { getNavbar } from "./navbar.js";
 
 // const baseUrl = '/.'
-const baseUrl = '/SGBD'
+const baseUrl = "/SGDB";
 
 const _linkDefinitions = [
   { name: "Préambule", url: `${baseUrl}/chapters/0` },
