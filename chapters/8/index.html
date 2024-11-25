@@ -28,8 +28,7 @@
     </p>
     <pre class="code-snippet block">
 SELECT * FROM owner as o
-JOIN contact as c on o.alias = c.owner_alias;
-</pre>
+JOIN contact as c on o.alias = c.owner_alias;</pre>
     <p>
       Étrangement, après exécution de cette requête, nous n'avons qu'un unique résultat... <br>
       Nous disposons pourtant de plus de propriétaires que ça. Alors pourquoi ne récupère-t-on pas la liste complète?
@@ -42,8 +41,7 @@ LEFT JOIN contact as c on o.alias = c.owner_alias;
 SELECT * FROM owner as o
 INNER JOIN contact as c on o.alias = c.owner_alias;
 SELECT * FROM owner as o
-RIGHT JOIN contact as c on o.alias = c.owner_alias;
-</pre>
+RIGHT JOIN contact as c on o.alias = c.owner_alias;</pre>
     <p>
       Elles ne donnent pas toutes le même result set... <br>
       Jusqu'a présent, nous n'avions vu que la forme la plus simple à écrire d'un <strong>JOIN</strong> en utilisant
@@ -72,6 +70,110 @@ RIGHT JOIN contact as c on o.alias = c.owner_alias;
       <img class="col-4" src="https://www.w3schools.com/mysql/img_right_join.png" alt="right-join">
       <a class="col-12" href="https://www.w3schools.com/mysql/mysql_join.asp">Images provenant de w3schools</a>
     </div>
+    <p class="nota-bene info">
+      Que se passe-t-il si, pour 1 record de la table <i>gauche</i>, 2 records de la table <i>droite</i> correspondent ?
+      <br>
+      Vous obtenez 2 records dans votre result set. <br>
+      Attention à utiliser des critères de jointure pertinent de façon à bien cibler les données voulues
+    </p>
+    <h2 id="join-join-join">Join, join, join,...</h2>
+    <p>Parfait. Fort de cette nouvelle connaissance, attaquons nous de nouveau à notre problème.</p>
+    <p>
+      Récupérer les différents utilisateurs ? <br>
+      Aucun problème. <br>
+      Le code précédent est fonctionnel et nous comprenons maintenant pourquoi il se comporte de la sorte
+    </p>
+    <pre class="code-snippet block">
+SELECT * FROM owner as o
+INNER JOIN contact as c on o.alias = c.owner_alias;</pre>
+    <p>Ajoutons les chats en faisant une jointure entre les propriétaires et les chats</p>
+    <pre class="code-snippet block">
+SELECT * FROM owner as o
+INNER JOIN contact as c on o.alias = c.owner_alias
+INNER JOIN cat on o.alias = cat.owner_alias;</pre>
+    <p>
+      Récupéront les différents vaccins possibles pour chaque chat <br>
+      Pour ce faire, nous allons passer par la table de liaison et, si les informations de la table de liaison sont
+      suffisantes, nous pourrions nous y arrêter <br>
+      Malheureusement pour nous, ce n'est pas le cas. <br>
+      Continuons
+    </p>
+    <pre class="code-snippet block">
+SELECT * FROM owner as o
+INNER JOIN contact as c on o.alias = c.owner_alias
+INNER JOIN cat on o.alias = cat.owner_alias
+INNER JOIN cat_vaccine as cv on cv.cat_name = cat.name
+INNER JOIN vaccine as v on cv.vaccine_name = vaccine.name</pre>
+    <p>
+      Notez que rapidement, au plus nous devons faire de jointures, au plus une query peut devenir complexe. <br>
+      Justement, voyons si nous ne pouvons pas simplifier cette requête? <br>
+      En regardant les différentes données utilisées, on voit que la jointure entre <i>cat</i> et <i>owner</i> utiliser
+      le même critère que la jointure entre <i>owner</i> et <i>contact</i> <br>
+      Considérant ceci, est-ce qu'il ne serait pas possible de bypasser entièrement la table <i>owner</i>? <br>
+    </p>
+    <pre class="code-snippet block">
+SELECT * FROM contact as c
+INNER JOIN cat on c.owner_alias = cat.owner_alias
+INNER JOIN cat_vaccine as cv on cv.cat_name = cat.name
+INNER JOIN vaccine as v on cv.vaccine_name = vaccine.name</pre>
+    <p class="nota-bene info">
+      Il s'agit d'un rappel, mais notez qu'il n'y a pas de relation de <strong>FK</strong> entre <i>cat</i> et
+      <i>contact</i>. <br>
+      Une <strong>FK</strong> n'étant <strong>PAS</strong> nécessaire pour une jointure
+    </p>
+    <p>
+      Super! <br>
+      Mais en essayant cette requête, nous nous rendons compte que nous disposont d'une liste complète des vaccins de
+      nos chats. <br>
+      Ce qui pourrait convenir si l'on décide de faire le tri au niveau applicatif. <br>
+      Néanmoins, réduire ces résultats de telle sorte de n'avoir que les records voulu permet de réduire le coût des
+      transferts entre notre programme et notre base de données. <br>
+      Un dernier effort avec quelques filtres supplémentaires <br>
+    </p>
+    <p>Peut-être qu'un <strong>WHERE</strong> pour récupérer le résultat avec la date la date la plus élevée permettrait
+      de réduire correctement les résultats? <br>
+      Malheureusement, nous n'aurront plus qu'un unique résultat <br>
+      Alors peut-être un <strong>ORDER BY</strong> sur la date en mode <strong>DESC</strong> ? <br>
+      Et si l'on combine avec un LIMIT en modifiant un peu le nombre d'éléments souhaité ? <br>
+      Rien à faire... <br>
+      On s'approche d'une solution, mais nous avons encore soit trop de résultats, soit un nombre arbitraire qui ne
+      convient pas à nos besoins...</p>
+    <h2 id="distinct">Distinct</h2>
+    <p>
+      Bien qu'utilisé lors d'exercices, le mot clé <strong>DISTINCT</strong> ne nous avait pas été formellement
+      présenté. <br>
+      Réparons l'impair.
+    </p>
+    <p>
+      Le mot clé <strong>DISTINCT</strong> permet de filtrer les résultats d'une requête sur un critère
+      <i>"d'unicité"</i> <br>
+      Par exemple, si je ne veux qu'une pesée pour un chat, je pourrais utiliser le mot clé distinct sur la propriété
+      <i>cat_name</i> de la table <i>weighting</i> :
+    </p>
+    <pre class="code-snippet block">
+SELECT  weight, date, DISTINCT cat_name FROM weighting;</pre>
+    <p>Dans ce cas, l'ajout d'un <strong>ORDER BY</strong> sur la date permettra de filtrer les résultats les plus
+      récents ou le plus anciens <i>par chat</i></p>
+    <pre class="code-snippet block">
+SELECT  weight, date, DISTINCT cat_name FROM weighting
+ORDER BY date DESC;</pre>
+    <h2 id="full-et-cross">Full et cross</h2>
+    <p>
+      Vous allez certainement rencontrer deux autres type de jointure assez rapidement dans vos
+      lectures. <br>
+      Bien qu'elles ne soient pas abordées dans ce chapitre, un rapide mot dessus. <br>
+      Le <strong>FULL OUTER JOIN</strong> permet de récupérer les informations des deux tables et ce, sans les
+      restrictions d'un <strong>LEFT</strong> ou <strong>RIGHT JOIN</strong>. On a donc chaque élément de la table
+      <i>gauche</i> ainsi que chaque élément de la table <i>droite</i>. <br>
+      Le <strong>CROSS JOIN</strong> permet de récupérer <i>chaque ligne de la table de gauche jointe avec chaque ligne
+        de la table de droite</i>. Ce qui est sensiblement différent et donne des résultats souvent nettement plus
+      conséquent.
+    </p>
+    <p class="nota-bene danger">
+      Le <strong>CROSS JOIN</strong> peut réellement donner des résultats très lourd. <br>
+      Si vous disposez de 10 éléments dans les deux tables jointes, vous allez récupérer 100 lignes de résultat... <br>
+      Imaginez sur des tables de plusieurs milliers de lignes
+    </p>
   </main>
 </body>
 
