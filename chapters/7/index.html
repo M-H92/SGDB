@@ -337,19 +337,19 @@ VALUES
   ('JD','+32477703077', 'JD@mail.com', 'rue Collard', '8C', 'Arlon','6700');
 
 UPDATE cat
-SET owner = 'MHS'
+SET owner_alias = 'MHS'
 WHERE name = 'Monza';
 
 UPDATE cat
-SET owner = 'JD'
+SET owner_alias = 'JD'
 WHERE name = 'Java';
 
 UPDATE cat
-SET owner = 'BD'
+SET owner_alias = 'BD'
 WHERE name = 'Rubi';
 
 SELECT o.alias, cat.name, cont.phone_number FROM owner as o 
-LEFT JOIN cat on cat.owner = o.alias
+LEFT JOIN cat on cat.owner_alias = o.alias
 LEFT JOIN contact as cont on cont.owner_alias = o.alias</pre>
     <p>
       Nos chats Monza, Java et Rubi disposent maintenant d'un propriétaire. <br>
