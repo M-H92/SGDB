@@ -358,8 +358,12 @@ LEFT JOIN contact as cont on cont.owner_alias = o.alias</pre>
     </p>
     <pre class="code-snippet block sql">
 DELETE FROM owner WHERE alias = 'JD';
-UPDATE owner SET alias = 'Bob D.';
+
+UPDATE owner SET alias = 'Bob D.' 
+WHERE alias = 'BD';
+
 SELECT * FROM cat ORDER BY owner;
+
 SELECT * FROM contact;</pre>
     <p>
       Java n'a plus de propriétaires tandis que Rubi dispose bien d'une valeur à jour pour son owner <br>
