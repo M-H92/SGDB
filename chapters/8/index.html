@@ -11,55 +11,67 @@
 
 <body>
   <main>
-    <h1>Subqueries</h1>
+    <h1>Propriétaires (suite)</h1>
     <ol>
       <li>Introduction</li>
-      <li>Plus lourd que la moyenne</li>
-      <li>Subquery</li>
-      <li>CRUD</li>
+      <li>Join</li>
+      <li>Left Join, Inner join, Right join</li>
       <li>Conclusion</li>
       <hr>
     </ol>
-    <h2 id="plus-lourd-que-la-moyenne">Plus lourd que la moyenne</h2>
+    <h2 id="join"></h2>
     <p>
-      Voici un petit challenge pour vous : pour la base de données fat_cat_clinic, écrire une query qui permettrait de
-      récupérer les chats plus lourd que la moyenne. <br>
-      À priori, il serait intéressant d'utiliser la table <i>weighting</i> qui contient les pesées des différents chats.
+      Maintenant que nous disposons des contacts des différents utilisateurs, nous allons pouvoir récupérer les
+      informations nécessaires pour les contacter quand un vaccin n'est plus à jour. <br>
+      Pour se faire, récupéront au fur et à mesure les informations requises. <br>
+      D'abord, les différents utilisateurs et leurs contacts :
+    </p>
+    <pre class="code-snippet block">
+SELECT * FROM owner as o
+JOIN contact as c on o.alias = c.owner_alias;
+</pre>
+    <p>
+      Étrangement, après exécution de cette requête, nous n'avons qu'un unique résultat... <br>
+      Nous disposons pourtant de plus de propriétaires que ça. Alors pourquoi ne récupère-t-on pas la liste complète?
       <br>
-      Instinctivement, vous pourriez certainement être tenté d'écrire quelque chose de ce genre :
     </p>
-    <pre class="code-snippet block sql">
-SELECT * FROM weighting
-WHERE weight > AVG(weight)</pre>
-    <p>Et vous auriez une très bonne intuition.</p>
-    <p>Néanmoins, rappelez-vous des contraintes des fonctions d'agrégation comme <i>AVG</i>. Elles ne peuvent pas être
-      utilisées dans une clasue <i>WHERE</i> <br>
-      Dans ce genre de situation, une <strong>SUBQUERY</strong> peut être utilisée.
-    </p>
-    <p class="nota-bene info">
-      <strong> Rappel : </strong> les fonctions d'agrégations seront utilisées avec des clauses <i>HAVING</i> plutot que
-      <i>WHERE</i>
-    </p>
-    <h2 id="subquery">Subquery</h2>
+    <p>Pour tenter de mieux comprendre ce que nous avons fait, comparons les résultats de ces trois requêtes</p>
+    <pre class="code-snippet block">
+SELECT * FROM owner as o
+LEFT JOIN contact as c on o.alias = c.owner_alias;
+SELECT * FROM owner as o
+INNER JOIN contact as c on o.alias = c.owner_alias;
+SELECT * FROM owner as o
+RIGHT JOIN contact as c on o.alias = c.owner_alias;
+</pre>
     <p>
-      Une <strong>subquery</strong> (en français, une <strong>requête imbriquée</strong>) est, comme son nom l'indique,
-      une requête imbriquée à l'intérieur d'une autre requête. <br>
-      Ceci permet de palier au problème d'utiliser des résultats de requêtes dans d'autres requêtes et peut, dans
-      certains cas, être utilisé comme substitut aux jointures. <br>
-      On pourra donc résoudre notre problème ci-dessus avec le code suivant :
+      Elles ne donnent pas toutes le même result set... <br>
+      Jusqu'a présent, nous n'avions vu que la forme la plus simple à écrire d'un <strong>JOIN</strong> en utilisant
+      uniquement ce mot clé. <br>
+      Mais comme pour les <strong>FK</strong>, il est possible d'aggrémenter nos <strong>JOIN</strong> de mot-clés
+      supplémentaires pour en modifier le comportement <br>
     </p>
-    <pre class="code-snippet block sql">
-SELECT * FROM weighting
-WHERE weight > (SELECT AVG(weight) FROM weighting);</pre>
-    <p>Si l'on décortique cette requête, on se rend compte que les deux composants, séparés, sont assez simple. <br>
-      D'un côté, la requête <i>interne</i> sélectionne uniquement la moyenne des pesées. <br>
-      De l'autre côté, la requête externe sélectionne les pesées pour lesquelles les valeurs sont supérieures au
-      résultat de la requête interne : la moyenne des pesées
-    </p>
-    <h2 class="crud">CRUD</h2>
+    <h2 id="left-join-inner-join-right-join">Left Join, Inner join, Right join</h2>
     <p>
-      Si l'utilité vient d'être démontrée pour les <i>SELECT</i>
+      Ci-dessus, vous pouvez remarque que nous avons utilisé trois mot-clés supplémentaires :
+      <strong>LEFT</strong>,<strong>INNER</strong> et <strong>RIGHT</strong> <br>
+      Ceux-ci vont modifier les données attendues lors d'une jointure pour récupérer une unique portion des données.
+      <br>
+      Pour l'exemple, prenons deux tables <i>gauche</i> et <i>droite</i> et faisons une jointure sur celles-ci. <br>
+      <strong>LEFT JOIN</strong> va récupérer toutes les données de la table <i>gauche</i> ainsi que les données
+      correspondants au critère de jointure dans la table <i>droite</i> <br>
+      <strong>RIGHT JOIN</strong>, à l'inverse, va récupérer toutes les données de la table <i>droite</i> ainsi que les
+      données correspondantes dans la table <i>gauche</i> <br>
+      <strong>INNER JOIN</strong>, utilisé par défaut (ceci peut dépendre du <i>DBMS</i>) ne prendra que les
+      informations pour lesquelles les critères de jointure seront validées. <br>
+      Ci-dessous, vous pourrez voir un schéma reprenant ces trois types de jointures <br>
     </p>
+    <div class="container">
+      <img class="col-4" src="https://www.w3schools.com/mysql/img_left_join.png" alt="left-join">
+      <img class="col-4" src="https://www.w3schools.com/mysql/img_inner_join.png" alt="inner-join">
+      <img class="col-4" src="https://www.w3schools.com/mysql/img_right_join.png" alt="right-join">
+      <a class="col-12" href="https://www.w3schools.com/mysql/mysql_join.asp">Images provenant de w3schools</a>
+    </div>
   </main>
 </body>
 
