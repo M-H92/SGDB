@@ -12,6 +12,7 @@ const _linkDefinitions = [
   { name: "Cardinalité", url: `${baseUrl}/chapters/5` },
   { name: "Problème de dates", url: `${baseUrl}/chapters/6` },
   { name: "Propriétaires", url: `${baseUrl}/chapters/7` },
+  { name: "Propriétaires (suite)", url: `${baseUrl}/chapters/8` },
   { name: "Liens et références externes", url: `${baseUrl}/chapters/x` },
 ];
 
