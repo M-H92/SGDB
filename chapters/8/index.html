@@ -16,10 +16,13 @@
       <li>Introduction</li>
       <li>Join</li>
       <li>Left Join, Inner join, Right join</li>
+      <li>Join, join, join,...</li>
+      <li>Distinct</li>
+      <li>Full et cross</li>
       <li>Conclusion</li>
       <hr>
     </ol>
-    <h2 id="join"></h2>
+    <h2 id="join">Join</h2>
     <p>
       Maintenant que nous disposons des contacts des différents utilisateurs, nous allons pouvoir récupérer les
       informations nécessaires pour les contacter quand un vaccin n'est plus à jour. <br>
@@ -85,12 +88,12 @@ RIGHT JOIN contact as c on o.alias = c.owner_alias;</pre>
     </p>
     <pre class="code-snippet block">
 SELECT * FROM owner as o
-INNER JOIN contact as c on o.alias = c.owner_alias;</pre>
+  INNER JOIN contact as c on o.alias = c.owner_alias;</pre>
     <p>Ajoutons les chats en faisant une jointure entre les propriétaires et les chats</p>
     <pre class="code-snippet block">
 SELECT * FROM owner as o
-INNER JOIN contact as c on o.alias = c.owner_alias
-INNER JOIN cat on o.alias = cat.owner_alias;</pre>
+  INNER JOIN contact as c on o.alias = c.owner_alias
+  INNER JOIN cat on o.alias = cat.owner_alias;</pre>
     <p>
       Récupéront les différents vaccins possibles pour chaque chat <br>
       Pour ce faire, nous allons passer par la table de liaison et, si les informations de la table de liaison sont
@@ -100,10 +103,10 @@ INNER JOIN cat on o.alias = cat.owner_alias;</pre>
     </p>
     <pre class="code-snippet block">
 SELECT * FROM owner as o
-INNER JOIN contact as c on o.alias = c.owner_alias
-INNER JOIN cat on o.alias = cat.owner_alias
-INNER JOIN cat_vaccine as cv on cv.cat_name = cat.name
-INNER JOIN vaccine as v on cv.vaccine_name = vaccine.name</pre>
+  INNER JOIN contact as c on o.alias = c.owner_alias
+  INNER JOIN cat on o.alias = cat.owner_alias
+  INNER JOIN cat_vaccine as cv on cv.cat_name = cat.name
+  INNER JOIN vaccine as v on cv.vaccine_name = v.name</pre>
     <p>
       Notez que rapidement, au plus nous devons faire de jointures, au plus une query peut devenir complexe. <br>
       Justement, voyons si nous ne pouvons pas simplifier cette requête? <br>
@@ -113,9 +116,9 @@ INNER JOIN vaccine as v on cv.vaccine_name = vaccine.name</pre>
     </p>
     <pre class="code-snippet block">
 SELECT * FROM contact as c
-INNER JOIN cat on c.owner_alias = cat.owner_alias
-INNER JOIN cat_vaccine as cv on cv.cat_name = cat.name
-INNER JOIN vaccine as v on cv.vaccine_name = vaccine.name</pre>
+  INNER JOIN cat on c.owner_alias = cat.owner_alias
+  INNER JOIN cat_vaccine as cv on cv.cat_name = cat.name
+  INNER JOIN vaccine as v on cv.vaccine_name = v.name</pre>
     <p class="nota-bene info">
       Il s'agit d'un rappel, mais notez qu'il n'y a pas de relation de <strong>FK</strong> entre <i>cat</i> et
       <i>contact</i>. <br>
@@ -147,17 +150,85 @@ INNER JOIN vaccine as v on cv.vaccine_name = vaccine.name</pre>
     <p>
       Le mot clé <strong>DISTINCT</strong> permet de filtrer les résultats d'une requête sur un critère
       <i>"d'unicité"</i> <br>
-      Par exemple, si je ne veux qu'une pesée pour un chat, je pourrais utiliser le mot clé distinct sur la propriété
-      <i>cat_name</i> de la table <i>weighting</i> :
+      Par exemple, si je ne veux qu'une pesée par chat, je pourrais utiliser le mot clé distinct sur la propriété
+      <i>name</i> de la table <i>weighting</i> :
+    </p>
+    <pre class="code-snippet block">SELECT DISTINCT name FROM weighting;</pre>
+    <p>
+      Dans ce cas, l'ajout d'un <strong>ORDER BY</strong> sur la date permettra de filtrer les résultats les plus
+      récents ou le plus anciens <i>par chat</i>. <br>
+      Mais si vous essayez <br>
     </p>
     <pre class="code-snippet block">
-SELECT  weight, date, DISTINCT cat_name FROM weighting;</pre>
-    <p>Dans ce cas, l'ajout d'un <strong>ORDER BY</strong> sur la date permettra de filtrer les résultats les plus
-      récents ou le plus anciens <i>par chat</i></p>
+SELECT DISTINCT name, weight, weighting_date FROM weighting
+ORDER BY weighting_date DESC;</pre>
+    <p>
+      Vous risquez d'avoir une surprise... <br>
+      Que s'est-il passé? <br>
+      La requête que vous venez de faire effectue en réalité un distinct sur les trois champs ensemble. <br>
+      Deux records retournés ne pourront donc pas avoir la même combinaison de <i>name, weight et weighting_date</i>
+      <br>
+      Ce qui ne semble pas trop nous avancer... <br>
+      Heureusement, il y a une solution. <br>
+      Essayez ce code
+    </p>
     <pre class="code-snippet block">
-SELECT  weight, date, DISTINCT cat_name FROM weighting
-ORDER BY date DESC;</pre>
+SELECT DISTINCT ON (weighting.name) weighting.name, weight, weighting_date 
+FROM weighting
+ORDER BY name, weighting_date DESC;</pre>
+    <p class="nota-bene info">
+      Il semble que la clause <strong>DISTINCT ON</strong> soit assez différente selon le DBMS... <br>
+      Si elle n'est pas tout simplement indisponible ! <br>
+      Pensez à vous référer à la documentation en cas de besoin
+    </p>
+    <p>
+      Ici, nous avons séparé la clause <strong>DISTINCT</strong> du reste du select. <br>
+      Notez d'ailleurs qu'il n'y a pas de <kbd>,</kbd> entre
+    <pre class="code-snippet line">DISTINCT ON (weighting.name)</pre> et les colonnes récupérées <br>
+    Remarquez aussi que l'on ordonne d'abord par <i>name</i> puis seulement par <i>weighting_date</i>. <br>
+    Essayez une fois sans et lisez attentivement l'erreur qui est lancée par PGSQL et vous comprendrez que c'est comme
+    ça. Pas le choix <br>
+    Et si nous voulions faire un <strong>DISTINCT</strong> sur une combinaison de colonnes, le pourrions-nous? <br>
+    Voyons avec les vaccins
+    </p>
+    <pre class="code-snippet block">
+SELECT DISTINCT ON (c.name, v.name) c.name as cat_name, 
+  v.name as vaccine_name, 
+  c.owner_alias, 
+  v.weeks_before_booster, 
+  inoculation 
+FROM cat as c
+  INNER JOIN cat_vaccine as cv on c.name = cv.cat_name
+  INNER JOIN vaccine as v on cv.vaccine_name = v.name
+ORDER BY c.name, v.name, cv.inoculation DESC</pre>
+    <p>
+      Nous voici déjà avec une belle requête. <br>
+      Prenez le temps de bien la lire correctement et de la comprendre. <br>
+      Puis ajoutons ce qui avait été fait précédement</p>
+    <pre class="code-snippet block">
+SELECT DISTINCT ON (cat.name, v.name) 
+  c.phone_number, 
+  cat.name as cat_name, 
+  v.name as vaccine_name, 
+  cat.owner_alias, 
+  v.weeks_before_booster, 
+  inoculation 
+FROM contact as c
+    INNER JOIN cat on c.owner_alias = cat.owner_alias
+    INNER JOIN cat_vaccine as cv on cv.cat_name = cat.name
+    INNER JOIN vaccine as v on cv.vaccine_name = v.name
+ORDER BY cat.name, v.name, cv.inoculation DESC;</pre>
+    <p>
+      Idéalement, l'ajout d'une clause <strong>WHERE</strong> pour ne prendre que les vaccins requis serait de mise.
+      <br>
+      Tentez de la réaliser avant de passer à la suite.
+    </p>
     <h2 id="full-et-cross">Full et cross</h2>
+    <p>Ajouter un vaccin</p>
+    <p>Refaire le select</p>
+    <p>Pas de record alors qu'aucun chat ne l'a</p>
+    <p>Cross join</p>
+    <p>Différence avec le FULL OUTER</p>
     <p>
       Vous allez certainement rencontrer deux autres type de jointure assez rapidement dans vos
       lectures. <br>
