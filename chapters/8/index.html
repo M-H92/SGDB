@@ -19,6 +19,7 @@
       <li>Join, join, join,...</li>
       <li>Distinct</li>
       <li>Full et cross</li>
+      <li>Vue</li>
       <li>Conclusion</li>
       <hr>
     </ol>
@@ -297,12 +298,76 @@ CROSS JOIN vaccine;
       donnera 200 records... <br>
       Sur des tables de plusieurs milliers de lignes, la taille des résultats n'est plus négligeable.
     </p>
+    <p>
+      Essayons maintenant d'intégrer ceci dans la requête précédente
+    </p>
+    <pre class="code-snippet block">
+  SELECT DISTINCT ON (cat.name, v.name) 
+    c.phone_number, 
+    cat.name as cat_name, 
+    v.name as vaccine_name, 
+    cat.owner_alias, 
+    v.weeks_before_booster, 
+    inoculation 
+  FROM contact as c
+      INNER JOIN cat on c.owner_alias = cat.owner_alias
+      CROSS JOIN vaccine as v
+      INNER JOIN cat_vaccine as cv on cv.cat_name = cat.name
+  ORDER BY cat.name, v.name, cv.inoculation DESC;</pre>
     <!-- <h2>subquery</h2>
+    <p>
+      Une manière d'éviter des résultats surprenant pourra être, par exemple, de passer par une <strong>SUBQUERY</strong> <br>
+       Nous avions testé notre <strong>CROSS JOIN</strong> en l'isolant dans une query. <br>
+    Essayons la requête précédente avec ceci</p>
     <p>mettre full outer dans query prec</p>
-    <p>séparer vaccin_cat avec distinct en subquery</p>
-    <h2>Vue</h2>
-    <p>Query devient immense</p>
-    <p>Encapsuler dans vue</p>
+    <p>séparer vaccin_cat avec distinct en subquery</p> -->
+    <h2 id="vue">Vue</h2>
+    <p>
+      Au fil de ce chapitre, notre query est devenue de plus en plus longue et, pour un oeil externe, de moins en moins
+      compréhensible. <br>
+      Effectivement, il est facile de comprendre ce que fait une requête impliquant une ou deux tables pour récupérer
+      une poignée de colonnes. <br>
+      Mais rapidement, quand plus de tables ou plus de colonnes sont ajoutées, il devient moins évident de comprendre
+      exactement <i>à quoi</i> sert une requête. <br>
+      Il serait intéressant de pouvoir la sauvegarder pour la réutiliser sans devoir la réécrire, et lui donner un nom
+      explicite qui permettra à un collègue de comprendre quand utiliser cette requête <br>
+      Pour ce faire, nous allons encapsuler notre requête dans une <strong>VUE</strong>. <br>
+    </p>
+    <p>
+      Dans son état le plus simple, une vue permet simplement de sauvegarder une requête <br>
+      Elle devient ensuite utilisable comme une table qui existerait bel et bien dans notre base de données. <br>
+      Ainsi, je pourrais faire un <strong>SELECT</strong> sur notre vue et même lui ajouter des clauses comme
+      <strong>WHERE</strong> ou <strong>ORDER BY</strong> <br>
+      Permettant en plus de rapidement obtenir des variantes des résultats de notre requête sans devoir modifier
+      celle-ci <br>
+      Voyons comment mettre ça en place
+    </p>
+    <pre class="code-snippet block">
+CREATE VIEW vue_derniers_vaccins_et_contacts
+SELECT DISTINCT ON (cat.name, v.name) 
+  c.phone_number, 
+  cat.name as cat_name, 
+  v.name as vaccine_name, 
+  cat.owner_alias, 
+  v.weeks_before_booster, 
+  inoculation 
+FROM contact as c
+    INNER JOIN cat on c.owner_alias = cat.owner_alias
+    CROSS JOIN vaccine as v
+    INNER JOIN cat_vaccine as cv on cv.cat_name = cat.name
+ORDER BY cat.name, v.name, cv.inoculation DESC;</pre>
+    <p>Nous pourrions dès lors utiliser notre vue comme ceci</p>
+    <pre class="code-snippet block">
+SELECT * FROM vue_derniers_vaccins_et_contacts 
+WHERE owner_alias = 'MHS'</pre>
+    <p>Si tant est que le développeur de l'application envoyant des messages aux utilisateurs connait l'existance de
+      cette vue, il n'a plus rien d'autre à faire qu'un <i>SELECT *</i></p>
+    <p class="nota-bene info">
+      Dans la pratique, une vue permet de faire plus de choses que de simplement sauvegarder une requête. <br>
+      Néanmoins, cela dépasse le cadre de cette première partie de cours d'SQL <br>
+      N'hésitez pas à vous renseigner de votre côté sur les points que vous souhaitez approfondir !
+    </p>
+    <!-- <p>Encapsuler dans vue</p>
     <p>Where sur la vue pour récupérer par utilisateur</p>
     <p>Board par utilisateur dans le programme</p>
     <p>Ajouter des owners</p>
