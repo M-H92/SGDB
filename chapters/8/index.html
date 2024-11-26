@@ -229,25 +229,16 @@ ORDER BY cat.name, v.name, cv.inoculation DESC;</pre>
       vaccin dans la base de données et exécutons à nouveau celle-ci
     </p>
     <pre class="code-snippet block">
-INSERT INTO vaccin (name
-  ,description
-  ,first_inoculation_week
-  ,mandatory
-  ,illness
-  ,years_before_booster)
-VALUES (
-  'PIF',
-  'La péritonite infectieuse féline est déclenchée 
-  par le coronavirus félin. Dans la plupart des cas,
-  cette maladie se caractérise par une péritonite. 
-  Parfois, la maladie ne se traduit que par un épanchement pleural : 
-  le chat tousse et semble avoir mal à la poitrine. 
-  src : zooplus.fr',
-  16,
-  false
-  'Péritonite infectieuse féline'
-  1
-);</pre>
+      INSERT INTO vaccine (name
+      ,first_inoculation_week
+      ,is_mandatory
+      ,weeks_before_booster)
+    VALUES (
+      'Péritonite infectieuse féline',
+      16,
+      false,
+      52
+    );</pre>
     <p>
       Aïe... Ce vaccin n'est pas récupéré par notre requête... <br>
       Ce qui est normal car nous n'avons pas de record dans la table de liaison entre <i>cat</i> et <i>vaccine</i> <br>
