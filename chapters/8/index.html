@@ -229,6 +229,7 @@ ORDER BY cat.name, v.name, cv.inoculation DESC;</pre>
     <p>Pas de record alors qu'aucun chat ne l'a</p>
     <p>Cross join</p>
     <p>Différence avec le FULL OUTER</p>
+    <p>join du cross avec vaccin_cat et distinct</p>
     <p>
       Vous allez certainement rencontrer deux autres type de jointure assez rapidement dans vos
       lectures. <br>
@@ -244,6 +245,20 @@ ORDER BY cat.name, v.name, cv.inoculation DESC;</pre>
       Le <strong>CROSS JOIN</strong> peut réellement donner des résultats très lourd. <br>
       Si vous disposez de 10 éléments dans les deux tables jointes, vous allez récupérer 100 lignes de résultat... <br>
       Imaginez sur des tables de plusieurs milliers de lignes
+    </p>
+    <h2>subquery</h2>
+    <p>mettre full outer dans query prec</p>
+    <p>séparer vaccin_cat avec distinct en subquery</p>
+    <h2>Vue</h2>
+    <p>Query devient immense</p>
+    <p>Encapsuler dans vue</p>
+    <p>Where sur la vue pour récupérer par utilisateur</p>
+    <p>Board par utilisateur dans le programme</p>
+    <p>Ajouter des owners</p>
+    <p>
+      Exercice => faire vue pour voir si dernière pesée est différentes de moyenne pour chaque chat de chaque
+      propriétaire <br>
+      Une fois dans vue, facile d'ajouter un where pour ajouter au board utilisateur
     </p>
   </main>
 </body>
