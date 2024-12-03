@@ -305,13 +305,6 @@ CROSS JOIN vaccine;
       CROSS JOIN vaccine as v
       INNER JOIN cat_vaccine as cv on cv.cat_name = cat.name
   ORDER BY cat.name, v.name, cv.inoculation DESC;</pre>
-    <!-- <h2>subquery</h2>
-    <p>
-      Une manière d'éviter des résultats surprenant pourra être, par exemple, de passer par une <strong>SUBQUERY</strong> <br>
-       Nous avions testé notre <strong>CROSS JOIN</strong> en l'isolant dans une query. <br>
-    Essayons la requête précédente avec ceci</p>
-    <p>mettre full outer dans query prec</p>
-    <p>séparer vaccin_cat avec distinct en subquery</p> -->
     <h2 id="vue">Vue</h2>
     <p>
       Au fil de ce chapitre, notre query est devenue de plus en plus longue et, pour un oeil externe, de moins en moins
