@@ -11,60 +11,283 @@
 
 <body>
   <main>
-    <h1>Subqueries</h1>
+    <h1>Espace utilisateur</h1>
     <ol>
       <li>Introduction</li>
-      <li>Plus lourd que la moyenne</li>
+      <li>Récupérations de statistiques</li>
+      <li>Moyenne, min, max et différence avec le poids actuel</li>
       <li>Subquery</li>
-      <li>CRUD</li>
+      <li >Table récapitulatif</li>
       <li>Conclusion</li>
       <hr>
     </ol>
-    <h2 id="plus-lourd-que-la-moyenne">Plus lourd que la moyenne</h2>
+    <h2>Introduction</h2>
     <p>
-      Voici un petit challenge pour vous : pour la base de données fat_cat_clinic, écrire une query qui
-      permettrait de
-      récupérer les chats plus lourd que la moyenne. <br>
-      À priori, il serait intéressant d'utiliser la table <i>weighting</i> qui contient les pesées des différents
-      chats.
+      Dans ce chapitre, nous allons tenter de mettre en place des requêtes utilisables pour la récupération de données d'un éventuel espace utilisateur <br>
+      Pour ce faire, nous allons manipuler nos requêtes en les imbriquants et explorer le principe des sous-requêtes
+    </p>
+    <h2 id="recuperations-de-statistiques">Récupérations de statistiques</h2>
+    <p>
+      Au chapitre précédent, nous avons réalisé une requête permettant de facilement récupérer les derniers vaccins et,
+      conséquement, la liste des vaccins à venir. <br>
+      Ceci était dans le cadre d'une mailing list pour les utilisateurs désireux d'être notifié des ces informations
       <br>
-      Instinctivement, vous pourriez certainement être tenté d'écrire quelque chose de ce genre :
+      Néanmoins, certains utilisateurs (entre autre ceux qui ne souhaitent pas partager leurs informations de contact)
+      aimeraient un espace utilisateur pour pouvoir consulter ces données à la demande <br>
+      Riche de nos compétences précédentes, nous sommes maintenantn capable de réaliser les requêtes pour afficher des
+      informations pertinentes à l'utilisateur.
     </p>
-    <pre class="code-snippet block sql">
-SELECT * FROM weighting
-WHERE weight > AVG(weight)</pre>
-    <p>Et vous auriez une très bonne intuition.</p>
-    <p>Néanmoins, rappelez-vous des contraintes des fonctions d'agrégation comme <i>AVG</i>. Elles ne peuvent pas
-      être
-      utilisées dans une clasue <i>WHERE</i> <br>
-      Dans ce genre de situation, une <strong>SUBQUERY</strong> peut être utilisée.
+    <p class="nota-bene">
+      Au chapitre précédent, nous avons encapsulé une requête permettant de récupérer les derniers vaccins pour les
+      utilisateurs qui avaient partagés leur informations de contact. <br>
+      Dans le cadre de la zone utilisateur, une requête similaire devrait être effectuée mais dont le critère limitant
+      ne serait pas la présence de contact, mais le pseudo de l'utilisateur. <br>
+      Vous avez les compétences pour rédiger cette requête ! Essayez en vous basant sur le chapitre précédent quand
+      nécessaire.
     </p>
-    <p class="nota-bene info">
-      <strong> Rappel : </strong> les fonctions d'agrégations seront utilisées avec des clauses <i>HAVING</i>
-      plutot que
-      <i>WHERE</i>
+    <h2 id="moyenne-min-max-et-difference-avec-le-poids-actuel">
+      Moyenne, min, max et différence avec le poids actuel
+    </h2>
+    <p>
+      Une donnée intéressante pour notre utilisateur pourrait être la différence par rapport aux poids max, min et moyen
+      de son chat pour la dernière pesée <br>
+      Ces requêtes sont simple à faire, nous avons vu très tôt comment les réaliser avec les fonctions correspondantes
+    </p>
+    <pre class="code-snippet block">
+SELECT MIN(weight) as minimum_weight, 
+  MAX(weight) as maximum_weight, 
+  ROUND(AVG(weight),2) as average_weight 
+FROM weighting
+WHERE name = 'Monza'
+    </pre>
+    <p>
+      Nous obtenons alors un résultat de 3.00 kg, 7.36 kg et 6.27 kg respectivement (si vos résultats sont différent
+      pour des raisons de données différentes, gardez les dans un coin de votre tête) <br>
+      Si nous appliquons une modification, nous devrions pouvoir récupérer les même résultats avec un <strong>GROUP
+        BY</strong> sur le nom de notre chat
+    </p>
+    <pre class="code-snippet block">
+SELECT name, MIN(weight) as minimum_weight, 
+  MAX(weight) as maximum_weight, 
+  ROUND(AVG(weight),2) as average_weight 
+FROM weighting
+GROUP BY (name)
+HAVING name = 'Monza'
+    </pre>
+    <p>
+      Et nous voudrions utiliser la même petite astuce qu'au chapitre précédent pour récupérer uniquement la dernière
+      pesée en ajoutant un <strong>ORDER BY</strong> sur la colonne <i>date</i><br>
+      Néanmoins, rappelez vous qu'une fois un <strong>GROUP BY</strong> appliqué, il devient impossible de manipuler les
+      colonnes qui ne sont pas présentes dans ce dernier <br>
+      Nous ne pouvons donc pas faire un <strong>ORDER BY</strong> sur la <i>date</i> sans l'ajouter au préalable dans
+      cette clause. <br>
+      Pas de problème, essayons
+    </p>
+
+    <pre class="code-snippet block">
+SELECT name, weighting_date, MIN(weight) as minimum_weight, 
+  MAX(weight) as maximum_weight, 
+  ROUND(AVG(weight),2) as average_weight 
+FROM weighting
+GROUP BY (name, weighting_date)
+HAVING name = 'Monza'
+ORDER BY weighting_date DESC
+LIMIT 1
+      </pre>
+    <p>
+      Ça semble marcher, mais... Regardons ces résultats : 6.17kg, 6.17kg et 6.17kg... <br>
+      Rien à voir avec ce qu'on avait avant et qui plus est, une moyenne équivalente à notre min et max semble très
+      étrange dans notre cas <br>
+      Mais le résultat est pourtant tout à fait logique... <br>
+      Nos fonctions ont été réalisées sur les différents résultats récupérés et groupés. <br>
+      Ainsi, en groupant nos résultats sur la date, nous avons fait la moyenne du poids du chat pour les pesées de cette
+      date... Unique dans notre cas !
+    </p>
+    <p>
+      Bon, d'accord. Le résultat est logique... <br>
+      Mais ça ne nous aide pas à résoudre notre problème de récupération des min, max et moy de manière à les faire
+      correspondre à la dernière pesée... <br>
+      Ce qui est d'autant plus frustrant que nous avions correctement récupérer les informations avec notre première
+      requête ! <br>
+      Et c'est justement sur celle-ci que nous allons nous basser pour résoudre notre problème.
     </p>
     <h2 id="subquery">Subquery</h2>
     <p>
       Une <strong>subquery</strong> (en français, une <strong>requête imbriquée</strong>) est, comme son nom
-      l'indique,
-      une requête imbriquée à l'intérieur d'une autre requête. <br>
-      Ceci permet de palier au problème d'utiliser des résultats de requêtes dans d'autres requêtes et peut, dans
-      certains cas, être utilisé comme substitut aux jointures. <br>
-      On pourra donc résoudre notre problème ci-dessus avec le code suivant :
+      l'indique, une requête imbriquée à l'intérieur d'une autre requête. <br>
+      Ceci permet de palier au problème d'utiliser des résultats de requêtes dans d'autres requêtes et peut parfois,
+      dans
+      certains cas, être utilisé comme <i> substitut </i> aux jointures. <br>
+      L'idée va être d'englober notre première requête dans des parenthèses et d'en utiliser les résultats dans la
+      requête suivante.
     </p>
     <pre class="code-snippet block sql">
-SELECT * FROM weighting
-WHERE weight > (SELECT AVG(weight) FROM weighting);</pre>
-    <p>Si l'on décortique cette requête, on se rend compte que les deux composants, séparés, sont assez simple. <br>
-      D'un côté, la requête <i>interne</i> sélectionne uniquement la moyenne des pesées. <br>
-      De l'autre côté, la requête externe sélectionne les pesées pour lesquelles les valeurs sont supérieures au
-      résultat de la requête interne : la moyenne des pesées
-    </p>
-    <h2 class="crud">CRUD</h2>
+SELECT name, 
+	weighting_date, 
+	weight, 
+	minimum_weight,
+	(weight - minimum_weight) as difference_with_min_weight,
+	maximum_weight, 
+	(maximum_weight - weight) as difference_with_max_weight, 
+	average_weight, 
+	(average_weight - weight) as difference_with_avg_weight
+from weighting 
+ CROSS JOIN (SELECT MIN(weight) as minimum_weight, 
+	MAX(weight) as maximum_weight, 
+	ROUND(AVG(weight),2) as average_weight 
+FROM weighting
+WHERE name = 'Monza')
+WHERE name = 'Monza'
+ORDER BY weighting_date DESC
+LIMIT 1
+      </pre>
     <p>
-      Si l'utilité vient d'être démontrée pour les <i>SELECT</i>
+      Notez que nous avons utilisé un <strong>CROSS JOIN</strong> pour lequel nous avions évoqué le risque de résultat
+      parfois imposant. <br>
+      Dans notre cas, le résultat de ces requêtes (imbriquée et englobante) est limité par deux facteurs. <br>
+      D'abord, nous réduisons le nombre de résultat de la <strong>subquery</strong> en utilisant des fonctions
+      d'aggrégation <br>
+      Nous n'avons effectivement qu'un résultat pour cette requête. <br>
+      Un <strong>CROSS JOIN</strong> étant multiplicatif, nous avons un résultat multiplié par 1 qui ne pose pas de
+      problèmes <br>
+      Ensuite, nous limitons aussi notre requête englobante en faisant un <strong>LIMIT 1</strong>. <br>
+      Nous nous retrouvons donc avec un <i>result set</i> d'un unique <i>record</i> bien qu'ayant utilisé un
+      <strong>CROSS JOIN</strong> <br>
+      Pour l'exercice, il est néanmoins possible de se débarasser de celui-ci en utilisant des requêtes imbriquées dans
+      notre clause <strong>SELECT</strong>
     </p>
+    <pre class="code-snippet block sql">
+SELECT name, 
+	weighting_date, 
+	weight, 
+	(SELECT MIN(weight) FROM weighting WHERE  name = 'Monza') as minimum_weight,
+	(weight - (SELECT MIN(weight) FROM weighting WHERE  name = 'Monza')) as difference_with_min_weight,
+	(SELECT MAX(weight) FROM weighting  WHERE  name = 'Monza') as maximum_weight, 
+	((SELECT MAX(weight) FROM weighting  WHERE  name = 'Monza') - weight) as difference_with_max_weight, 
+	(SELECT ROUND(AVG(weight),2) FROM weighting  WHERE  name = 'Monza') as average_weight,
+	((SELECT ROUND(AVG(weight),2) FROM weighting  WHERE  name = 'Monza') - weight) as difference_with_avg_weight
+from weighting 
+WHERE name = 'Monza'
+ORDER BY weighting_date DESC
+LIMIT 1
+      </pre>
+    <p>
+      Nous nous retrouvons néanmoins avec des requêtes significativement différentes en terme de lecture ainsi qu'en
+      terme d'exécution <br>
+    </p>
+    <p class="nota-bene info">
+      Si vous êtes curieux d'approfondir votre compréhension des impacts de performance que peuvent avoir deux requêtes
+      au résultat identique mais à l'écriture différente,
+      vous pouvez vérifier le <i>plan d'exécution</i> de vos requêtes. <br>
+      Et bien que la lecture et interprétation de ces données dépassent le cadre de ce cours et que ces recherches
+      seront à faire de votre côté, je ne peux que vous suggérer d'y regarder au moins un peu pour votre compréhension
+      générale d'<i>SQL</i>
+    </p>
+    <p>
+      Ajoutons encore une donnée intéressante : le nombre de pesées suivi du nombre de pesée par dessus la moyenne et par dessous la moyenne. <br>
+      Conceptuellement, ces queries sont loin d'être compliquées : il suffit d'utiliser un <strong>COUNT</strong> sur les pesées pour lesquelles <strong>weight > AVG(weight)</strong> <br>
+      Mais dans la mise en place, les choses deviennent un peu plus compliquées <br>
+      Faire une moyenne demande d'exclure tout résultat qui n'est pas un aggrégat <br>
+      Heureusement, <strong>COUNT</strong> est un aggrégat <br>
+      Mais récupérer seulement ceux supérieur à la moyenne demande de faire une condition... <br>
+      Qu'il est impossible de combiner avec la condition permettant de récupérer uniquement les résultats inférieurs à la moyenne... <br>
+      Nous pouvons heureusement utiliser les <strong>subqueries</strong> directement dans notre sélection de colonnes  
+    </p>
+<pre class="code-snippet block sql">
+SELECT COUNT(*) as total_weightings,
+	(SELECT COUNT(*) FROM weighting
+		WHERE name = 'Monza'   
+			AND weight > (SELECT avg(weight) FROM weighting WHERE name = 'Monza')
+	) as total_weighint_over_avg,
+	(SELECT COUNT(*) FROM weighting
+		WHERE   name = 'Monza' 
+			AND weight < (SELECT avg(weight) FROM weighting WHERE name = 'Monza') 
+	)  as total_weighint_under_avg
+FROM weighting
+WHERE name = 'Monza'
+</pre>
+    <p>
+      Une fois que vous avez compris le principe qu'il s'agit <i>simplement</i> de combiner des queries dans d'autres queries, les possibilités deviennent très grandes. <br>
+      Attention toutefois à ne pas trop complexifier la lecture de vos queries en en utilisant ce procédé quand il n'est pas nécessaire
+    </p>
+    <h2 class="table-recapitulatif">Table récapitulatif</h2>
+    <p>
+      Si l'utilité vient d'être démontrée pour les <i>SELECT</i> il est intéressant de noter que le principe peut être exploité à la fois dans des <strong>INSERT</strong>, mais aussi <strong>UPDATE</strong> ou <strong>DELETE</strong> <br>
+      La subqueries va retourner un <i>set de données</i> tout à fait comparable à une table exploitable de la même manière. <br>
+      Nous pourrions donc imaginer faire un <strong>DELETE</strong> des éléments pour lesquels le poids dépasse le double du poids idéal de notre chat (considérant ces records comme fantaisiste) <br>
+      Nous devrions alors créer une requête retournant les <strong>PK</strong> de ces recors que nous pourrions utiliser dans une clause <strong>WHERE .. IN</strong> <br>
+      De notre côté, nous allons l'utiliser dans un <strong>INSERT</strong>
+    </p>
+    <p>
+      La récupération des données annuelles est possible avec une requête <strong>SELECT</strong> <br>
+      Si nous voulions récupérer le poids moyen par année de chaque chat, nous pourrions le faire à la volée de cette manière <br>
+      Néanmoins, pour simplifier l'utilisation de notre base de données, nous pourrions sauvegarder ces résultats dans une nouvelle table que nous alimenterions avec une <strong>subquery</strong> contenue dans un <strong>INSERT</strong> <br>
+      Essayons
+    </p>
+    <p class="nota-bene info">
+      La création de cette table permet surtout d'illustrer le comportement de notre <strong>subquery</strong>, mais va à l'encontre de certains principes de design de base de données <br>
+      Idéalement, nous souhaiterions ne pas sauvegarder des résultats simple à calculer à la volée dans un <strong>SELECT</strong> <br>
+      Ceci pour éviter de <i>dupliquer</i> de la donnée en partant du principe que si une donnée est composée de plusieurs données présentes dans la base de données, celle-ci ne doit pas être insérée à nouveau <br>
+      Néanmoins, dans la pratique, certains cas peuvent le justifier pour des raisons de performance, sécurité, ... <br>
+      Il faudra toujours juger le pour et le contre dans la mise en place de ces <i>exceptions</i>
+    </p>
+    <pre class="code-snippet block sql">
+CREATE TABLE annual_summary(
+  cat_name varchar(32),
+  year int,
+  average decimal(4,2),
+  PRIMARY KEY (cat_name, year)
+)</pre>
+      <p>
+        D'abord, créons notre table <br>
+        Elle dispose d'un nom de chat ainsi que d'une annnée (sous la forme d'un entier) qui représente la <strong>PK</strong> <br>
+        Nous ajoutons la moyenne comme donnée récupérée annuellement. <br>
+        Nous pourrions tout autant récupérer le minimum et le maximum. N'hésitez pas à essayer d'ajouter ces données pour vous entrainer. <br>
+        Cette table étant vide, nous allons la remplir grâce aux données déjà présentes dans la table <i>weighting</i>
+      </p>
+      <pre class="code-snippet block sql">
+SELECT name,
+	extract(year from weighting_date) as year, 
+	ROUND(AVG(weight),2) as average FROM weighting
+GROUP BY (name, extract(year from weighting_date));
+      </pre>
+      <p>
+        Le première étape est de récupérer les données qui nous intéressent. <br>
+        Veillez à toujours vérifier que vos requêtes récupère bien les bonnées données avant d'utiliser les résultats pour de l'insertion, suppression, mise à jour... <br>
+        Une fois fait, nous pouvons inclure cette requête en tant que <strong>subquery</strong> dans notre <strong>INSERT</strong>
+      </p>
+      <pre class="code-snippet block sql">
+INSERT INTO annual_summary
+(cat_name, year, average)
+(
+  SELECT name,
+    extract(year from weighting_date) as year, 
+    ROUND(AVG(weight),2) as average FROM weighting
+  GROUP BY (name, extract(year from weighting_date))
+);
+      </pre>
+      <p>
+        Notez l'absence du mot clé <strong>VALUES</strong> que nous avions quand nous faisions ces requêtes à la main. <br>
+        Enfin, comparons nos données insérées et les données de notre subquery avec les deux requêtes ci-dessous 
+      </p>
+      <pre class="code-snippet block sql">
+SELECT * FROM annual_summary
+ORDER BY cat_name, year;
+
+SELECT name,
+	extract(year from weighting_date) as year, 
+	ROUND(AVG(weight),2) as average FROM weighting
+GROUP BY (name, extract(year from weighting_date))
+ORDER BY name, year;
+      </pre>
+      <h2 id="conclusion">Conclusion</h2>
+      <p>
+        Dans ce chapitre, nous avons vu la notion de <strong>SUBQUERY</strong> <br>
+        Nous avons vu que cette notion permettait de récupérer le résultat d'une requête pour l'insérer dans une autre requête <br>
+        Ceci nous offrant la possibilité de récupérer des résultats autrement impossible à récupérer. <br>
+        Nous avons aussi appris à utiliser ce concept dans les autres parties du <strong>CRUD</strong> en insérant dans une table des données récupérées via une autre requête <br>
+        Le prochain chapitre sera dédié à des exercices
+      </p>
   </main>
 </body>
 
