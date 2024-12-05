@@ -109,7 +109,9 @@ hr {
 }
 
 #news-update{
-  h3,p{
+  div{
+    margin-left: 16px;
     padding-left: 16px;
+    border-left: 2px solid black;
   }
 }
