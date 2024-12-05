@@ -59,8 +59,7 @@ SELECT MIN(weight) as minimum_weight,
   MAX(weight) as maximum_weight, 
   ROUND(AVG(weight),2) as average_weight 
 FROM weighting
-WHERE name = 'Monza'
-    </pre>
+WHERE name = 'Monza'</pre>
     <p>
       Nous obtenons alors un résultat de 3.00 kg, 7.36 kg et 6.27 kg respectivement (si vos résultats sont différent
       pour des raisons de données différentes, gardez les dans un coin de votre tête) <br>
@@ -73,8 +72,7 @@ SELECT name, MIN(weight) as minimum_weight,
   ROUND(AVG(weight),2) as average_weight 
 FROM weighting
 GROUP BY (name)
-HAVING name = 'Monza'
-    </pre>
+HAVING name = 'Monza'</pre>
     <p>
       Et nous voudrions utiliser la même petite astuce qu'au chapitre précédent pour récupérer uniquement la dernière
       pesée en ajoutant un <strong>ORDER BY</strong> sur la colonne <i>date</i><br>
@@ -93,8 +91,7 @@ FROM weighting
 GROUP BY (name, weighting_date)
 HAVING name = 'Monza'
 ORDER BY weighting_date DESC
-LIMIT 1
-      </pre>
+LIMIT 1</pre>
     <p>
       Ça semble marcher, mais... Regardons ces résultats : 6.17kg, 6.17kg et 6.17kg... <br>
       Rien à voir avec ce qu'on avait avant et qui plus est, une moyenne équivalente à notre min et max semble très
@@ -140,8 +137,7 @@ FROM weighting
 WHERE name = 'Monza')
 WHERE name = 'Monza'
 ORDER BY weighting_date DESC
-LIMIT 1
-      </pre>
+LIMIT 1</pre>
     <p>
       Notez que nous avons utilisé un <strong>CROSS JOIN</strong> pour lequel nous avions évoqué le risque de résultat
       parfois imposant. <br>
@@ -170,8 +166,7 @@ SELECT name,
 from weighting 
 WHERE name = 'Monza'
 ORDER BY weighting_date DESC
-LIMIT 1
-      </pre>
+LIMIT 1</pre>
     <p>
       Nous nous retrouvons néanmoins avec des requêtes significativement différentes en terme de lecture ainsi qu'en
       terme d'exécution <br>
@@ -205,8 +200,7 @@ SELECT COUNT(*) as total_weightings,
 			AND weight < (SELECT avg(weight) FROM weighting WHERE name = 'Monza') 
 	)  as total_weighint_under_avg
 FROM weighting
-WHERE name = 'Monza'
-</pre>
+WHERE name = 'Monza'</pre>
     <p>
       Une fois que vous avez compris le principe qu'il s'agit <i>simplement</i> de combiner des queries dans d'autres queries, les possibilités deviennent très grandes. <br>
       Attention toutefois à ne pas trop complexifier la lecture de vos queries en en utilisant ce procédé quand il n'est pas nécessaire
@@ -250,8 +244,7 @@ CREATE TABLE annual_summary(
 SELECT name,
 	extract(year from weighting_date) as year, 
 	ROUND(AVG(weight),2) as average FROM weighting
-GROUP BY (name, extract(year from weighting_date));
-      </pre>
+GROUP BY (name, extract(year from weighting_date));</pre>
       <p>
         Le première étape est de récupérer les données qui nous intéressent. <br>
         Veillez à toujours vérifier que vos requêtes récupère bien les bonnées données avant d'utiliser les résultats pour de l'insertion, suppression, mise à jour... <br>
@@ -265,8 +258,7 @@ INSERT INTO annual_summary
     extract(year from weighting_date) as year, 
     ROUND(AVG(weight),2) as average FROM weighting
   GROUP BY (name, extract(year from weighting_date))
-);
-      </pre>
+);</pre>
       <p>
         Notez l'absence du mot clé <strong>VALUES</strong> que nous avions quand nous faisions ces requêtes à la main. <br>
         Enfin, comparons nos données insérées et les données de notre subquery avec les deux requêtes ci-dessous 
@@ -279,8 +271,7 @@ SELECT name,
 	extract(year from weighting_date) as year, 
 	ROUND(AVG(weight),2) as average FROM weighting
 GROUP BY (name, extract(year from weighting_date))
-ORDER BY name, year;
-      </pre>
+ORDER BY name, year;</pre>
       <h2 id="conclusion">Conclusion</h2>
       <p>
         Dans ce chapitre, nous avons vu la notion de <strong>SUBQUERY</strong> <br>
@@ -301,5 +292,4 @@ ORDER BY name, year;
       </p>
   </main>
 </body>
-
 </html>

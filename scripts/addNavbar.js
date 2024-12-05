@@ -4,6 +4,7 @@ import { getNavbar } from "./navbar.js";
 const baseUrl = "/SGDB";
 
 const _linkDefinitions = [
+  { name: "Home", url: `${baseUrl}` },
   { name: "Préambule", url: `${baseUrl}/chapters/0` },
   { name: "Première DB", url: `${baseUrl}/chapters/1` },
   { name: "Relations", url: `${baseUrl}/chapters/2` },

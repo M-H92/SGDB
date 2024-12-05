@@ -48,6 +48,7 @@ kbd {
   -webkit-box-shadow: 9px 2px 9px -4px rgba(0, 0, 0, 0.5);
   -moz-box-shadow: 9px 2px 9px -4px rgba(0, 0, 0, 0.5);
   box-shadow: 9px 2px 9px -4px rgba(0, 0, 0, 0.5);
+  overflow-y: auto;
 }
 .lateral-navbar:hover {
   left: 0px;
@@ -104,5 +105,11 @@ hr {
 @media print {
   .print-hide {
     display: none;
+  }
+}
+
+#news-update{
+  h3,p{
+    padding-left: 16px;
   }
 }
