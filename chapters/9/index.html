@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Document</title>
   <script type="module" src="../../scripts/addNavbar.js"></script>
+  <script type="module" src="../../scripts/syntaxHighlighting.js"></script>
   <link rel="stylesheet" href="../../ressources/style.css" />
 </head>
 
@@ -54,10 +55,10 @@
       de son chat pour la dernière pesée <br>
       Ces requêtes sont simple à faire, nous avons vu très tôt comment les réaliser avec les fonctions correspondantes
     </p>
-    <pre class="code-snippet block">
-SELECT MIN(weight) as minimum_weight, 
-  MAX(weight) as maximum_weight, 
-  ROUND(AVG(weight),2) as average_weight 
+    <pre class="code-snippet block sql">
+SELECT MIN(weight) AS minimum_weight, 
+  MAX(weight) AS maximum_weight, 
+  ROUND(AVG(weight),2) AS average_weight 
 FROM weighting
 WHERE name = 'Monza'</pre>
     <p>
@@ -66,10 +67,10 @@ WHERE name = 'Monza'</pre>
       Si nous appliquons une modification, nous devrions pouvoir récupérer les même résultats avec un <strong>GROUP
         BY</strong> sur le nom de notre chat
     </p>
-    <pre class="code-snippet block">
-SELECT name, MIN(weight) as minimum_weight, 
-  MAX(weight) as maximum_weight, 
-  ROUND(AVG(weight),2) as average_weight 
+    <pre class="code-snippet block sql">
+SELECT name, MIN(weight) AS minimum_weight, 
+  MAX(weight) AS maximum_weight, 
+  ROUND(AVG(weight),2) AS average_weight 
 FROM weighting
 GROUP BY (name)
 HAVING name = 'Monza'</pre>
@@ -83,10 +84,10 @@ HAVING name = 'Monza'</pre>
       Pas de problème, essayons
     </p>
 
-    <pre class="code-snippet block">
-SELECT name, weighting_date, MIN(weight) as minimum_weight, 
-  MAX(weight) as maximum_weight, 
-  ROUND(AVG(weight),2) as average_weight 
+    <pre class="code-snippet block sql">
+SELECT name, weighting_date, MIN(weight) AS minimum_weight, 
+  MAX(weight) AS maximum_weight, 
+  ROUND(AVG(weight),2) AS average_weight 
 FROM weighting
 GROUP BY (name, weighting_date)
 HAVING name = 'Monza'
@@ -124,15 +125,15 @@ SELECT name,
 	weighting_date, 
 	weight, 
 	minimum_weight,
-	(weight - minimum_weight) as difference_with_min_weight,
+	(weight - minimum_weight) AS difference_with_min_weight,
 	maximum_weight, 
-	(maximum_weight - weight) as difference_with_max_weight, 
+	(maximum_weight - weight) AS difference_with_max_weight, 
 	average_weight, 
-	(average_weight - weight) as difference_with_avg_weight
+	(average_weight - weight) AS difference_with_avg_weight
 from weighting 
- CROSS JOIN (SELECT MIN(weight) as minimum_weight, 
-	MAX(weight) as maximum_weight, 
-	ROUND(AVG(weight),2) as average_weight 
+ CROSS JOIN (SELECT MIN(weight) AS minimum_weight, 
+	MAX(weight) AS maximum_weight, 
+	ROUND(AVG(weight),2) AS average_weight 
 FROM weighting
 WHERE name = 'Monza')
 WHERE name = 'Monza'
@@ -157,12 +158,12 @@ LIMIT 1</pre>
 SELECT name, 
 	weighting_date, 
 	weight, 
-	(SELECT MIN(weight) FROM weighting WHERE  name = 'Monza') as minimum_weight,
-	(weight - (SELECT MIN(weight) FROM weighting WHERE  name = 'Monza')) as difference_with_min_weight,
-	(SELECT MAX(weight) FROM weighting  WHERE  name = 'Monza') as maximum_weight, 
-	((SELECT MAX(weight) FROM weighting  WHERE  name = 'Monza') - weight) as difference_with_max_weight, 
-	(SELECT ROUND(AVG(weight),2) FROM weighting  WHERE  name = 'Monza') as average_weight,
-	((SELECT ROUND(AVG(weight),2) FROM weighting  WHERE  name = 'Monza') - weight) as difference_with_avg_weight
+	(SELECT MIN(weight) FROM weighting WHERE  name = 'Monza') AS minimum_weight,
+	(weight - (SELECT MIN(weight) FROM weighting WHERE  name = 'Monza')) AS difference_with_min_weight,
+	(SELECT MAX(weight) FROM weighting  WHERE  name = 'Monza') AS maximum_weight, 
+	((SELECT MAX(weight) FROM weighting  WHERE  name = 'Monza') - weight) AS difference_with_max_weight, 
+	(SELECT ROUND(AVG(weight),2) FROM weighting  WHERE  name = 'Monza') AS average_weight,
+	((SELECT ROUND(AVG(weight),2) FROM weighting  WHERE  name = 'Monza') - weight) AS difference_with_avg_weight
 from weighting 
 WHERE name = 'Monza'
 ORDER BY weighting_date DESC
@@ -190,15 +191,15 @@ LIMIT 1</pre>
       Nous pouvons heureusement utiliser les <strong>subqueries</strong> directement dans notre sélection de colonnes  
     </p>
 <pre class="code-snippet block sql">
-SELECT COUNT(*) as total_weightings,
+SELECT COUNT(*) AS total_weightings,
 	(SELECT COUNT(*) FROM weighting
 		WHERE name = 'Monza'   
 			AND weight > (SELECT avg(weight) FROM weighting WHERE name = 'Monza')
-	) as total_weighint_over_avg,
+	) AS total_weighint_over_avg,
 	(SELECT COUNT(*) FROM weighting
 		WHERE   name = 'Monza' 
 			AND weight < (SELECT avg(weight) FROM weighting WHERE name = 'Monza') 
-	)  as total_weighint_under_avg
+	)  AS total_weighint_under_avg
 FROM weighting
 WHERE name = 'Monza'</pre>
     <p>
@@ -242,8 +243,8 @@ CREATE TABLE annual_summary(
       </p>
       <pre class="code-snippet block sql">
 SELECT name,
-	extract(year from weighting_date) as year, 
-	ROUND(AVG(weight),2) as average FROM weighting
+	extract(year from weighting_date) AS year, 
+	ROUND(AVG(weight),2) AS average FROM weighting
 GROUP BY (name, extract(year from weighting_date));</pre>
       <p>
         Le première étape est de récupérer les données qui nous intéressent. <br>
@@ -255,8 +256,8 @@ INSERT INTO annual_summary
 (cat_name, year, average)
 (
   SELECT name,
-    extract(year from weighting_date) as year, 
-    ROUND(AVG(weight),2) as average FROM weighting
+    extract(year from weighting_date) AS year, 
+    ROUND(AVG(weight),2) AS average FROM weighting
   GROUP BY (name, extract(year from weighting_date))
 );</pre>
       <p>
@@ -268,8 +269,8 @@ SELECT * FROM annual_summary
 ORDER BY cat_name, year;
 
 SELECT name,
-	extract(year from weighting_date) as year, 
-	ROUND(AVG(weight),2) as average FROM weighting
+	extract(year from weighting_date) AS year, 
+	ROUND(AVG(weight),2) AS average FROM weighting
 GROUP BY (name, extract(year from weighting_date))
 ORDER BY name, year;</pre>
       <h2 id="conclusion">Conclusion</h2>
