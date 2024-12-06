@@ -151,7 +151,6 @@
       Ces deux requêtes nous permettent de trouver les dates min et max des orders. Il ne nous reste plus qu'à les
       intégrer dans notre recherche.
     </p>
-
     <pre class="code-snippet block sql">
   SELECT order_date, * FROM orders
   WHERE order_date = (SELECT min(order_date) FROM orders) 
@@ -159,9 +158,44 @@
   ORDER BY order_date DESC</pre>
     <p>
       Nous avons ici utilisé le principe de <i>subquery</i> pour intégrer le résultat d'une requête à l'intérieur de
-      notre recherche.</p>
+      notre recherche. <br>
+      Remarquez que nous obtenons plus d'un résultat pour l' <i>orders</i> la plus récente <br>
+      Une version avec le mot clé <strong>UNION</strong> est envisageable pour ne récupérer strictement qu'un résultat
+      pour le max et le min :
+    </p>
+    <pre class="code-snippet block sql">
+  SELECT * FROM (SELECT * FROM orders
+  ORDER BY order_date DESC
+  LIMIT 1)
+  UNION (SELECT * FROM orders
+  ORDER BY order_date ASC
+  LIMIT 1)</pre>
+    <p>
+      <strong>UNION</strong> permet de <i>mettre à la suite l'un de l'autre</i> deux <i>result set</i>. De les
+      <i>"fusionner"</i> <br>
+      Ceci nécessite néanmoins d'avoir les mêmes colonnes dans les différents <i>result set</i>
+    </p>
     <hr>
     <p class="bold">Trouvez le nombre total de produits pour chaque catégorie</p>
+    <pre class="code-snippet block sql">
+  SELECT category_id, COUNT(*) FROM products
+  GROUP BY category_id;</pre>
+    <p>
+      Cette requête répond strictement à la question demandée. Mais nous pourrions aussi vouloir obtenir le nom des
+      catégories nous donnant cette requête plus intéressante
+    </p>
+    <pre class="code-snippet block sql">
+  SELECT categories.category_name , COUNT(*) FROM products
+  LEFT JOIN categories ON products.category_id = categories.category_id
+  GROUP BY categories.category_id, categories.category_name 
+  ORDER BY categories.category_name</pre>
+    <p>
+      Ici, un <strong>LEFT JOIN</strong> a été utiliser pour récupérer les informations de la table categories <br>
+      Notez que le <strong>GROUP BY</strong> reprend aussi <i>category_name</i>. <br>
+      Bien qu'en terme de <i>logique métier</i>, avoir plusieurs catégories du même nom serait handicapant, la structure
+      de la table <i>categories</i> ne l'empêche pas du tout (pas de <strong>UNIQUE CONSTRAINT</strong> sur cette
+      colonne).
+    </p>
     <hr>
     <p class="bold">Trouvez les produits qui nécessitent d'être réapprovisionnés</p>
     <hr>
