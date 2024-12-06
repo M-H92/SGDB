@@ -131,7 +131,9 @@
     <p class="bold">Montrez le montant total des différents <i>orders</i> (sans prendre les éventuels <i>discount</i> en
       considération) </p>
     <pre class="code-snippet block sql">
-  SELECT order_id, CAST(SUM(unit_price*quantity) AS numeric(20,2)) AS order_total FROM order_details
+  SELECT 
+    order_id, CAST(SUM(unit_price*quantity) AS numeric(20,2)) AS order_total 
+  FROM order_details
   GROUP BY (order_id)
   ORDER BY order_id</pre>
     <p>
