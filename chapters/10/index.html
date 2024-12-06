@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Document</title>
   <script type="module" src="../../scripts/addNavbar.js"></script>
+  <script type="module" src="../../scripts/syntaxHighlighting.js"></script>
   <link rel="stylesheet" href="../../ressources/style.css" />
 </head>
 
@@ -21,36 +22,167 @@
     </ol>
     <h2 id="northwind">Northwind</h2>
     <p>
-      Northwind est un extrait de base de données dédiée aux exercices et fourniée par Microsoft <br>
+      Northwind est un extrait de base de données dédiée aux exercices et fournies par Microsoft <br>
       Vous trouverez plus d'informations sur leur documentation officielle (learn.microsoft.com) ou sur leur github <br>
-      Normalement prévue pour être utilisée avec <i>SQL SERVER</i>, vous trouverez un fichier <i>.sql</i> ci-dessous qui vous permettra de l'installer sur votre postgre <br>
+      Normalement prévue pour être utilisée avec <i>SQL SERVER</i>, vous trouverez un fichier <i>.sql</i> ci-dessous qui
+      vous permettra de l'installer sur votre postgre <br>
       Ces données sont nécessaires pour les exercices de ce chapitre
     </p>
     <a href="../../ressources/sql/northwind.sql">Données Northwind pour postgre</a>
     <h2 id="exercices">Exercices</h2>
-    <h3>1</h3>
-    <p>Sélectionnez les <i>orders</i> destinées à la France ou aux USA</p>
-    <h3>2</h3>
-    <p>Sélectionnez le <i>nombre total</i> des <i>orders</i> délivrés à la France ou aux USA</p>
-    <h3>3</h3>
-    <p>Sélectionnez les <i>orders</i> délivrés en Amérique latine</p>
-    <h3>4</h3>
-    <p>Montrez le montant total des différents <i>orders</i> </p>
-    <h3>5</h3>
-    <p>Trouvez l'<i>order</i> la plus ancienne ainsi que la plus récente</p>
-    <h3>6</h3>
-    <p>Trouvez le nombre total de produits pour chaque catégorie</p>
-    <h3>7</h3>
-    <p>Trouvez les produits qui nécessitent d'être réapprovisionnés</p>
-    <h3>8</h3>
+    <p class="bold">Sélectionnez les <i>orders</i> destinées à la France ou aux USA</p>
+    <pre class="code-snippet block sql">
+  SELECT * FROM orders
+  WHERE ship_country LIKE 'France' 
+    OR ship_country LIKE 'USA'</pre>
+    <p>
+      Ici, un simple <strong>SELECT</strong> permet de récupérer toutes les colonnes (joker <kbd>*</kbd>) de la table
+      <i>orders</i> spécifié après le <strong>FROM</strong> <br>
+      L'ajout d'un <strong>WHERE</strong> permet de filtrer les résultats sur une condition utilisant ici l'opérateur
+      <strong>LIKE</strong> qui permet de comparer des chaînes de caractère. <br>
+      Notez qu'il aurait été possible d'utiliser un <kbd>=</kbd> plutôt qu'un <strong>LIKE</strong> <br>
+      Rappelez-vous aussi de la différence entre le mot clé <strong>LIKE</strong> et <strong>ILIKE</strong> spécifique à
+      postgre. <br>
+      Ce dernier permet de ne pas prendre en considération <i>la casse</i> (ce qui est le comportement par défaut du
+      <strong>LIKE</strong> dans d'autres <strong>DBMS</strong>
+    </p>
+    <hr>
+    <p class="bold">Sélectionnez le <i>nombre total</i> des <i>orders</i> délivrés à la France ou aux USA</p>
+    <pre class="code-snippet block sql">
+  SELECT COUNT(*) FROM orders
+  WHERE ship_country LIKE 'France' 
+    OR ship_country LIKE 'USA'</pre>
+    <p>Notez la différence avec la requête précédente qui utilise la fonction <strong>COUNT</strong> pour <i>compter le
+        nombre d'occurences</i> des résultats.</p>
+    <hr>
+    <p class="bold">Sélectionnez le <i>nombre total</i> des <i>orders</i> délivrés à la France <strong>AINSI
+        QUE</strong> le <i>nombre total</i> des <i>orders</i> délivrés aux USA</p>
+    <pre class="code-snippet block sql">
+  SELECT ship_country, COUNT(*) FROM orders
+  WHERE ship_country LIKE 'France' 
+    OR ship_country LIKE 'USA'
+  GROUP BY ship_country</pre>
+    <p>Ici, le rajout du mot clé <strong>GROUP BY</strong> nous permet de récupérer un résultat par valeur différente
+      dans la colonne <i>ship_country</i> <br>
+      Faites bien attention que la fonction <strong>COUNT</strong> s'applique sur le sous ensemble de valeurs
+      regroupées. <br>
+      Il en sera de même avec toutes autres fonctions comme <strong>MAX</strong>, <strong>MIN</strong>,
+      <strong>AVG</strong>...
+    </p>
+    <hr>
+    <p class="bold"> Récupérer le top 5 des pays ayant passés le plus de commande (<i>orders</i>) </p>
+    <pre class="code-snippet block sql">
+  SELECT ship_country, COUNT(*) AS nbr_of_orders FROM orders
+  GROUP BY ship_country
+  ORDER BY nbr_of_orders DESC
+  LIMIT 5 </pre>
+    <p>
+      À la différence de la requête précédente, nous n'avons pas mis de clause <strong>WHERE</strong> car nous voulons
+      passer en revue toutes les données, peut-importe le pays. <br>
+      Ensuite, nous avons utilisé un <strong>ORDER BY</strong> accompagné du mot clé <strong>DESC</strong> en faisant
+      référence à l'alias <i>nbr_of_orders</i> représentant notre <strong>COUNT</strong>. Ceci nous permet de récupérer
+      d'abord les résultats avec le plus d'orders <br>
+      Enfin, nous avons limité notre sélection aux 5 premiers résultats avec le mot clé <strong>LIMIT</strong>
+    </p>
+    <hr>
+    <p class="bold">Sélectionnez les <i>orders</i> délivrés en Amérique latine</p>
+    <pre class="code-snippet block sql">
+  SELECT * FROM orders
+  WHERE ship_country IN (
+    'Argentina',
+    'Brazil',
+    'Mexico',
+    'Venezuela'
+  )</pre>
+    <p>Différence notable avec les requête précédente, l'utilisation de l'opérateur <strong>IN</strong> <br>
+      L'amérique latine reprends plusieurs pays et, plutôt que de multiplier les <strong>OR [condition]</strong> qui
+      pourraient rendre la requête difficilement lisible, l'utilisation du <strong>IN</strong> permet de discriminer la
+      valeur spécifiée par rapport à une liste de valeur données</p>
+
+    <p>Montrez le montant total pour l'<i>orders</i> 10834 (sans prendre les éventuels <i>discount</i> en considération)
+    </p>
+    <pre class="code-snippet block sql">
+    SELECT CAST(SUM(unit_price*quantity) AS numeric(20,2)) AS order_total FROM order_details
+    WHERE order_id = 10834</pre>
+    <p>Ici, nous allons utiliser la table <i>order_details</i> qui fait une référence directe à <i>orders</i>. <br>
+      Chaque détail est lié à une commande dans une liaison de type <i>one to many</i> et, la présence de la colonne
+      <i>order_id</i> dans la table <i>order_details</i> nous donne une indication clair de la direction de cette
+      relation <br>
+      Nous allons justement nous baser sur cette colonne pour notre clause <strong>WHERE</strong> dans laquelle nous
+      allons filtrer les résultats sur base du <i>order_id</i> <br>
+      D'abord, dans notre <strong>SELECT</strong>, nous allons récupérer le prix total pour chaque record correspondant
+      au prix unitaire (<i>unit_price</i> multiplié par la quantité <i>quantity</i>). <br>
+      Ensuite, nous allons faire la somme de ces résultats avec la <i>fonction d'agrégation</i> <strong>SUM</strong>
+      permettant de n'avoir plus qu'un unique résultat <br>
+      Enfin, nous allons utiliser un <strong>CAST</strong> pour arrondir notre résultat sur 2 décimales en transformant
+      le résultat de la fonction en type <i>numeric(20,2)</i> et utiliser un alias pour avoir un nom de colonne
+      cohérent<br>
+    </p>
+    <p class="nota-bene info">
+      L'utilisation d'un <strong>CAST</strong> est ici un cas particulier sachant que la fonction <strong>ROUND</strong>
+      existe <br>
+      La fonction <strong>ROUND</strong> ne fonctionne pas avec un argument de type <i>double</i> qui est le type du
+      résultat de la fonction <strong>SUM</strong> <br>
+      Quand cela est possible, je vous invite à favoriser la fonction <strong>ROUND</strong>. <br>
+      Si pas pour une question de résultat ou de performance, au moins pour rendre votre code plus explicite et donc,
+      plus lisible
+    </p>
+    <hr>
+    <p class="bold">Montrez le montant total des différents <i>orders</i> (sans prendre les éventuels <i>discount</i> en
+      considération) </p>
+    <pre class="code-snippet block sql">
+  SELECT order_id, CAST(SUM(unit_price*quantity) AS numeric(20,2)) AS order_total FROM order_details
+  GROUP BY (order_id)
+  ORDER BY order_id</pre>
+    <p>
+      Si vous avez bien compris la requête précédende, celle-ci ne devrait pas être trop compliquée à lire. <br>
+      Au lieu de restreindre notre sélection avec un <strong>WHERE</strong>, nous avons groupé les différents détails
+      selon l'<i>order_id</i> grâce au <strong>GROUP BY</strong><br>
+      Ce faisant, nous aurons une ligne de résultat par <i>order_id</i> différent. <br>
+      Cette multiplication de ligne de résultat explique aussi pourquoi nous avons ajouté la colonne <i>order_id</i>
+      dans notre <strong>SELECT</strong>
+    </p>
+    <hr>
+    <p class="bold">Trouvez les <i>orders</i> les plus anciennes ainsi que les plus récentes</p>
+    <pre class="code-snippet block sql">
+  SELECT min(order_date) FROM orders;
+  SELECT max(order_date) FROM orders;</pre>
+    <p>
+      Ces deux requêtes nous permettent de trouver les dates min et max des orders. Il ne nous reste plus qu'à les
+      intégrer dans notre recherche.
+    </p>
+
+    <pre class="code-snippet block sql">
+  SELECT order_date, * FROM orders
+  WHERE order_date = (SELECT min(order_date) FROM orders) 
+    OR order_date = (SELECT max(order_date) FROM orders)
+  ORDER BY order_date DESC</pre>
+    <p>
+      Nous avons ici utilisé le principe de <i>subquery</i> pour intégrer le résultat d'une requête à l'intérieur de
+      notre recherche.</p>
+    <hr>
+    <p class="bold">Trouvez le nombre total de produits pour chaque catégorie</p>
+    <hr>
+    <p class="bold">Trouvez les produits qui nécessitent d'être réapprovisionnés</p>
+    <hr>
+    <p class="bold"></p>
+    <hr>
+    <p class="bold">Trouvez les clients qui ne disposent pas d'<i>orders</i></p>
+    <hr>
     <p></p>
-    <h3>9</h3>
-    <p>Trouvez les clients qui ne disposent pas d'<i>orders</i></p>
-    <h3>10</h3>
-    <p></p>
-    <h3>11</h3>
+    <hr>
     <p></p>
   </main>
 </body>
+<script>
+  function numerotationExo() {
+    let exos = document.getElementsByClassName('bold');
+    let index = 1;
+    for (let i = 0; i < exos.length; i++, index++) {
+      exos[i].innerText = `${index}) ${exos[i].innerText}`
+    }
+  }
+  numerotationExo();
+</script>
 
 </html>
