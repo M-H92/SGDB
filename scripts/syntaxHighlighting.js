@@ -48,6 +48,7 @@ function applyColor(word) {
     case "SET":
     case "TABLE":
     case "USE":
+    case "UNION":
     case "DATABASE":
     case "INSERT":
     case "UPDATE":
@@ -77,7 +78,6 @@ function applyColor(word) {
 
 function colorationSyntaxique() {
   let codeBlocks = document.getElementsByClassName("code-snippet block sql");
-  console.log(codeBlocks);
   for (let i = 0; i < codeBlocks.length; i++) {
     let content = codeBlocks[i].innerHTML;
     let contentWordByWord = content.split(" ");
