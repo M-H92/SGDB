@@ -129,3 +129,14 @@ hr {
     color: darkred;
   }
 }
+
+@media not print {
+  .blured-answer{
+    filter: blur(5px);
+    cursor: pointer;
+  }
+}
+
+.hidden{
+  display: none;
+}
