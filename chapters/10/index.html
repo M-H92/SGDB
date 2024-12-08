@@ -42,7 +42,7 @@
   SELECT * FROM orders
   WHERE ship_country LIKE 'France' 
     OR ship_country LIKE 'USA'</pre>
-    <p>
+    <p class="blurable">
       Ici, un simple <strong>SELECT</strong> permet de récupérer toutes les colonnes (joker <kbd>*</kbd>) de la table
       <i>orders</i> spécifié après le <strong>FROM</strong> <br>
       L'ajout d'un <strong>WHERE</strong> permet de filtrer les résultats sur une condition utilisant ici l'opérateur
@@ -59,7 +59,7 @@
   SELECT COUNT(*) FROM orders
   WHERE ship_country LIKE 'France' 
     OR ship_country LIKE 'USA'</pre>
-    <p>Notez la différence avec la requête précédente qui utilise la fonction <strong>COUNT</strong> pour <i>compter le
+    <p class="blurable">Notez la différence avec la requête précédente qui utilise la fonction <strong>COUNT</strong> pour <i>compter le
         nombre d'occurences</i> des résultats.</p>
     <hr>
     <p class="bold">Sélectionnez le <i>nombre total</i> des <i>orders</i> délivrés à la France <strong>AINSI
@@ -69,7 +69,7 @@
   WHERE ship_country LIKE 'France' 
     OR ship_country LIKE 'USA'
   GROUP BY ship_country</pre>
-    <p>Ici, le rajout du mot clé <strong>GROUP BY</strong> nous permet de récupérer un résultat par valeur différente
+    <p class="blurable">Ici, le rajout du mot clé <strong>GROUP BY</strong> nous permet de récupérer un résultat par valeur différente
       dans la colonne <i>ship_country</i> <br>
       Faites bien attention que la fonction <strong>COUNT</strong> s'applique sur le sous ensemble de valeurs
       regroupées. <br>
@@ -83,7 +83,7 @@
   GROUP BY ship_country
   ORDER BY nbr_of_orders DESC
   LIMIT 5 </pre>
-    <p>
+    <p class="blurable">
       À la différence de la requête précédente, nous n'avons pas mis de clause <strong>WHERE</strong> car nous voulons
       passer en revue toutes les données, peut-importe le pays. <br>
       Ensuite, nous avons utilisé un <strong>ORDER BY</strong> accompagné du mot clé <strong>DESC</strong> en faisant
@@ -101,7 +101,7 @@
     'Mexico',
     'Venezuela'
   )</pre>
-    <p>Différence notable avec les requête précédente, l'utilisation de l'opérateur <strong>IN</strong> <br>
+    <p class="blurable">Différence notable avec les requête précédente, l'utilisation de l'opérateur <strong>IN</strong> <br>
       L'amérique latine reprends plusieurs pays et, plutôt que de multiplier les <strong>OR [condition]</strong> qui
       pourraient rendre la requête difficilement lisible, l'utilisation du <strong>IN</strong> permet de discriminer la
       valeur spécifiée par rapport à une liste de valeur données</p>
@@ -112,7 +112,7 @@
     <pre class="code-snippet block sql blurable">
     SELECT CAST(SUM(unit_price*quantity) AS numeric(20,2)) AS order_total FROM order_details
     WHERE order_id = 10834</pre>
-    <p>Ici, nous allons utiliser la table <i>order_details</i> qui fait une référence directe à <i>orders</i>. <br>
+    <p class="blurable">Ici, nous allons utiliser la table <i>order_details</i> qui fait une référence directe à <i>orders</i>. <br>
       Chaque détail est lié à une commande dans une liaison de type <i>one to many</i> et, la présence de la colonne
       <i>order_id</i> dans la table <i>order_details</i> nous donne une indication clair de la direction de cette
       relation <br>
@@ -126,7 +126,7 @@
       le résultat de la fonction en type <i>numeric(20,2)</i> et utiliser un alias pour avoir un nom de colonne
       cohérent<br>
     </p>
-    <p class="nota-bene info">
+    <p class="nota-bene info blurable">
       L'utilisation d'un <strong>CAST</strong> est ici un cas particulier sachant que la fonction <strong>ROUND</strong>
       existe <br>
       La fonction <strong>ROUND</strong> ne fonctionne pas avec un argument de type <i>double</i> qui est le type du
@@ -144,7 +144,7 @@
   FROM order_details
   GROUP BY (order_id)
   ORDER BY order_id</pre>
-    <p>
+    <p class="blurable">
       Si vous avez bien compris la requête précédende, celle-ci ne devrait pas être trop compliquée à lire. <br>
       Au lieu de restreindre notre sélection avec un <strong>WHERE</strong>, nous avons groupé les différents détails
       selon l'<i>order_id</i> grâce au <strong>GROUP BY</strong><br>
@@ -157,7 +157,7 @@
     <pre class="code-snippet block sql blurable">
   SELECT min(order_date) FROM orders;
   SELECT max(order_date) FROM orders;</pre>
-    <p>
+    <p class="blurable">
       Ces deux requêtes nous permettent de trouver les dates min et max des orders. Il ne nous reste plus qu'à les
       intégrer dans notre recherche.
     </p>
@@ -166,7 +166,7 @@
   WHERE order_date = (SELECT min(order_date) FROM orders) 
     OR order_date = (SELECT max(order_date) FROM orders)
   ORDER BY order_date DESC</pre>
-    <p>
+    <p class="blurable">
       Nous avons ici utilisé le principe de <i>subquery</i> pour intégrer le résultat d'une requête à l'intérieur de
       notre recherche. <br>
       Remarquez que nous obtenons plus d'un résultat pour l' <i>orders</i> la plus récente <br>
@@ -180,7 +180,7 @@
   UNION (SELECT * FROM orders
   ORDER BY order_date ASC
   LIMIT 1)</pre>
-    <p>
+    <p class="blurable">
       <strong>UNION</strong> permet de <i>mettre à la suite l'un de l'autre</i> deux <i>result set</i>. De les
       <i>"fusionner"</i> <br>
       Ceci nécessite néanmoins d'avoir les mêmes colonnes dans les différents <i>result set</i>
@@ -190,7 +190,7 @@
     <pre class="code-snippet block sql blurable">
   SELECT category_id, COUNT(*) FROM products
   GROUP BY category_id;</pre>
-    <p>
+    <p class="blurable">
       Cette requête répond strictement à la question demandée. Mais nous pourrions aussi vouloir obtenir le nom des
       catégories nous donnant cette requête plus intéressante
     </p>
@@ -199,7 +199,7 @@
   LEFT JOIN categories ON products.category_id = categories.category_id
   GROUP BY categories.category_id, categories.category_name 
   ORDER BY categories.category_name</pre>
-    <p>
+    <p class="blurable">
       Ici, un <strong>LEFT JOIN</strong> a été utiliser pour récupérer les informations de la table categories <br>
       Notez que le <strong>GROUP BY</strong> reprend aussi <i>category_name</i>. <br>
       Bien qu'en terme de <i>logique métier</i>, avoir plusieurs catégories du même nom serait handicapant, la structure
@@ -213,14 +213,14 @@
     <pre class="code-snippet block sql blurable">
   SELECT units_in_stock, reorder_level, * FROM products
   WHERE units_in_stock <= reorder_level;</pre>
-    <p>Voici une première version de la requête qui semble satisfaire nos besoins. <br>
+    <p class="blurable">Voici une première version de la requête qui semble satisfaire nos besoins. <br>
       Néanmoins, en inspectant un peu plus les différentes colonnes de la table <i>products</i>, on se rend compte que
       <i>discontinued</i> pourrait améliorer notre résultat.
     </p>
     <pre class="code-snippet block sql blurable">
   SELECT discontinued, units_in_stock, reorder_level, * FROM products
   WHERE discontinued != 0 AND units_in_stock <= reorder_level;</pre>
-    <p>Ainsi, nous sommes certain de ne pas avoir de commandes pour des produits qui ne sont plus en vente. <br>
+    <p class="blurable">Ainsi, nous sommes certain de ne pas avoir de commandes pour des produits qui ne sont plus en vente. <br>
       Mais ce n'est pas tout. <br>
       Considéront la colonne <i>units_on_order</i> comme le total de nos commandes fournisseur déjà en cours pour cet
       article. <br>
@@ -228,7 +228,7 @@
     <pre class="code-snippet block sql blurable">
   SELECT discontinued, units_in_stock, reorder_level, * FROM products
   WHERE discontinued != 0 AND (units_in_stock + units_on_order)  <= reorder_level;</pre>
-    <p>Nous venons d'améliorer notre résultat en prenant en compte les unités commandées aux fournisseurs <br>
+    <p class="blurable">Nous venons d'améliorer notre résultat en prenant en compte les unités commandées aux fournisseurs <br>
       Dans le même ordre d'idée, une gestion complète d'un <i>stock virtuel</i> prendrais aussi en considération les
       unités qui doivent sortir du stock <br>
       Essayez de les récupérer puis, une fois fait, d'injecter ce résultat dans la query précédente pour affiner notre
@@ -267,7 +267,7 @@
     GROUP BY product_id) AS ongoing ON ongoing.product_id = products.product_id
   WHERE discontinued != 0 
     AND (units_in_stock - ongoing_units + units_on_order) <= reorder_level;</pre>
-    <p>
+    <p class="blurable">
       Ici, nous construisons graduellement la requête permettant de récupérer les ids et le stock sortant des orders qui
       ne sont pas encore livrés. <br>
       Notez l'utilisation d'un <strong>LEFT JOIN</strong> et non d'un <strong>INNER JOIN</strong> <br>
@@ -288,7 +288,7 @@
   FROM orders
   WHERE orders.freight < (SELECT AVG(freight) / 2 FROM orders )
   ORDER BY orders.shipped_date, orders.ship_name, orders.freight ASC;</pre>
-    <p>Ici, une requête imbriquée dans le <strong>WHERE</strong> permet de placer une condition sur la moyenne des
+    <p class="blurable">Ici, une requête imbriquée dans le <strong>WHERE</strong> permet de placer une condition sur la moyenne des
       <i>freight</i> <br>
       Accessoirement, cette requête imbriquée a été utilisée pour afficher la moyenne ainsi que la différence avec la
       moyenne sur chaque ligne de résultat <br>
@@ -313,7 +313,7 @@
       AND freight_per_ship.shipped_date = orders.shipped_date
   WHERE orders.freight < (SELECT AVG(freight) / 2 FROM orders )
   ORDER BY orders.shipped_date, orders.ship_name, orders.freight ASC;</pre>
-    <p>
+    <p class="blurable">
       Ici, un <strong>JOIN</strong> est réalisé sur un groupement par bateau et par date des différentes <i>orders</i>
     </p>
     <hr>
@@ -322,7 +322,7 @@
   SELECT * FROM customers
   LEFT JOIN orders ON orders.customer_id = customers.customer_id
   WHERE orders.customer_id IS NULL</pre>
-    <p>
+    <p class="blurable">
       Si cette requête n'est pas trop complexe, notez bien la subtilité d'utiliser un <strong>LEFT JOIN</strong> pour
       récupérer tout les résultats de la table <i>customers</i> avec l'ajout d'un <strong>WHERE</strong> sur <i>
         orders.customer_id
@@ -341,7 +341,7 @@
     GROUP BY (customer_id)
   ) AS o ON o.customer_id = c.customer_id
   ORDER BY o.order_count DESC</pre>
-    <p>
+    <p class="blurable">
       D'abord, nous utilisons une <i>subquery</i> pour récupérer le nombre de commandes par client en utilisant un <strong>GROUP BY</strong> <br>
       Ensuite, nous intégrons cette <i>subquery</i> dans un <strong>INNER JOIN</strong> pour lier l'information du nombre de commande à notre <i>query</i> principale. <br>
       Enfin, nous ajoutons un <strong>ORDER BY</strong> sur cette colonne représentant le nombre d'<i>orders</i> et le tour est joué <br>
