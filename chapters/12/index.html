@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <script type="module" src="../../scripts/addNavbar.js"></script>
+  <script type="module" src="../../scripts/syntaxHighlighting.js"></script>
+  <link rel="stylesheet" href="../../ressources/style.css" />
+</head>
+
+<body>
+  <main id="mainElement">
+    <h1>QCM de fin de module</h1>
+    <ol>
+      <li>Introduction</li>
+      <li>Placeholder</li>
+      <li>Conclusion</li>
+    </ol>
+    <hr>
+    <h2 id="introduction">Introduction</h2>
+    <p>Ci-dessous, un QCM reprenant la plupart des concepts vu jusqu'à présent dans ce cours. <br>
+      Essayez de répondre au maximum de question sans vous référencer au cours
+    </p>
+    <h2 id="placeholder">Placeholder</h2>
+    <!-- <p id="question-relation-one-to-many">
+      Trouvez toutes les relations correspondant à une relation 1..n (ou 0..n) dans ces propositions :
+    </p> -->
+    <!-- <ul id="proposition-question-relation-one-to-many">
+      <li>1) personne - praticien</li>
+      <li>2) praticien - patient</li>
+      <li>3) patient - praticien</li>
+      <li>4) maison_medicale - conges</li>
+    </ul> -->
+    <!-- <fieldset id="fieldset-relation-one-to-many">
+      <legend>
+        Choisir une unique réponses
+      </legend>
+      <div>
+        <input id="answer-1-relation-one-to-many" type="checkbox" name="relation-one-to-many">
+        <label for="answer-1-relation-one-to-many">
+          Toutes les propositions.
+        </label>
+      </div>
+      <div>
+        <input id="answer-2-relation-one-to-many" type="checkbox" name="relation-one-to-many">
+        <label for="answer-2-relation-one-to-many">
+          Aucune des propositions
+        </label>
+      </div>
+      <div>
+        <input id="answer-3-relation-one-to-many" type="checkbox" name="relation-one-to-many">
+        <label for="answer-3-relation-one-to-many">
+          Les propositions 1, 2 et 3
+        </label>
+      </div>
+      <div>
+        <input id="answer-4-relation-one-to-many" type="checkbox" name="relation-one-to-many">
+        <label for="answer-4-relation-one-to-many">
+          Les propositions 1 et 3
+        </label>
+      </div>
+      <div>
+        <input id="answer-5-relation-one-to-many" type="checkbox" name="relation-one-to-many">
+        <label for="answer-5-relation-one-to-many">Les propositions 1, 2 et 4</label>
+      </div>
+    </fieldset> -->
+    <h2>conclusion</h2>
+  </main>
+</body>
+<script>
+  const QCMElement = [
+    {
+      id: "relation-one-to-many",
+      difficulte: 1,
+      question: "Trouvez toutes les relations correspondant à une relation 1..n (ou 0..n) dans ces propositions :",
+      propositions: [
+        "1) personne - praticien",
+        "2) praticien - patient",
+        "3) patient - praticien",
+        "4) maison_medicale - conges"
+      ],
+      reponses: [
+        { texte: "Toutes les propositions.", valeur: true },
+        { texte: "Aucune des propositions.", valeur: false },
+        { texte: "Les propositions 2, 3 et 4.", valeur: false },
+        { texte: "Les propositions 1 et 3.", valeur: false },
+        { texte: "Les propositions 1, 2 et 4.", valeur: false },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+  ]
+
+  const QCMElementSet = new Set(QCMElement.map(e => e.id));
+  if (QCMElementSet.size != QCMElement.length)
+    console.error("duplicata dans les id du qcm")
+
+  function populateBody() {
+    const main = document.getElementById("placeholder")
+    QCMElement.forEach(e => {
+      const element = document.createElement("p");
+      element.id = `question-${e.id}`
+      element.textContent = e.question;
+      main.after(element);
+
+      const ul = document.createElement("ul");
+      ul.id = `proposition-${e.id}`;
+
+      const propositions = e.propositions.forEach(p => {
+        let prop = document.createElement("li");
+        prop.textContent = p;
+        ul.appendChild(prop);
+      });
+      element.after(ul);
+
+      const fieldset = document.createElement("fieldset");
+      fieldset.id = `fieldset-${e.id}`
+      const legend = document.createElement("legend");
+      if (e.nbrReponseCorrecte === 1)
+        legend.textContent = "Choisir une unique réponse";
+      else
+        legend.textContent = "Choisir une ou plusieurs réponse(s)";
+
+      let i = 1;
+      e.reponses.forEach(r => {
+        const div = document.createElement("div");
+        const reponse = document.createElement("input");
+        reponse.type = "checkbox"
+        reponse.id = `answer-${i}-${e.id}`
+        reponse.name = e.id
+        i++;
+        const label = document.createElement("label");
+        label.textContent = r.texte;
+        label.htmlFor = reponse.id;
+        div.appendChild(reponse);
+        div.appendChild(label);
+        fieldset.appendChild(div)
+      })
+      // <input id="answer-1-relation-one-to-many" type="checkbox" name="relation-one-to-many">
+      ul.after(fieldset);
+    });
+  }
+  populateBody();
+</script>
+
+</html>
