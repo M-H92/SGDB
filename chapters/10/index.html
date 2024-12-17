@@ -223,7 +223,7 @@
     </p>
     <pre class="code-snippet block sql blurable">
   SELECT discontinued, units_in_stock, reorder_level, * FROM products
-  WHERE discontinued != 0 AND units_in_stock <= reorder_level;</pre>
+  WHERE discontinued = 0 AND units_in_stock <= reorder_level;</pre>
     <p class="blurable">Ainsi, nous sommes certain de ne pas avoir de commandes pour des produits qui ne sont plus en
       vente. <br>
       Mais ce n'est pas tout. <br>
@@ -232,7 +232,7 @@
       Nous pourrions encore affiner nos résultats en prenant ces unités en compte</p>
     <pre class="code-snippet block sql blurable">
   SELECT discontinued, units_in_stock, reorder_level, * FROM products
-  WHERE discontinued != 0 AND (units_in_stock + units_on_order)  <= reorder_level;</pre>
+  WHERE discontinued = 0 AND (units_in_stock + units_on_order)  <= reorder_level;</pre>
     <p class="blurable">Nous venons d'améliorer notre résultat en prenant en compte les unités commandées aux
       fournisseurs <br>
       Dans le même ordre d'idée, une gestion complète d'un <i>stock virtuel</i> prendrais aussi en considération les
@@ -271,7 +271,7 @@
     WHERE order_id IN (SELECT order_id FROM orders
       WHERE shipped_date IS NULL)
     GROUP BY product_id) AS ongoing ON ongoing.product_id = products.product_id
-  WHERE discontinued != 0 
+  WHERE discontinued = 0 
     AND (units_in_stock - ongoing_units + units_on_order) <= reorder_level;</pre>
     <p class="blurable">
       Ici, nous construisons graduellement la requête permettant de récupérer les ids et le stock sortant des orders qui
@@ -408,15 +408,15 @@
     }
   }
 
-  blurAnswers();
+  // blurAnswers();
 
-  function hideAnswers() {
-    let answers = document.getElementsByClassName('blurable')
-    for (let i = 0; i < answers.length; i++) {
-      answers[i].classList.add('hidden');
-    }
-  }
-  hideAnswers();
+  // function hideAnswers() {
+  //   let answers = document.getElementsByClassName('blurable')
+  //   for (let i = 0; i < answers.length; i++) {
+  //     answers[i].classList.add('hidden');
+  //   }
+  // }
+  // hideAnswers();
 </script>
 
 </html>
