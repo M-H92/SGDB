@@ -59,7 +59,8 @@
   SELECT COUNT(*) FROM orders
   WHERE ship_country LIKE 'France' 
     OR ship_country LIKE 'USA'</pre>
-    <p class="blurable">Notez la différence avec la requête précédente qui utilise la fonction <strong>COUNT</strong> pour <i>compter le
+    <p class="blurable">Notez la différence avec la requête précédente qui utilise la fonction <strong>COUNT</strong>
+      pour <i>compter le
         nombre d'occurences</i> des résultats.</p>
     <hr>
     <p class="bold">Sélectionnez le <i>nombre total</i> des <i>orders</i> délivrés à la France <strong>AINSI
@@ -69,7 +70,8 @@
   WHERE ship_country LIKE 'France' 
     OR ship_country LIKE 'USA'
   GROUP BY ship_country</pre>
-    <p class="blurable">Ici, le rajout du mot clé <strong>GROUP BY</strong> nous permet de récupérer un résultat par valeur différente
+    <p class="blurable">Ici, le rajout du mot clé <strong>GROUP BY</strong> nous permet de récupérer un résultat par
+      valeur différente
       dans la colonne <i>ship_country</i> <br>
       Faites bien attention que la fonction <strong>COUNT</strong> s'applique sur le sous ensemble de valeurs
       regroupées. <br>
@@ -101,7 +103,8 @@
     'Mexico',
     'Venezuela'
   )</pre>
-    <p class="blurable">Différence notable avec les requête précédente, l'utilisation de l'opérateur <strong>IN</strong> <br>
+    <p class="blurable">Différence notable avec les requête précédente, l'utilisation de l'opérateur <strong>IN</strong>
+      <br>
       L'amérique latine reprends plusieurs pays et, plutôt que de multiplier les <strong>OR [condition]</strong> qui
       pourraient rendre la requête difficilement lisible, l'utilisation du <strong>IN</strong> permet de discriminer la
       valeur spécifiée par rapport à une liste de valeur données</p>
@@ -112,7 +115,8 @@
     <pre class="code-snippet block sql blurable">
     SELECT CAST(SUM(unit_price*quantity) AS numeric(20,2)) AS order_total FROM order_details
     WHERE order_id = 10834</pre>
-    <p class="blurable">Ici, nous allons utiliser la table <i>order_details</i> qui fait une référence directe à <i>orders</i>. <br>
+    <p class="blurable">Ici, nous allons utiliser la table <i>order_details</i> qui fait une référence directe à
+      <i>orders</i>. <br>
       Chaque détail est lié à une commande dans une liaison de type <i>one to many</i> et, la présence de la colonne
       <i>order_id</i> dans la table <i>order_details</i> nous donne une indication clair de la direction de cette
       relation <br>
@@ -219,16 +223,18 @@
     </p>
     <pre class="code-snippet block sql blurable">
   SELECT discontinued, units_in_stock, reorder_level, * FROM products
-  WHERE discontinued != 0 AND units_in_stock <= reorder_level;</pre>
-    <p class="blurable">Ainsi, nous sommes certain de ne pas avoir de commandes pour des produits qui ne sont plus en vente. <br>
+  WHERE discontinued = 0 AND units_in_stock <= reorder_level;</pre>
+    <p class="blurable">Ainsi, nous sommes certain de ne pas avoir de commandes pour des produits qui ne sont plus en
+      vente. <br>
       Mais ce n'est pas tout. <br>
       Considéront la colonne <i>units_on_order</i> comme le total de nos commandes fournisseur déjà en cours pour cet
       article. <br>
       Nous pourrions encore affiner nos résultats en prenant ces unités en compte</p>
     <pre class="code-snippet block sql blurable">
   SELECT discontinued, units_in_stock, reorder_level, * FROM products
-  WHERE discontinued != 0 AND (units_in_stock + units_on_order)  <= reorder_level;</pre>
-    <p class="blurable">Nous venons d'améliorer notre résultat en prenant en compte les unités commandées aux fournisseurs <br>
+  WHERE discontinued = 0 AND (units_in_stock + units_on_order)  <= reorder_level;</pre>
+    <p class="blurable">Nous venons d'améliorer notre résultat en prenant en compte les unités commandées aux
+      fournisseurs <br>
       Dans le même ordre d'idée, une gestion complète d'un <i>stock virtuel</i> prendrais aussi en considération les
       unités qui doivent sortir du stock <br>
       Essayez de les récupérer puis, une fois fait, d'injecter ce résultat dans la query précédente pour affiner notre
@@ -265,7 +271,7 @@
     WHERE order_id IN (SELECT order_id FROM orders
       WHERE shipped_date IS NULL)
     GROUP BY product_id) AS ongoing ON ongoing.product_id = products.product_id
-  WHERE discontinued != 0 
+  WHERE discontinued = 0 
     AND (units_in_stock - ongoing_units + units_on_order) <= reorder_level;</pre>
     <p class="blurable">
       Ici, nous construisons graduellement la requête permettant de récupérer les ids et le stock sortant des orders qui
@@ -288,7 +294,8 @@
   FROM orders
   WHERE orders.freight < (SELECT AVG(freight) / 2 FROM orders )
   ORDER BY orders.shipped_date, orders.ship_name, orders.freight ASC;</pre>
-    <p class="blurable">Ici, une requête imbriquée dans le <strong>WHERE</strong> permet de placer une condition sur la moyenne des
+    <p class="blurable">Ici, une requête imbriquée dans le <strong>WHERE</strong> permet de placer une condition sur la
+      moyenne des
       <i>freight</i> <br>
       Accessoirement, cette requête imbriquée a été utilisée pour afficher la moyenne ainsi que la différence avec la
       moyenne sur chaque ligne de résultat <br>
@@ -332,7 +339,8 @@
     </p>
     <hr>
     <p class="bold">
-      Récupérer les <i>customers</i> triés par nombre d'<i>orders</i> décroissant (donc, les meilleurs <i>customers</i> en premier)
+      Récupérer les <i>customers</i> triés par nombre d'<i>orders</i> décroissant (donc, les meilleurs <i>customers</i>
+      en premier)
     </p>
     <pre class="code-snippet block sql blurable">
   SELECT o.order_count, * FROM customers AS c
@@ -342,13 +350,21 @@
   ) AS o ON o.customer_id = c.customer_id
   ORDER BY o.order_count DESC</pre>
     <p class="blurable">
-      D'abord, nous utilisons une <i>subquery</i> pour récupérer le nombre de commandes par client en utilisant un <strong>GROUP BY</strong> <br>
-      Ensuite, nous intégrons cette <i>subquery</i> dans un <strong>INNER JOIN</strong> pour lier l'information du nombre de commande à notre <i>query</i> principale. <br>
-      Enfin, nous ajoutons un <strong>ORDER BY</strong> sur cette colonne représentant le nombre d'<i>orders</i> et le tour est joué <br>
-      Vous pouvez noter que la <i>subquery</i> suffit pour récupérer le nombre d'<i>orders</i> et les trier par <i>customer_id</i>. Mais se limiter à celle-ci empêche de récupérer les informations venant de la table <i>customers</i>
+      D'abord, nous utilisons une <i>subquery</i> pour récupérer le nombre de commandes par client en utilisant un
+      <strong>GROUP BY</strong> <br>
+      Ensuite, nous intégrons cette <i>subquery</i> dans un <strong>INNER JOIN</strong> pour lier l'information du
+      nombre de commande à notre <i>query</i> principale. <br>
+      Enfin, nous ajoutons un <strong>ORDER BY</strong> sur cette colonne représentant le nombre d'<i>orders</i> et le
+      tour est joué <br>
+      Vous pouvez noter que la <i>subquery</i> suffit pour récupérer le nombre d'<i>orders</i> et les trier par
+      <i>customer_id</i>. Mais se limiter à celle-ci empêche de récupérer les informations venant de la table
+      <i>customers</i>
     </p>
     <hr>
-    <!--<p class="bold"></p>
+    <!--<p class="bold">
+      Récupérer les fournisseurs les plus populaires par clients (ceux qui apparraissent dans le plus d'orders) <br/>
+      Récupérer les fournisseurs les plus rentables par clients (ceux dont la somme des totaux des différents orders est le plus élevé)
+    </p>
     <pre class="code-snippet block sql blurable"></pre>
     <p></p>
     <hr>
@@ -364,7 +380,8 @@
     <hr> -->
     <h2 id="conclusion">Conclusion</h2>
     <p>
-      Dans ce chapitre, vous avez pu toucher à la plus grande partie du cours avec une série d'exercices utilisant des <strong>SELECT</strong> <br>
+      Dans ce chapitre, vous avez pu toucher à la plus grande partie du cours avec une série d'exercices utilisant des
+      <strong>SELECT</strong> <br>
       N'oubliez pas de réviser les autres aspect de la création et gestion de base de données.
     </p>
   </main>
@@ -379,21 +396,21 @@
   }
   numerotationExo();
 
-  function unblurAnswers(element){
+  function unblurAnswers(element) {
     element.target.classList?.remove('blured-answer');
   }
 
-  function blurAnswers(){
+  function blurAnswers() {
     let answers = document.getElementsByClassName('blurable')
     for (let i = 0; i < answers.length; i++) {
       answers[i].classList.add('blured-answer');
-      answers[i].addEventListener('click', unblurAnswers )
+      answers[i].addEventListener('click', unblurAnswers)
     }
   }
 
-  blurAnswers();
+  // blurAnswers();
 
-  // function hideAnswers(){
+  // function hideAnswers() {
   //   let answers = document.getElementsByClassName('blurable')
   //   for (let i = 0; i < answers.length; i++) {
   //     answers[i].classList.add('hidden');
