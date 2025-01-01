@@ -16,6 +16,7 @@ const _linkDefinitions = [
   { name: "8) Propriétaires (suite)", url: `${baseUrl}/chapters/8` },
   { name: "9) Espace utilisateur", url: `${baseUrl}/chapters/9` },
   { name: "10) Northwind", url: `${baseUrl}/chapters/10` },
+  { name: "12) QCM", url: `${baseUrl}/chapters/12` },
   { name: "x) Liens et références externes", url: `${baseUrl}/chapters/x` },
 ];
 

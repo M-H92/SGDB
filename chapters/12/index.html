@@ -15,15 +15,18 @@
     <h1>QCM de fin de module</h1>
     <ol>
       <li>Introduction</li>
-      <li>Placeholder</li>
-      <li>Conclusion</li>
+      <li>Diagramme de base de données</li>
+      <li>QCM</li>
+      <!-- <li>Conclusion</li> -->
     </ol>
     <hr>
     <h2 id="introduction">Introduction</h2>
     <p>Ci-dessous, un QCM reprenant la plupart des concepts vu jusqu'à présent dans ce cours. <br>
       Essayez de répondre au maximum de question sans vous référencer au cours
     </p>
-    <h2 id="placeholder">Placeholder</h2>
+    <h2 id="diagramme-de-base-de-donnees">Diagramme de base de données</h2>
+    <img src="../../ressources/img/maisonMedicale.drawio.png" alt="database-diagram" style="width: 100%;">
+    <h2 id="qcm">QCM</h2>
     <!-- <p id="question-relation-one-to-many">
       Trouvez toutes les relations correspondant à une relation 1..n (ou 0..n) dans ces propositions :
     </p> -->
@@ -66,32 +69,518 @@
         <label for="answer-5-relation-one-to-many">Les propositions 1, 2 et 4</label>
       </div>
     </fieldset> -->
-    <h2>conclusion</h2>
+    <!-- <h2>conclusion</h2> -->
   </main>
 </body>
 <script>
   const QCMElement = [
     {
-      id: "relation-one-to-many",
+      id: "1",
       difficulte: 1,
-      question: "Trouvez toutes les relations correspondant à une relation 1..n (ou 0..n) dans ces propositions :",
+      question: "Trouvez toutes les relations correspondant à une relation n..n dans ces propositions :",
+      codeSnippets: [],
       propositions: [
-        "1) personne - praticien",
-        "2) praticien - patient",
-        "3) patient - praticien",
-        "4) maison_medicale - conges"
+        "1) praticien - specialite_medicale",
+        "2) praticien - maison_medicale",
+        "3) patient - dossier_medical",
+        "4) praticien - conges"
       ],
       reponses: [
-        { texte: "Toutes les propositions.", valeur: true },
+        { texte: "Toutes les propositions.", valeur: false },
         { texte: "Aucune des propositions.", valeur: false },
-        { texte: "Les propositions 2, 3 et 4.", valeur: false },
-        { texte: "Les propositions 1 et 3.", valeur: false },
-        { texte: "Les propositions 1, 2 et 4.", valeur: false },
+        { texte: "Les propositions 1 et 2.", valeur: true },
+        { texte: "Les propositions 2 et 3.", valeur: false },
+        { texte: "Les propositions 3 et 4.", valeur: false },
       ],
       nbrReponseCorrecte: () => {
         return this.reponses.filter(p => p.valeur === true).length;
       }
     },
+    {
+      id: "2",
+      difficulte: 1,
+      codeSnippets: [],
+      question: "Trouvez toutes les relations correspondant à une relation 1..1 (ou 0..1) dans ces propositions :",
+      propositions: [
+        "1) personne - patient",
+        "2) patient - patient",
+        "3) patient - praticien",
+        "4) dossier_medical - patient",
+        "5) praticien - specialite_medicale",
+      ],
+      reponses: [
+        { texte: "Toutes les propositions.", valeur: false },
+        { texte: "Aucune des propositions.", valeur: false },
+        { texte: "Les propositions 1, 2 et 4.", valeur: false },
+        { texte: "Les propositions 1 et 2.", valeur: false },
+        { texte: "Les propositions 4 et 5.", valeur: false },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "3",
+      difficulte: 1,
+      codeSnippets: [],
+      question: "Trouvez toutes les relations correspondant à une relation 1..n (ou 0..n) dans ces propositions :",
+      propositions: [
+        "1) praticien - conge",
+        "2) dossier_medicale - patient",
+        "3) patient - personne",
+      ],
+      reponses: [
+        { texte: "Toutes les propositions.", valeur: false },
+        { texte: "Aucune des propositions.", valeur: false },
+        { texte: "Uniquement la 1", valeur: true },
+        { texte: "Uniquement la 2", valeur: false },
+        { texte: "Uniquement la 3", valeur: false },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "4",
+      difficulte: 1,
+      codeSnippets: [],
+      question: "Deux liens relient directement patient et personne : expliquez",
+      propositions: [
+      ],
+      reponses: [
+        { texte: "Il s'agit d'une erreur, cela semble incohérent", valeur: false },
+        { texte: "Un patient peut être une personne, mais l'inverse est aussi vrai", valeur: false },
+        { texte: "Deux relations de FK existent entre patient et personne", valeur: true },
+        { texte: "Les deux relations étant nullable, elles s'additionnent en relation non nullable", valeur: false },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "5",
+      difficulte: 1,
+      codeSnippets: [],
+      question: "Sur base du schéma, déduisez qui peut insérer un rendez-vous en base de données",
+      propositions: [
+      ],
+      reponses: [
+        { texte: "Il est impossible de déduire ça du schéma", valeur: true },
+        { texte: "Toute personne", valeur: false },
+        { texte: "Tout praticien", valeur: false },
+        { texte: "Tout patient", valeur: false },
+        { texte: "Tout praticien lié à une maison médicale et uniquement pour cette maison médicale", valeur: false },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "6",
+      difficulte: 1,
+      codeSnippets: [],
+      question: "Sur base du schéma, un praticien peut-il avoir plusieurs spécialités?",
+      propositions: [
+      ],
+      reponses: [
+        { texte: "Il est impossible de déduire ça du schéma", valeur: false },
+        { texte: "Oui", valeur: true },
+        { texte: "Non", valeur: false },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "7",
+      difficulte: 1,
+      codeSnippets: [],
+      question: "Laquelle de ces conditions permet de récupérer un praticien n'ayant plus de contrat actif au jour d'aujourd'hui",
+      propositions: [
+      ],
+      reponses: [
+        { texte: "Aucune des propositions suivantes.", valeur: true },
+        { texte: "Toutes les propositions suivantes.", valeur: false },
+        { texte: "WHERE praticien.fin_contrat is null", valeur: false },
+        { texte: "WHERE praticien.fin_contrat is not null", valeur: false },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "8",
+      difficulte: 1,
+      codeSnippets: [],
+      question: "Laquelle de ces PK est auto incrémentée",
+      propositions: [
+        "1) personne.identifiant_interne",
+        "2) patient.identifiant_interne",
+        "3) praticien.identifiant_praticien",
+      ],
+      reponses: [
+        { texte: "Toutes les propositions.", valeur: false },
+        { texte: "Aucune des propositions.", valeur: true },
+        { texte: "Au moins la proposition 3", valeur: false },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "9",
+      difficulte: 1,
+      codeSnippets: [],
+      question: "Strictement selon le diagramme, un patient peut-il avoir plusieurs rendez-vous le même jour?",
+      propositions: [
+        "1) Oui, mais avec un praticien différent",
+        "2) Oui, mais avec une heure de début différente",
+        "3) Oui, mais avec une heure de fin différente",
+        "4) Oui, mais uniquement si le praticien, l'heure de début et l'heure de fin sont toutes strictement différentes",
+      ],
+      reponses: [
+        { texte: "Toutes les propositions.", valeur: false },
+        { texte: "Aucune des propositions.", valeur: false },
+        { texte: "Les propositions 1, 2 et 3", valeur: false },
+        { texte: "Les propositions 1 et 2", valeur: false },
+        { texte: "Les propositions 2 et 3", valeur: false },
+        { texte: "Uniquement la proposition 4", valeur: false },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "10",
+      difficulte: 1,
+      codeSnippets: [],
+      question: "Deux maisons médicales peuvent-elle avoir le même nom?",
+      propositions: [
+      ],
+      reponses: [
+        { texte: "Oui", valeur: false },
+        { texte: "Non", valeur: false },
+        { texte: "Uniquement si les autres informations permettent de les distinguer", valeur: false },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    // {
+    //   id: "11",
+    //   difficulte: 1,
+    //   codeSnippets: [],
+    //   question: "",
+    //   propositions: [
+    //     "1) ",
+    //     "2) ",
+    //     "3) ",
+    //     "4) ",
+    //     "5) ",
+    //   ],
+    //   reponses: [
+    //     { texte: "Toutes les propositions.", valeur: false },
+    //     { texte: "Aucune des propositions.", valeur: false },
+    //     { texte: "", valeur: false },
+    //   ],
+    //   nbrReponseCorrecte: () => {
+    //     return this.reponses.filter(p => p.valeur === true).length;
+    //   }
+    // },
+    // {
+    //   id: "12",
+    //   difficulte: 1,
+    //   codeSnippets: [],
+    //   question: "",
+    //   propositions: [
+    //     "1) ",
+    //     "2) ",
+    //     "3) ",
+    //     "4) ",
+    //     "5) ",
+    //   ],
+    //   reponses: [
+    //     { texte: "Toutes les propositions.", valeur: false },
+    //     { texte: "Aucune des propositions.", valeur: false },
+    //     { texte: "", valeur: false },
+    //   ],
+    //   nbrReponseCorrecte: () => {
+    //     return this.reponses.filter(p => p.valeur === true).length;
+    //   }
+    // },
+    // {
+    //   id: "13",
+    //   difficulte: 1,
+    //   codeSnippets: [],
+    //   question: "",
+    //   propositions: [
+    //     "1) ",
+    //     "2) ",
+    //     "3) ",
+    //     "4) ",
+    //     "5) ",
+    //   ],
+    //   reponses: [
+    //     { texte: "Toutes les propositions.", valeur: false },
+    //     { texte: "Aucune des propositions.", valeur: false },
+    //     { texte: "", valeur: false },
+    //   ],
+    //   nbrReponseCorrecte: () => {
+    //     return this.reponses.filter(p => p.valeur === true).length;
+    //   }
+    // },
+    // {
+    //   id: "14",
+    //   difficulte: 1,
+    //   codeSnippets: [],
+    //   question: "",
+    //   propositions: [
+    //     "1) ",
+    //     "2) ",
+    //     "3) ",
+    //     "4) ",
+    //     "5) ",
+    //   ],
+    //   reponses: [
+    //     { texte: "Toutes les propositions.", valeur: false },
+    //     { texte: "Aucune des propositions.", valeur: false },
+    //     { texte: "", valeur: false },
+    //   ],
+    //   nbrReponseCorrecte: () => {
+    //     return this.reponses.filter(p => p.valeur === true).length;
+    //   }
+    // },
+    // {
+    //   id: "15",
+    //   difficulte: 1,
+    //   codeSnippets: [],
+    //   question: "",
+    //   propositions: [
+    //     "1) ",
+    //     "2) ",
+    //     "3) ",
+    //     "4) ",
+    //     "5) ",
+    //   ],
+    //   reponses: [
+    //     { texte: "Toutes les propositions.", valeur: false },
+    //     { texte: "Aucune des propositions.", valeur: false },
+    //     { texte: "", valeur: false },
+    //   ],
+    //   nbrReponseCorrecte: () => {
+    //     return this.reponses.filter(p => p.valeur === true).length;
+    //   }
+    // },
+    // {
+    //   id: "16",
+    //   difficulte: 1,
+    //   codeSnippets: [],
+    //   question: "",
+    //   propositions: [
+    //     "1) ",
+    //     "2) ",
+    //     "3) ",
+    //     "4) ",
+    //     "5) ",
+    //   ],
+    //   reponses: [
+    //     { texte: "Toutes les propositions.", valeur: false },
+    //     { texte: "Aucune des propositions.", valeur: false },
+    //     { texte: "", valeur: false },
+    //   ],
+    //   nbrReponseCorrecte: () => {
+    //     return this.reponses.filter(p => p.valeur === true).length;
+    //   }
+    // },
+    // {
+    //   id: "17",
+    //   difficulte: 1,
+    //   codeSnippets: [],
+    //   question: "",
+    //   propositions: [
+    //     "1) ",
+    //     "2) ",
+    //     "3) ",
+    //     "4) ",
+    //     "5) ",
+    //   ],
+    //   reponses: [
+    //     { texte: "Toutes les propositions.", valeur: false },
+    //     { texte: "Aucune des propositions.", valeur: false },
+    //     { texte: "", valeur: false },
+    //   ],
+    //   nbrReponseCorrecte: () => {
+    //     return this.reponses.filter(p => p.valeur === true).length;
+    //   }
+    // },
+    // {
+    //   id: "18",
+    //   difficulte: 1,
+    //   codeSnippets: [],
+    //   question: "",
+    //   propositions: [
+    //     "1) ",
+    //     "2) ",
+    //     "3) ",
+    //     "4) ",
+    //     "5) ",
+    //   ],
+    //   reponses: [
+    //     { texte: "Toutes les propositions.", valeur: false },
+    //     { texte: "Aucune des propositions.", valeur: false },
+    //     { texte: "", valeur: false },
+    //   ],
+    //   nbrReponseCorrecte: () => {
+    //     return this.reponses.filter(p => p.valeur === true).length;
+    //   }
+    // },
+    // {
+    //   id: "19",
+    //   difficulte: 1,
+    //   codeSnippets: [],
+    //   question: "",
+    //   propositions: [
+    //     "1) ",
+    //     "2) ",
+    //     "3) ",
+    //     "4) ",
+    //     "5) ",
+    //   ],
+    //   reponses: [
+    //     { texte: "Toutes les propositions.", valeur: false },
+    //     { texte: "Aucune des propositions.", valeur: false },
+    //     { texte: "", valeur: false },
+    //   ],
+    //   nbrReponseCorrecte: () => {
+    //     return this.reponses.filter(p => p.valeur === true).length;
+    //   }
+    // },
+    // {
+    //   id: "20",
+    //   difficulte: 1,
+    //   codeSnippets: [],
+    //   question: "",
+    //   propositions: [
+    //     "1) ",
+    //     "2) ",
+    //     "3) ",
+    //     "4) ",
+    //     "5) ",
+    //   ],
+    //   reponses: [
+    //     { texte: "Toutes les propositions.", valeur: false },
+    //     { texte: "Aucune des propositions.", valeur: false },
+    //     { texte: "", valeur: false },
+    //   ],
+    //   nbrReponseCorrecte: () => {
+    //     return this.reponses.filter(p => p.valeur === true).length;
+    //   }
+    // },
+    // {
+    //   id: "21",
+    //   difficulte: 1,
+    //   codeSnippets: [],
+    //   question: "",
+    //   propositions: [
+    //     "1) ",
+    //     "2) ",
+    //     "3) ",
+    //     "4) ",
+    //     "5) ",
+    //   ],
+    //   reponses: [
+    //     { texte: "Toutes les propositions.", valeur: false },
+    //     { texte: "Aucune des propositions.", valeur: false },
+    //     { texte: "", valeur: false },
+    //   ],
+    //   nbrReponseCorrecte: () => {
+    //     return this.reponses.filter(p => p.valeur === true).length;
+    //   }
+    // },
+    // {
+    //   id: "22",
+    //   difficulte: 1,
+    //   codeSnippets: [],
+    //   question: "",
+    //   propositions: [
+    //     "1) ",
+    //     "2) ",
+    //     "3) ",
+    //     "4) ",
+    //     "5) ",
+    //   ],
+    //   reponses: [
+    //     { texte: "Toutes les propositions.", valeur: false },
+    //     { texte: "Aucune des propositions.", valeur: false },
+    //     { texte: "", valeur: false },
+    //   ],
+    //   nbrReponseCorrecte: () => {
+    //     return this.reponses.filter(p => p.valeur === true).length;
+    //   }
+    // },
+    // {
+    //   id: "23",
+    //   difficulte: 1,
+    //   codeSnippets: [],
+    //   question: "",
+    //   propositions: [
+    //     "1) ",
+    //     "2) ",
+    //     "3) ",
+    //     "4) ",
+    //     "5) ",
+    //   ],
+    //   reponses: [
+    //     { texte: "Toutes les propositions.", valeur: false },
+    //     { texte: "Aucune des propositions.", valeur: false },
+    //     { texte: "", valeur: false },
+    //   ],
+    //   nbrReponseCorrecte: () => {
+    //     return this.reponses.filter(p => p.valeur === true).length;
+    //   }
+    // },
+    // {
+    //   id: "24",
+    //   difficulte: 1,
+    //   codeSnippets: [],
+    //   question: "",
+    //   propositions: [
+    //     "1) ",
+    //     "2) ",
+    //     "3) ",
+    //     "4) ",
+    //     "5) ",
+    //   ],
+    //   reponses: [
+    //     { texte: "Toutes les propositions.", valeur: false },
+    //     { texte: "Aucune des propositions.", valeur: false },
+    //     { texte: "", valeur: false },
+    //   ],
+    //   nbrReponseCorrecte: () => {
+    //     return this.reponses.filter(p => p.valeur === true).length;
+    //   }
+    // },
+    // {
+    //   id: "25",
+    //   difficulte: 1,
+    //   codeSnippets: [],
+    //   question: "",
+    //   propositions: [
+    //     "1) ",
+    //     "2) ",
+    //     "3) ",
+    //     "4) ",
+    //     "5) ",
+    //   ],
+    //   reponses: [
+    //     { texte: "Toutes les propositions.", valeur: false },
+    //     { texte: "Aucune des propositions.", valeur: false },
+    //     { texte: "", valeur: false },
+    //   ],
+    //   nbrReponseCorrecte: () => {
+    //     return this.reponses.filter(p => p.valeur === true).length;
+    //   }
+    // },
   ]
 
   const QCMElementSet = new Set(QCMElement.map(e => e.id));
@@ -99,8 +588,13 @@
     console.error("duplicata dans les id du qcm")
 
   function populateBody() {
-    const main = document.getElementById("placeholder")
-    QCMElement.forEach(e => {
+    const main = document.getElementById("qcm")
+    QCMElement.sort((a, b) => +a > +b ? 1 : -1).forEach(e => {
+      const hr = document.createElement("hr");
+      hr.style.width = "75%"
+      hr.style.marginTop = "16px"
+      hr.style.marginBottom = "24px"
+      main.after(hr);
       const element = document.createElement("p");
       element.id = `question-${e.id}`
       element.textContent = e.question;
@@ -139,7 +633,6 @@
         div.appendChild(label);
         fieldset.appendChild(div)
       })
-      // <input id="answer-1-relation-one-to-many" type="checkbox" name="relation-one-to-many">
       ul.after(fieldset);
     });
   }
