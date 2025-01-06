@@ -26,6 +26,10 @@
     </p>
     <h2 id="diagramme-de-base-de-donnees">Diagramme de base de données</h2>
     <img src="../../ressources/img/maisonMedicale.drawio.png" alt="database-diagram" style="width: 100%;">
+    <p class="nota-bene info">
+      On considère que toute colonne disposent d'une contrainte empêchant les valeurs nulles sauf
+      'praticien.fin_contrat'
+    </p>
     <h2 id="qcm">QCM</h2>
     <!-- <p id="question-relation-one-to-many">
       Trouvez toutes les relations correspondant à une relation 1..n (ou 0..n) dans ces propositions :
@@ -716,111 +720,127 @@ MODIFY TABLE patient ADD COLUMN inscrit_maison_medical boolean;`,
         return this.reponses.filter(p => p.valeur === true).length;
       }
     },
-    // {
-    //   id: "31",
-    //   difficulte: 1,
-    //   codeSnippets: [],
-    //   question: "",
-    //   propositions: [
-    //     "1) ",
-    //     "2) ",
-    //     "3) ",
-    //     "4) ",
-    //     "5) ",
-    //   ],
-    //   reponses: [
-    //     { texte: "Toutes les propositions.", valeur: false },
-    //     { texte: "Aucune des propositions.", valeur: false },
-    //     { texte: "", valeur: false },
-    //   ],
-    //   nbrReponseCorrecte: () => {
-    //     return this.reponses.filter(p => p.valeur === true).length;
-    //   }
-    // },
-    // {
-    //   id: "32",
-    //   difficulte: 1,
-    //   codeSnippets: [],
-    //   question: "",
-    //   propositions: [
-    //     "1) ",
-    //     "2) ",
-    //     "3) ",
-    //     "4) ",
-    //     "5) ",
-    //   ],
-    //   reponses: [
-    //     { texte: "Toutes les propositions.", valeur: false },
-    //     { texte: "Aucune des propositions.", valeur: false },
-    //     { texte: "", valeur: false },
-    //   ],
-    //   nbrReponseCorrecte: () => {
-    //     return this.reponses.filter(p => p.valeur === true).length;
-    //   }
-    // },
-    // {
-    //   id: "33",
-    //   difficulte: 1,
-    //   codeSnippets: [],
-    //   question: "",
-    //   propositions: [
-    //     "1) ",
-    //     "2) ",
-    //     "3) ",
-    //     "4) ",
-    //     "5) ",
-    //   ],
-    //   reponses: [
-    //     { texte: "Toutes les propositions.", valeur: false },
-    //     { texte: "Aucune des propositions.", valeur: false },
-    //     { texte: "", valeur: false },
-    //   ],
-    //   nbrReponseCorrecte: () => {
-    //     return this.reponses.filter(p => p.valeur === true).length;
-    //   }
-    // },
-    // {
-    //   id: "34",
-    //   difficulte: 1,
-    //   codeSnippets: [],
-    //   question: "",
-    //   propositions: [
-    //     "1) ",
-    //     "2) ",
-    //     "3) ",
-    //     "4) ",
-    //     "5) ",
-    //   ],
-    //   reponses: [
-    //     { texte: "Toutes les propositions.", valeur: false },
-    //     { texte: "Aucune des propositions.", valeur: false },
-    //     { texte: "", valeur: false },
-    //   ],
-    //   nbrReponseCorrecte: () => {
-    //     return this.reponses.filter(p => p.valeur === true).length;
-    //   }
-    // },
-    // {
-    //   id: "35",
-    //   difficulte: 1,
-    //   codeSnippets: [],
-    //   question: "",
-    //   propositions: [
-    //     "1) ",
-    //     "2) ",
-    //     "3) ",
-    //     "4) ",
-    //     "5) ",
-    //   ],
-    //   reponses: [
-    //     { texte: "Toutes les propositions.", valeur: false },
-    //     { texte: "Aucune des propositions.", valeur: false },
-    //     { texte: "", valeur: false },
-    //   ],
-    //   nbrReponseCorrecte: () => {
-    //     return this.reponses.filter(p => p.valeur === true).length;
-    //   }
-    // },
+    {
+      id: "31",
+      difficulte: 2,
+      codeSnippets: [
+        `-- A
+INSERT INTO personne
+VALUES('JDOE', 'Jon', 'Doe', '+3247777777');`,
+        `-- B
+INSERT INTO personne (identifiant_interne, prenom, nom)
+VALUES('JLEN', 'John', 'Lennon');`,
+        `-- C
+INSERT INTO personne (identifiant_interne, prenom, nom, telephone)
+VALUES('JARB', 'Jon', 'Arbuckle', '+35247777777');`,
+        `-- D
+INSERT INTO personne (telephone, prenom, nom, identifiant_interne)
+VALUES('+3347777777', 'Jon', 'Bon Jovi', 'JBON');`,
+      ],
+      question: "Laquelle de ces requête permet de créer une personne",
+      propositions: [
+      ],
+      reponses: [
+        { texte: "Aucune des propositions ci-dessous.", valeur: false },
+        { texte: "Toutes les requêtes.", valeur: false },
+        { texte: "Aucune des requêtes.", valeur: false },
+        { texte: "Les requêtes A, B et C.", valeur: false },
+        { texte: "Les requêtes B, C et D.", valeur: false },
+        { texte: "Les requêtes A, C, et D.", valeur: true },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "32",
+      difficulte: 1,
+      codeSnippets: [
+        `INSERT INTO personne (identifiant_interne, prenom, nom)
+VALUES('BMAR', 'Bob', 'Marley'),
+('BLEN', 'Bob', 'Lennon'),
+('BAFF', 'Bob', 'Affet');`
+      ],
+      question: "Quel sera le résultat de cette requête?",
+      propositions: [
+      ],
+      reponses: [
+        { texte: "Aucune des propositions.", valeur: false },
+        { texte: "Erreur, aucune personne n'est enregistrée", valeur: false },
+        { texte: "Erreur, seule la première personne est enregistrée", valeur: false },
+        { texte: "Les trois personnes enregistrées", valeur: false },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "33",
+      difficulte: 1,
+      codeSnippets: [`
+INSERT INTO personne 
+VALUES('SLJA', 'Sammuel L.', 'Jackson', '0032477777777');`,
+        `INSERT INTO personne (identifiant_interne, prenom, nom, telephone)
+VALUES('SLJA', 'Sammuel L.', 'Jackson', '0032477777777');`],
+      question: "Prise individuellement, ces deux requêtes",
+      propositions: [],
+      reponses: [
+        { texte: "Aucune des propositions ci-dessous", valeur: false },
+        { texte: "Les deux propositions ci-dessous", valeur: false },
+        { texte: "Résultent en une erreur", valeur: false },
+        { texte: "Sont fonctionnellement identique", valeur: true },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "34",
+      difficulte: 2,
+      codeSnippets: [`INSERT INTO patient 
+(SELECT identifiant_interne FROM personne)`],
+      question: "Quel aura pour effet cette requête?",
+      propositions: [
+      ],
+      reponses: [
+        { texte: "Aucune des propositions.", valeur: true },
+        { texte: "Toutes les propositions suivantes spécifiant une erreur.", valeur: false },
+        { texte: "Erreur, clause WHERE manquante", valeur: false },
+        { texte: "Erreur, mot-clé INSERT et SELECT incompatible", valeur: false },
+        { texte: "Réussite, plusieurs patients sont insérés en base de données", valeur: false },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "35",
+      difficulte: 1,
+      codeSnippets: [`-- A
+SELECT identifiant_interne FROM personne
+WHERE identifiant_interne NOT IN
+(SELECT pr.identifiant_praticien FROM praticien as pr
+LEFT JOIN personne as pe
+	on pr.identifiant_praticien = pe.identifiant_interne)`,
+        `-- B
+SELECT identifiant_interne FROM personne as pe
+LEFT JOIN praticien as pr
+ON pr.identifiant_praticien = pe.identifiant_interne
+WHERE pr.identifiant_praticien IS NULL`],
+      question: "Pour ces deux requêtes, sélectionnez les bonnes propositions",
+      propositions: [
+      ],
+      reponses: [
+        { texte: "Elles résultent toutes les deux en une erreur", valeur: false },
+        { texte: "La requête A échoue et la B réussi", valeur: false },
+        { texte: "La requête B échoue et la A réussi", valeur: false },
+        { texte: "Les deux requêtes réussissent et produisent le même résultat", valeur: true },
+        { texte: "Les deux requêtes réussissent et produisent un résultat différent", valeur: false },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
     // {
     //   id: "36",
     //   difficulte: 1,
