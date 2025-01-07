@@ -12,16 +12,19 @@
 
 <body>
   <main id="mainElement">
-    <h1>QCM de fin de module</h1>
+    <h1>Questionnaire de fin de module</h1>
     <ol>
       <li>Introduction</li>
       <li>Diagramme de base de données</li>
       <li>QCM</li>
+      <li>Question ouverte</li>
       <!-- <li>Conclusion</li> -->
     </ol>
     <hr>
     <h2 id="introduction">Introduction</h2>
-    <p>Ci-dessous, un QCM reprenant la plupart des concepts vu jusqu'à présent dans ce cours. <br>
+    <p>
+      Ci-dessous, un QCM reprenant la plupart des concepts vu jusqu'à présent dans ce cours ainsi qu'une question
+      ouverte demandant la création d'un diagramme de base de données. <br>
       Essayez de répondre au maximum de question sans vous référencer au cours
     </p>
     <h2 id="diagramme-de-base-de-donnees">Diagramme de base de données</h2>
@@ -74,6 +77,44 @@
       </div>
     </fieldset> -->
     <!-- <h2>conclusion</h2> -->
+    <h2 id="question-ouverte">Question ouverte</h2>
+    <p>
+      Sur base des information ci-dessous, créer un diagramme de base de données qui puisse garder une trace, pour de
+      multiple utilisateurs, des sessions de musculation faites et à venir <br>
+      On utilisera les informations des muscles impactés principaux et secondaires pour générer les sessions suivantes
+    </p>
+    <p>
+      Pour le suivi de son activité sportive, un développeur décide de créer une base de données permettant de traiter
+      les informations de ses sessions d'entrainement
+    </p>
+    <p>
+      Il organise habituellement de 2 à 3 sessions de musculation par semaine comprenant un nombre variable d'exercices
+    </p>
+    <p>
+      Pour optimiser son entrainement, il essaye d'organiser ses sessions de telle manière qu'elles se focalise sur un
+      groupe musculaire précis et, pour optimiser sa récupération, il essaye d'espacer d'au moins quelques jours les
+      sessions se focalisant sur le
+      même groupe musculaire.
+    </p>
+    <p>
+      Ainsi, une semaine type pourrait se composer de 3 sessions : Lundi - dos, Mercredi - torse, Vendredi - jambes <br>
+      De plus, la semaine suivante ne commencera pas par une session "jambes", mais plutôt par une session "dos"
+      (ce groupe musculaire étant le plus reposé). <br>
+    </p>
+    <p>
+      En ce qui concerne ces sessions, elles se composent d'une série d'exercices s'articulant autours des même muscles
+      "principaux", mais ayant un impacte sur une série de muscles "secondaires". <br>
+      Par exemple, une séance pourra avoir, entre autres, un exercice de développé couché prise large pour lequel le
+      muscule ciblé principal serait le grand pectoral avec un effet sur des muscles secondaires qui seraient le petit
+      pectoral, le triceps brachial et le deltoïde antérieur. <br>
+      Dans la même séance, on pourra envisager un exercice de développé Arnold ciblant le deltoïde antérieur, supérieur
+      et postérieur ou un exercice d'extension à la poulie haute ciblant principalement le triceps brachial.
+    </p>
+    <p>
+      Dans une session, chaque exercice se réalises sur x séries de y répétitions réalisée avec un poids z. Par exemple,
+      4 séries de 10 répétitions de développé couché à 30 kg. (pour cette base de données, on ne considère pas les
+      exercices avec variation de répétitions ou de poids)
+    </p>
   </main>
 </body>
 <script>
