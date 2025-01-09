@@ -411,7 +411,7 @@ CREATE TABLE dossier_medical(
 ALTER TABLE dossier_medical
 ADD PRIMARY KEY(identifiant_patient);`,
       ],
-      question: "Parmis les reqûetes suivantes, lesquelles permettent de créer la table dossier_medical ainsi que sa clé primaire",
+      question: "Parmis les requêtes suivantes, lesquelles permettent de créer la table dossier_medical ainsi que sa clé primaire",
       propositions: [
       ],
       reponses: [
@@ -430,7 +430,7 @@ ADD PRIMARY KEY(identifiant_patient);`,
       id: "15",
       difficulte: 1,
       codeSnippets: [
-        `ALTER TABLE public.dossier_medical SWITCH CONSTRAINT dossier_medical_pkey
+        `ALTER TABLE dossier_medical SWITCH CONSTRAINT dossier_medical_pkey
 FROM dossier_medical.digital TO dossier_medical.identifiant_patient;`
       ],
       question: "Par erreur, la PK (dossier_medical_pkey) de la table dossier_medical a été initialisée sur la colonne 'digital'. On souhaite corriger cette erreur avec la requête suivante. Cochez la ou les bonnes réponses.",
@@ -450,7 +450,7 @@ FROM dossier_medical.digital TO dossier_medical.identifiant_patient;`
       id: "16",
       difficulte: 1,
       codeSnippets: [
-        `ALTER TABLE public.dossier_medical DROP CONSTRAINT dossier_medical_pkey;
+        `ALTER TABLE dossier_medical DROP CONSTRAINT dossier_medical_pkey;
 ALTER TABLE dossier_medical ADD PRIMARY KEY(identifiant_patient);`
       ],
       question: "Par erreur, la PK (dossier_medical_pkey) de la table dossier_medical a été initialisée sur la colonne 'digital'. On souhaite corriger cette erreur avec les 2 requêtes suivantes. Cochez la ou les bonnes réponses.",
@@ -608,7 +608,7 @@ ALTER TABLE praticien ALTER COLUMN debut_contrat SET NOT NULL;`,
         `-- B
 ALTER TABLE praticien ALTER COLUMN fin_contrat SET NULL;`
       ],
-      question: "Considérant la table praticien d'écrite dans le diagramme, sélectionnez laquelle de ces requêtes est correcte",
+      question: "Considérant la table praticien décrite dans le diagramme, sélectionnez laquelle de ces requêtes est correcte",
       propositions: [
       ],
       reponses: [
@@ -704,7 +704,7 @@ ALTER TABLE praticien ALTER COLUMN fin_contrat SET NULL;`
         `ALTER TABLE praticien 
   ADD CONSTRAINT fk_praticien_personne FOREIGN KEY (identifiant_praticien) 
   REFERENCES personne (identifiant_interne);
-ALTER TABLE praticien 
+ALTER TABLE patient 
   ADD CONSTRAINT fk_patient_personne FOREIGN KEY (identifiant_interne) 
   REFERENCES personne (identifiant_interne);`
       ],
@@ -818,8 +818,7 @@ VALUES('BMAR', 'Bob', 'Marley'),
     {
       id: "33",
       difficulte: 1,
-      codeSnippets: [`
-INSERT INTO personne 
+      codeSnippets: [`INSERT INTO personne 
 VALUES('SLJA', 'Sammuel L.', 'Jackson', '0032477777777');`,
         `INSERT INTO personne (identifiant_interne, prenom, nom, telephone)
 VALUES('SLJA', 'Sammuel L.', 'Jackson', '0032477777777');`],
@@ -882,90 +881,78 @@ WHERE pr.identifiant_praticien IS NULL`],
         return this.reponses.filter(p => p.valeur === true).length;
       }
     },
-    // {
-    //   id: "36",
-    //   difficulte: 1,
-    //   codeSnippets: [],
-    //   question: "",
-    //   propositions: [
-    //     "1) ",
-    //     "2) ",
-    //     "3) ",
-    //     "4) ",
-    //     "5) ",
-    //   ],
-    //   reponses: [
-    //     { texte: "Toutes les propositions.", valeur: false },
-    //     { texte: "Aucune des propositions.", valeur: false },
-    //     { texte: "", valeur: false },
-    //   ],
-    //   nbrReponseCorrecte: () => {
-    //     return this.reponses.filter(p => p.valeur === true).length;
-    //   }
-    // },
-    // {
-    //   id: "37",
-    //   difficulte: 1,
-    //   codeSnippets: [],
-    //   question: "",
-    //   propositions: [
-    //     "1) ",
-    //     "2) ",
-    //     "3) ",
-    //     "4) ",
-    //     "5) ",
-    //   ],
-    //   reponses: [
-    //     { texte: "Toutes les propositions.", valeur: false },
-    //     { texte: "Aucune des propositions.", valeur: false },
-    //     { texte: "", valeur: false },
-    //   ],
-    //   nbrReponseCorrecte: () => {
-    //     return this.reponses.filter(p => p.valeur === true).length;
-    //   }
-    // },
-    // {
-    //   id: "38",
-    //   difficulte: 1,
-    //   codeSnippets: [],
-    //   question: "",
-    //   propositions: [
-    //     "1) ",
-    //     "2) ",
-    //     "3) ",
-    //     "4) ",
-    //     "5) ",
-    //   ],
-    //   reponses: [
-    //     { texte: "Toutes les propositions.", valeur: false },
-    //     { texte: "Aucune des propositions.", valeur: false },
-    //     { texte: "", valeur: false },
-    //   ],
-    //   nbrReponseCorrecte: () => {
-    //     return this.reponses.filter(p => p.valeur === true).length;
-    //   }
-    // },
-    // {
-    //   id: "39",
-    //   difficulte: 1,
-    //   codeSnippets: [],
-    //   question: "",
-    //   propositions: [
-    //     "1) ",
-    //     "2) ",
-    //     "3) ",
-    //     "4) ",
-    //     "5) ",
-    //   ],
-    //   reponses: [
-    //     { texte: "Toutes les propositions.", valeur: false },
-    //     { texte: "Aucune des propositions.", valeur: false },
-    //     { texte: "", valeur: false },
-    //   ],
-    //   nbrReponseCorrecte: () => {
-    //     return this.reponses.filter(p => p.valeur === true).length;
-    //   }
-    // },
+    {
+      id: "36",
+      difficulte: 1,
+      codeSnippets: [`INSERT INTO patient (identifiant_interne, nom_generaliste, telephone_generaliste, personne_contact, inscrit_maison_medical)
+VALUES ('SLEG', 'Dupont Luc', '0035245784575', 'SLEG', false);`],
+      question: "Considérant qu'un enregistrement existe dans la table 'personne' avec l'identifiant_interne 'SLEG', quel sera le résultat de cette requête",
+      propositions: [],
+      reponses: [
+        { texte: "Aucune des valeurs ci-dessous", valeur: false },
+        { texte: "Erreur, la valeur SLEG est déjà utilisée et une PRIMARY KEY ne peut être dupliquée", valeur: false },
+        { texte: "Erreur, la valeur SLEG ne peut être utilisée, dans la table patient, pour deux FOREIGN KEY différente", valeur: false },
+        { texte: "Réussite, un patient est enregistré en base de données", valeur: true },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "37",
+      difficulte: 1,
+      codeSnippets: [`INSERT INTO specialite_medicale(nom, description)
+VALUES ('Pédiatrie', '');
+INSERT INTO praticien_specialite_medicale (identifiant_praticien, nom_specialite_medicale)
+VALUES ('JDOE', 'Pédiatrie');`],
+      question: "Considérant qu'un praticien est enregistré avec l'identifiant JDOE, on tente d'exécuter ces deux requêtes. Quel sera le résultat?",
+      propositions: [],
+      reponses: [
+        { texte: "Erreur, les deux requêtes échouent", valeur: false },
+        { texte: "Réussite partielle, une des requête échoue", valeur: false },
+        { texte: "Réussite, les deux requêtes fonctionnent", valeur: true },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "38",
+      difficulte: 1,
+      codeSnippets: [`INSERT INTO praticien_specialite_medicale (identifiant_praticien, nom_specialite_medicale)
+VALUES ('JDOE', 'Généraliste');
+INSERT INTO specialite_medicale(nom, description)
+VALUES ('Généraliste', '');`],
+      question: "Considérant qu'un praticien est enregistré avec l'identifiant JDOE, on tente d'exécuter ces deux requêtes. Quel sera le résultat?",
+      propositions: [],
+      reponses: [
+        { texte: "Erreur, les deux requêtes échouent", valeur: false },
+        { texte: "Réussite partielle, une des requête échoue", valeur: false },
+        { texte: "Réussite, les deux requêtes fonctionnent", valeur: true },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "39",
+      difficulte: 1,
+      codeSnippets: [
+        `INSERT INTO specialite_medicale(nom, description)
+VALUES ('', '');`
+      ],
+      question: "Considérant une table 'specialite_medicale' sans données, quel sera le résultat de cette requête?",
+      propositions: [],
+      reponses: [
+        { texte: "Aucune des propositions ci-dessous", valeur: false },
+        { texte: "Erreur, une valeur est requise pour la PRIMARY KEY", valeur: false },
+        { texte: "Erreur, syntaxe incorrecte", valeur: false },
+        { texte: "Réussite", valeur: true },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
     // {
     //   id: "40",
     //   difficulte: 1,
