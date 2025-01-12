@@ -953,8 +953,301 @@ VALUES ('', '');`
         return this.reponses.filter(p => p.valeur === true).length;
       }
     },
+    {
+      id: "40",
+      questionnaire: ['A', 'B'],
+      difficulte: 1,
+      codeSnippets: [`-- A
+SELECT * FROM specialite_medicale`, `-- B
+SELECT nom, description FROM specialite_medicale`],
+      question: "Sans considération pour l'ordre des colonnes ou des rangées, sélectionnez la bonne affirmation pour ces deux requêtes",
+      propositions: [
+      ],
+      reponses: [
+        { texte: "La requête A récupère plus de colonnes que la B", valeur: false },
+        { texte: "La requête B récupère plus de colonnes que la A", valeur: false },
+        { texte: "Les deux requêtes récupère les mêmes informations", valeur: true },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "41",
+      questionnaire: ['A', 'B'],
+      difficulte: 1,
+      codeSnippets: [`-- A
+WHERE description = ''`, `-- B
+WHERE description LIKE '%'`, `--C
+WHERE description LIKE '_'`],
+      question: "Laquelle de ces propositions permet de récupérer toutes les specialités médicales lors d'un `SELECT * FROM specialite_medicale`",
+      propositions: [
+      ],
+      reponses: [
+        { texte: "Toutes les propositions.", valeur: false },
+        { texte: "Aucune des propositions.", valeur: false },
+        { texte: "La proposition A", valeur: false },
+        { texte: "La proposition B", valeur: false },
+        { texte: "La proposition C", valeur: false },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "42",
+      difficulte: 1,
+      codeSnippets: [`SELECT * FROM specialite_medicale as sm
+[---] JOIN praticien_specialite_medicale AS psm
+ON psm.nom_specialite_medicale = sm.nom;`],
+      question: "Je ne souhaite récupérer que les spécialités médicales attribuées à au moins un praticien. Quelle mot clé utiliser à la place des [---]",
+      propositions: [
+      ],
+      reponses: [
+        { texte: "Toutes les propositions.", valeur: false },
+        { texte: "Aucune des propositions.", valeur: false },
+        { texte: "LEFT", valeur: false },
+        { texte: "INNER", valeur: true },
+        { texte: "RIGHT", valeur: false },
+        { texte: "CROSS", valeur: false },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "43",
+      difficulte: 2,
+      codeSnippets: [`-- A
+SELECT identifiant_interne FROM personne AS p
+JOIN patient AS pa 
+ON pa.identifiant_interne = p.identifiant_interne;`, `-- B
+SELECT identifiant_interne FROM personne AS p
+JOIN praticien AS pr 
+ON pr.identifiant_praticien = p.identifiant_interne;`],
+      question: "Ces requêtes sont utilisées. Cochez la bonne réponse",
+      propositions: [],
+      reponses: [
+        { texte: "La requête A et B fonctionnent", valeur: false },
+        { texte: "La requête A fonctionne. La B échoue.", valeur: false },
+        { texte: "La requête A échoue. La requête B fonctionne", valeur: true },
+        { texte: "La requête A et B échouent", valeur: false },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "44",
+      difficulte: 2,
+      codeSnippets: [`-- A
+SELECT * FROM specialite_medicale as sm
+INNER JOIN praticien_specialite_medicale AS psm
+ON psm.nom_specialite_medicale = sm.nom;`, `-- B
+SELECT * FROM specialite_medicale as sm
+JOIN praticien_specialite_medicale AS psm
+ON psm.nom_specialite_medicale = sm.nom;`],
+      question: "Les deux requêtes sont utilisées. Cochez la bonne réponse",
+      propositions: [
+      ],
+      reponses: [
+        { texte: "La requête A retourne plus de rangées que la B", valeur: false },
+        { texte: "La requête B retourne plus de rangées que la A", valeur: false },
+        { texte: "Les deux requêtes retournent le même nombre de rangées", valeur: true },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "45",
+      difficulte: 3,
+      codeSnippets: [`-- A
+SELECT identifiant_interne FROM personne AS p
+LEFT JOIN praticien AS pr 
+ON pr.identifiant_praticien = p.identifiant_interne;`, `-- B
+SELECT identifiant_interne FROM praticien AS pr
+LEFT JOIN personne AS p 
+ON pr.identifiant_praticien = p.identifiant_interne;`],
+      question: "Considérant que des données existent pour des praticiens et des patients, cochez la bonne réponse pour comparer ces deux requêtes",
+      propositions: [
+      ],
+      reponses: [
+        { texte: "La requête A retourne plus de rangées que la requête B", valeur: true },
+        { texte: "La requête B retourne plus de rangées que la requête A", valeur: false },
+        { texte: "Les deux requêtes retournent le même nombre de rangées", valeur: false },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "46",
+      difficulte: 3,
+      codeSnippets: [`-- A
+SELECT identifiant_interne FROM personne AS p
+RIGHT JOIN praticien AS pr 
+ON pr.identifiant_praticien = p.identifiant_interne;`, `-- B
+SELECT identifiant_interne FROM personne AS p
+LEFT JOIN praticien AS pr 
+ON pr.identifiant_praticien = p.identifiant_interne;`],
+      question: "Considérant que des données existent pour des praticiens et des patients, cochez la bonne réponse pour comparer ces deux requêtes",
+      propositions: [],
+      reponses: [
+        { texte: "La requête A retourne plus de rangées que la requête B", valeur: false },
+        { texte: "La requête B retourne plus de rangées que la requête A", valeur: true },
+        { texte: "Les deux requêtes retournent le même nombre de rangées", valeur: false },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "47",
+      difficulte: 1,
+      codeSnippets: [
+        `-- A
+SELECT * FROM conge
+WHERE date_debut > CURRENT_DATE AND date_fin < CURRENT_DATE;`,
+        `-- B
+SELECT * FROM conge
+WHERE date_debut > CURRENT_DATE OR date_fin < CURRENT_DATE;`,
+        `-- C
+SELECT * FROM conge
+WHERE date_debut <= CURRENT_DATE AND date_fin > CURRENT_DATE;`,
+        `-- D
+SELECT * FROM conge
+WHERE date_debut <= CURRENT_DATE OR date_fin > CURRENT_DATE;`],
+      question: "Laquelle de ces requêtes permet de récupérer les identifiant des praticiens en congé aujourd'hui",
+      propositions: [],
+      reponses: [
+        { texte: "Toutes les propositions.", valeur: false },
+        { texte: "Aucune des propositions.", valeur: false },
+        { texte: "La requête A", valeur: false },
+        { texte: "La requête B", valeur: false },
+        { texte: "La requête C", valeur: true },
+        { texte: "La requête D", valeur: false },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "48",
+      difficulte: 2,
+      codeSnippets: [
+        `-- A
+SELECT * FROM conge
+WHERE date_debut > CURRENT_DATE AND date_fin < CURRENT_DATE;`,
+        `-- B
+SELECT * FROM conge
+WHERE date_debut > CURRENT_DATE OR date_fin < CURRENT_DATE;`,
+        `-- C
+SELECT * FROM conge
+WHERE date_debut <= CURRENT_DATE AND date_fin > CURRENT_DATE;`,
+        `-- D
+SELECT * FROM conge
+WHERE date_debut <= CURRENT_DATE OR date_fin > CURRENT_DATE;`
+      ],
+      question: "Laquelle de ces requêtes permet de récupérer les identifiant des praticiens en congé aujourd'hui et n'ayant pris qu'un seul jour de congé? (ils ne sont donc en congé ni hier ni demain)",
+      propositions: [],
+      reponses: [
+        { texte: "Toutes les propositions.", valeur: false },
+        { texte: "Aucune des propositions.", valeur: true },
+        { texte: "La requête A", valeur: false },
+        { texte: "La requête B", valeur: false },
+        { texte: "La requête C", valeur: false },
+        { texte: "La requête D", valeur: false },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "49",
+      difficulte: 1,
+      codeSnippets: [`CREATE TABLE maison_medicale(
+  nom varchar(64) PRIMARY KEY,
+  adresse varchar(256),
+  telephone varchar(32),
+  mail varchar(256),
+  site_web varchar(256)
+);`],
+      question: "Je souhaite créer la table 'maison_medicale' et j'utilise cette requête. Cochez la bonne réponse",
+      propositions: [],
+      reponses: [
+        { texte: "Aucune des propositions.", valeur: false },
+        { texte: "La table est créée", valeur: true },
+        { texte: "Erreur pour la déclaration de la clé primaire", valeur: false },
+        { texte: "Erreur pour la déclaration des types", valeur: false },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "50",
+      difficulte: 3,
+      codeSnippets: [`-- A
+SELECT pr.identifiant_praticien FROM praticien AS pr
+JOIN praticien_maison_medicale AS p_mm
+ON p_mm.identifiant_praticien = pr.identifiant_praticien
+WHERE p_mm.nom_maison_medicale = 'Arlon';`,
+        `-- B
+SELECT p_mm.identifiant_praticien FROM maison_medicale AS mm
+JOIN praticien_maison_medicale AS p_mm
+ON p_mm.nom_maison_medicale = mm.nom
+WHERE mm.nom = 'Arlon';`,
+        `-- C
+SELECT identifiant_praticien FROM praticien_maison_medicale
+WHERE nom_maison_medicale = 'Arlon'`],
+      question: "Je souhaite récupérer l'identifiant des praticiens de la maison médicale d'arlon. Considérant ces trois requêtes, sélectionnez la bonne réponse",
+      propositions: [],
+      reponses: [
+        { texte: "Aucune des propositions.", valeur: false },
+        { texte: "La requête A, B et C retournent les valeurs voulues", valeur: true },
+        { texte: "La requête A et B retournent les valeurs voulues", valeur: false },
+        { texte: "La requête A et C retournent les valeurs voulues", valeur: false },
+        { texte: "La requête B et C retournent les valeurs voulues", valeur: false },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "51",
+      difficulte: 1,
+      codeSnippets: [`UPDATE conge SET statut = 'Accepté'
+WHERE date_debut > CURRENT_DATE;`],
+      question: "Je souhaite accepter tout les congés posés à venir. Est-ce que cette requête répond à mon besoin?",
+      propositions: [],
+      reponses: [
+        { texte: "Aucune des propositions.", valeur: false },
+        { texte: "Oui, tout les congés futurs sont maintenant acceptés", valeur: true },
+        { texte: "Erreur, statut ne peut pas prendre la valeur 'Accepté'. Uniquement true ou false", valeur: true },
+        { texte: "Erreur, impossible de combiner les clauses UPDATE et WHERE", valeur: true },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
+    {
+      id: "52",
+      difficulte: 1,
+      codeSnippets: [`DELETE FROM conge WHERE statut = 'Refusé'`],
+      question: "Je souhaite supprimer les congés refusés. Pour cela, j'utilise cette requête. Cochez la bonne réponse",
+      propositions: [],
+      reponses: [
+        { texte: "Aucune des propositions.", valeur: false },
+        { texte: "Les congés dont le statut est 'Refusé' sont supprimés", valeur: true },
+        { texte: "Erreur, impossible de combiner les clauses DELETE et WHERE", valeur: false },
+      ],
+      nbrReponseCorrecte: () => {
+        return this.reponses.filter(p => p.valeur === true).length;
+      }
+    },
     // {
-    //   id: "40",
+    //   id: "53",
     //   difficulte: 1,
     //   codeSnippets: [],
     //   question: "",
@@ -975,7 +1268,7 @@ VALUES ('', '');`
     //   }
     // },
     // {
-    //   id: "41",
+    //   id: "54",
     //   difficulte: 1,
     //   codeSnippets: [],
     //   question: "",
@@ -996,7 +1289,7 @@ VALUES ('', '');`
     //   }
     // },
     // {
-    //   id: "42",
+    //   id: "55",
     //   difficulte: 1,
     //   codeSnippets: [],
     //   question: "",
@@ -1017,7 +1310,7 @@ VALUES ('', '');`
     //   }
     // },
     // {
-    //   id: "43",
+    //   id: "56",
     //   difficulte: 1,
     //   codeSnippets: [],
     //   question: "",
@@ -1038,7 +1331,7 @@ VALUES ('', '');`
     //   }
     // },
     // {
-    //   id: "44",
+    //   id: "57",
     //   difficulte: 1,
     //   codeSnippets: [],
     //   question: "",
@@ -1059,7 +1352,154 @@ VALUES ('', '');`
     //   }
     // },
     // {
-    //   id: "45",
+    //   id: "58",
+    //   difficulte: 1,
+    //   codeSnippets: [],
+    //   question: "",
+    //   propositions: [
+    //     "1) ",
+    //     "2) ",
+    //     "3) ",
+    //     "4) ",
+    //     "5) ",
+    //   ],
+    //   reponses: [
+    //     { texte: "Toutes les propositions.", valeur: false },
+    //     { texte: "Aucune des propositions.", valeur: false },
+    //     { texte: "", valeur: false },
+    //   ],
+    //   nbrReponseCorrecte: () => {
+    //     return this.reponses.filter(p => p.valeur === true).length;
+    //   }
+    // },
+    // {
+    //   id: "59",
+    //   difficulte: 1,
+    //   codeSnippets: [],
+    //   question: "",
+    //   propositions: [
+    //     "1) ",
+    //     "2) ",
+    //     "3) ",
+    //     "4) ",
+    //     "5) ",
+    //   ],
+    //   reponses: [
+    //     { texte: "Toutes les propositions.", valeur: false },
+    //     { texte: "Aucune des propositions.", valeur: false },
+    //     { texte: "", valeur: false },
+    //   ],
+    //   nbrReponseCorrecte: () => {
+    //     return this.reponses.filter(p => p.valeur === true).length;
+    //   }
+    // },
+    // {
+    //   id: "60",
+    //   difficulte: 1,
+    //   codeSnippets: [],
+    //   question: "",
+    //   propositions: [
+    //     "1) ",
+    //     "2) ",
+    //     "3) ",
+    //     "4) ",
+    //     "5) ",
+    //   ],
+    //   reponses: [
+    //     { texte: "Toutes les propositions.", valeur: false },
+    //     { texte: "Aucune des propositions.", valeur: false },
+    //     { texte: "", valeur: false },
+    //   ],
+    //   nbrReponseCorrecte: () => {
+    //     return this.reponses.filter(p => p.valeur === true).length;
+    //   }
+    // },
+    // {
+    //   id: "61",
+    //   difficulte: 1,
+    //   codeSnippets: [],
+    //   question: "",
+    //   propositions: [
+    //     "1) ",
+    //     "2) ",
+    //     "3) ",
+    //     "4) ",
+    //     "5) ",
+    //   ],
+    //   reponses: [
+    //     { texte: "Toutes les propositions.", valeur: false },
+    //     { texte: "Aucune des propositions.", valeur: false },
+    //     { texte: "", valeur: false },
+    //   ],
+    //   nbrReponseCorrecte: () => {
+    //     return this.reponses.filter(p => p.valeur === true).length;
+    //   }
+    // },
+    // {
+    //   id: "62",
+    //   difficulte: 1,
+    //   codeSnippets: [],
+    //   question: "",
+    //   propositions: [
+    //     "1) ",
+    //     "2) ",
+    //     "3) ",
+    //     "4) ",
+    //     "5) ",
+    //   ],
+    //   reponses: [
+    //     { texte: "Toutes les propositions.", valeur: false },
+    //     { texte: "Aucune des propositions.", valeur: false },
+    //     { texte: "", valeur: false },
+    //   ],
+    //   nbrReponseCorrecte: () => {
+    //     return this.reponses.filter(p => p.valeur === true).length;
+    //   }
+    // },
+    // {
+    //   id: "63",
+    //   difficulte: 1,
+    //   codeSnippets: [],
+    //   question: "",
+    //   propositions: [
+    //     "1) ",
+    //     "2) ",
+    //     "3) ",
+    //     "4) ",
+    //     "5) ",
+    //   ],
+    //   reponses: [
+    //     { texte: "Toutes les propositions.", valeur: false },
+    //     { texte: "Aucune des propositions.", valeur: false },
+    //     { texte: "", valeur: false },
+    //   ],
+    //   nbrReponseCorrecte: () => {
+    //     return this.reponses.filter(p => p.valeur === true).length;
+    //   }
+    // },
+    // {
+    //   id: "64",
+    //   difficulte: 1,
+    //   codeSnippets: [],
+    //   question: "",
+    //   propositions: [
+    //     "1) ",
+    //     "2) ",
+    //     "3) ",
+    //     "4) ",
+    //     "5) ",
+    //   ],
+    //   reponses: [
+    //     { texte: "Toutes les propositions.", valeur: false },
+    //     { texte: "Aucune des propositions.", valeur: false },
+    //     { texte: "", valeur: false },
+    //   ],
+    //   nbrReponseCorrecte: () => {
+    //     return this.reponses.filter(p => p.valeur === true).length;
+    //   }
+    // },
+    // {
+    //   id: "65",
     //   difficulte: 1,
     //   codeSnippets: [],
     //   question: "",
