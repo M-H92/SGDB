@@ -148,17 +148,16 @@
       question: "Trouvez toutes les relations correspondant à une relation 1..1 (ou 0..1) dans ces propositions :",
       propositions: [
         "1) personne - patient",
-        "2) patient - patient",
-        "3) patient - praticien",
-        "4) dossier_medical - patient",
-        "5) praticien - specialite_medicale",
+        "2) patient - praticien",
+        "3) dossier_medical - patient",
+        "4) praticien - specialite_medicale",
       ],
       reponses: [
         { texte: "Toutes les propositions.", valeur: false },
         { texte: "Aucune des propositions.", valeur: false },
-        { texte: "Les propositions 1, 2 et 4.", valeur: false },
         { texte: "Les propositions 1 et 2.", valeur: false },
         { texte: "Les propositions 4 et 5.", valeur: false },
+        { texte: "Les propositions 3 et 1.", valeur: true },
       ],
       nbrReponseCorrecte: () => {
         return this.reponses.filter(p => p.valeur === true).length;
@@ -240,7 +239,7 @@
       id: "7",
       difficulte: 1,
       codeSnippets: [],
-      question: "Laquelle de ces conditions permet de récupérer un praticien n'ayant plus de contrat actif au jour d'aujourd'hui",
+      question: "Laquelle de ces conditions permet de récupérer un praticien n'ayant plus de contrat actif aujourd'hui",
       propositions: [
       ],
       reponses: [
@@ -266,7 +265,9 @@
       reponses: [
         { texte: "Toutes les propositions.", valeur: false },
         { texte: "Aucune des propositions.", valeur: true },
-        { texte: "Au moins la proposition 3", valeur: false },
+        { texte: "La proposition 1", valeur: false },
+        { texte: "La proposition 2", valeur: false },
+        { texte: "La proposition 3", valeur: false },
       ],
       nbrReponseCorrecte: () => {
         return this.reponses.filter(p => p.valeur === true).length;
@@ -304,7 +305,7 @@
       ],
       reponses: [
         { texte: "Oui", valeur: false },
-        { texte: "Non", valeur: false },
+        { texte: "Non", valeur: true },
         { texte: "Uniquement si les autres informations permettent de les distinguer", valeur: false },
       ],
       nbrReponseCorrecte: () => {
@@ -332,7 +333,7 @@ CREATE DATABASE db_maison_medical
 	-- code omis par clarté)
 );`
       ],
-      question: "Sélectionnez là ou les requêtes valides pour créer une base de données",
+      question: "Sélectionnez la valide pour créer une base de données",
       propositions: [
       ],
       reponses: [
@@ -350,8 +351,7 @@ CREATE DATABASE db_maison_medical
       id: "12",
       difficulte: 1,
       codeSnippets: [
-        `
-CREATE TABLE dossier_medical(
+        `CREATE TABLE dossier_medical(
   identifiant_patient varchar(32),
   digital boolean,
   access varchar(562)
@@ -380,7 +380,7 @@ CREATE TABLE dossier_medical(
       ],
       reponses: [
         { texte: "Aucune des propositions.", valeur: false },
-        { texte: "N'aura pas d'impacte sur les données de la table patient", valeur: false },
+        { texte: "N'aura pas d'impacte sur les données de la table patient", valeur: true },
         { texte: "Supprimer toutes les données de la table patient par 'cascade'", valeur: false },
         { texte: "Supprimer les patient de la table patient par 'cascade', mais uniquement si ils ont un dossier médical", valeur: false },
       ],
@@ -433,13 +433,12 @@ ADD PRIMARY KEY(identifiant_patient);`,
         `ALTER TABLE dossier_medical SWITCH CONSTRAINT dossier_medical_pkey
 FROM dossier_medical.digital TO dossier_medical.identifiant_patient;`
       ],
-      question: "Par erreur, la PK (dossier_medical_pkey) de la table dossier_medical a été initialisée sur la colonne 'digital'. On souhaite corriger cette erreur avec la requête suivante. Cochez la ou les bonnes réponses.",
+      question: "Par erreur, la PK (dossier_medical_pkey) de la table dossier_medical a été initialisée sur la colonne 'digital'. On souhaite corriger cette erreur avec la requête suivante. Cochez la bonne réponse.",
       propositions: [
       ],
       reponses: [
         { texte: "La contrainte de PK est correctement passée de la colonne digital à la colonne identifiant_patient", valeur: false },
         { texte: "La contrainte de PK n'est pas correctement modifiée. La colonne FROM et la colonne TO doivent avoir le même type", valeur: false },
-        { texte: "La contrainte de PK n'est pas correctement modifiée. On ne peut pas modifier une contrainte de PRIMARY KEY", valeur: false },
         { texte: "La contrainte de PK n'est pas correctement modifiée. Erreur de syntaxe", valeur: true },
       ],
       nbrReponseCorrecte: () => {
@@ -453,13 +452,12 @@ FROM dossier_medical.digital TO dossier_medical.identifiant_patient;`
         `ALTER TABLE dossier_medical DROP CONSTRAINT dossier_medical_pkey;
 ALTER TABLE dossier_medical ADD PRIMARY KEY(identifiant_patient);`
       ],
-      question: "Par erreur, la PK (dossier_medical_pkey) de la table dossier_medical a été initialisée sur la colonne 'digital'. On souhaite corriger cette erreur avec les 2 requêtes suivantes. Cochez la ou les bonnes réponses.",
+      question: "Par erreur, la PK (dossier_medical_pkey) de la table dossier_medical a été initialisée sur la colonne 'digital'. On souhaite corriger cette erreur avec les 2 requêtes suivantes. Cochez la bonne réponse.",
       propositions: [
       ],
       reponses: [
         { texte: "La contrainte de PK est correctement passée de la colonne digital à la colonne identifiant_patient", valeur: true },
         { texte: "La contrainte de PK n'est pas correctement modifiée. La PRIMARY KEY doit être retirée et réappliquée dans la même requête pour ne pas compremettre l'intégrité des données.", valeur: false },
-        { texte: "La contrainte de PK n'est pas correctement modifiée. On ne peut pas modifier une contrainte de PRIMARY KEY", valeur: false },
         { texte: "La contrainte de PK n'est pas correctement modifiée. Erreur de syntaxe", valeur: false },
       ],
       nbrReponseCorrecte: () => {
@@ -484,13 +482,14 @@ CREATE TABLE conge(
   -- reste des colonnes
 );`
       ],
-      question: "Pour les requêtes suivantes cocher la ou les bonnes propositions",
+      question: "Pour les requêtes suivantes cocher la bonne proposition",
       propositions: [
       ],
       reponses: [
         { texte: "Aucune des propositions suivantes", valeur: false },
-        { texte: "La requête A permet de créer une table 'conge' avec une clé primaire sur 'identifiant_praticien' et 'date_debut' ", valeur: true },
-        { texte: "La requête B permet de créer une table 'conge' avec une clé primaire sur 'identifiant_praticien' et 'date_debut' ", valeur: false },
+        { texte: "Les deux requêtes permettent de créer une table 'conge avec une clé primaire sur 'identifiant_praticien' et 'date_debut' ", valeur: false },
+        { texte: "La requête A uniquement permet de créer une table 'conge' avec une clé primaire sur 'identifiant_praticien' et 'date_debut' ", valeur: true },
+        { texte: "La requête B uniquement permet de créer une table 'conge' avec une clé primaire sur 'identifiant_praticien' et 'date_debut' ", valeur: false },
       ],
       nbrReponseCorrecte: () => {
         return this.reponses.filter(p => p.valeur === true).length;
@@ -525,7 +524,7 @@ CREATE TABLE conge(
       id: "19",
       difficulte: 2,
       codeSnippets: [],
-      question: "Considérant la table praticien déjà créée et avec la clé primaire renseignée sur le diagramme. Je souhaite ajouter une clé primaire sur la colonne debut_contrat. Sélectionnez la ou les bonnes propositions",
+      question: "Considérant la table praticien déjà créée et avec la clé primaire renseignée sur le diagramme. Je souhaite ajouter une clé primaire sur la colonne debut_contrat. Sélectionnez la bonne proposition",
       propositions: [
       ],
       reponses: [
@@ -587,7 +586,7 @@ CREATE TABLE conge(
   nom varchar(32),
   telephone varchar(32)
 );`],
-      question: "Considérant que la table 'personne' n'est pas encore créée, cochez la ou les propositions valides pour la requête suivante.",
+      question: "Considérant que la table 'personne' n'est pas encore créée, cochez la proposition valide pour la requête suivante.",
       propositions: [],
       reponses: [
         { texte: "Aucune des propositions suivantes.", valeur: true },
