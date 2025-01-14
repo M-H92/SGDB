@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script type="module" src="../../../scripts/addNavbar.js"></script>
+    <script type="module" src="../../../scripts/syntaxHighlighting.js"></script>
+    <link rel="stylesheet" href="../../../ressources/style.css" />
+</head>
+
+<body>
+    <main id="mainElement">
+        <div style="display: flex; justify-content: space-between;">
+            <div>
+                <div>Nom :</div>
+                <div>Prénom :</div>
+            </div>
+            <div>Examen de base de données - Questionnaire A</div>
+            <div>13/01/2025</div>
+        </div>
+        <h2>Modalités d'évaluation</h2>
+        <p>
+            Pour chaque question, cochez la bonne proposition (une réponse par question) <br>
+            Chaque réponse correcte augmente votre score d' 1 point <br>
+            Chaque réponse incorrecte diminue votre score de (1 / (nombre de réponse possible) - 1) <br>
+            <i>Cad 2 propositions => +1 ou -1; 3 propositions => +1 ou -0,5; 4 propositions => +1 ou -0,33... </i> <br>
+            Reportez vos réponses sur la feuille de réponse annexe avec votre nom, prénom, identifiant du questionnaire
+            (A, B,...) <br>
+            Sur cette feuille annexe, notez uniquement le numéro de la réponse cochée.
+        </p>
+        <h2 id="qcm">Liste des questions</h2>
+
+    </main>
+</body>
+<script>
+    const QCMElement = [
+        {
+            id: "1",
+            difficulte: 1,
+            question: "Trouvez toutes les relations correspondant à une relation n..n dans ces propositions :",
+            codeSnippets: [],
+            propositions: [
+                "1) praticien - specialite_medicale",
+                "2) praticien - maison_medicale",
+                "3) patient - dossier_medical",
+                "4) praticien - conges"
+            ],
+            reponses: [
+                { texte: "Toutes les propositions.", valeur: false },
+                { texte: "Aucune des propositions.", valeur: false },
+                { texte: "Les propositions 1 et 2.", valeur: true },
+                { texte: "Les propositions 2 et 3.", valeur: false },
+                { texte: "Les propositions 3 et 4.", valeur: false },
+            ],
+            nbrReponseCorrecte: () => {
+                return this.reponses.filter(p => p.valeur === true).length;
+            }
+        },
+        {
+            id: "2",
+            difficulte: 1,
+            codeSnippets: [],
+            question: "Trouvez toutes les relations correspondant à une relation 1..1 (ou 0..1) dans ces propositions :",
+            propositions: [
+                "1) personne - patient",
+                "2) patient - praticien",
+                "3) dossier_medical - patient",
+                "4) praticien - specialite_medicale",
+            ],
+            reponses: [
+                { texte: "Toutes les propositions.", valeur: false },
+                { texte: "Aucune des propositions.", valeur: false },
+                { texte: "Les propositions 1 et 2.", valeur: false },
+                { texte: "Les propositions 4 et 5.", valeur: false },
+                { texte: "Les propositions 3 et 1.", valeur: true },
+            ],
+            nbrReponseCorrecte: () => {
+                return this.reponses.filter(p => p.valeur === true).length;
+            }
+        },
+        {
+            id: "5",
+            difficulte: 1,
+            codeSnippets: [],
+            question: "Sur base du schéma, déduisez qui peut insérer un rendez-vous en base de données",
+            propositions: [
+            ],
+            reponses: [
+                { texte: "Il est impossible de déduire ça du schéma", valeur: true },
+                { texte: "Toute personne", valeur: false },
+                { texte: "Tout praticien", valeur: false },
+                { texte: "Tout patient", valeur: false },
+                { texte: "Tout praticien lié à une maison médicale et uniquement pour cette maison médicale", valeur: false },
+            ],
+            nbrReponseCorrecte: () => {
+                return this.reponses.filter(p => p.valeur === true).length;
+            }
+        },
+        {
+            id: "6",
+            difficulte: 1,
+            codeSnippets: [],
+            question: "Sur base du schéma, un praticien peut-il avoir plusieurs spécialités?",
+            propositions: [
+            ],
+            reponses: [
+                { texte: "Il est impossible de déduire ça du schéma", valeur: false },
+                { texte: "Oui", valeur: true },
+                { texte: "Non", valeur: false },
+            ],
+            nbrReponseCorrecte: () => {
+                return this.reponses.filter(p => p.valeur === true).length;
+            }
+        },
+        {
+            id: "10",
+            difficulte: 1,
+            codeSnippets: [],
+            question: "Deux maisons médicales peuvent-elle avoir le même nom?",
+            propositions: [
+            ],
+            reponses: [
+                { texte: "Oui", valeur: false },
+                { texte: "Non", valeur: true },
+                { texte: "Uniquement si les autres informations permettent de les distinguer", valeur: false },
+            ],
+            nbrReponseCorrecte: () => {
+                return this.reponses.filter(p => p.valeur === true).length;
+            }
+        },
+        {
+            id: "11",
+            difficulte: 1,
+            codeSnippets: [
+                `-- A
+CREATE DATABASE db_maison_medical;`,
+                `-- B
+CREATE DATABASE db_maison_medical(EMPTY);`,
+                `-- C
+CREATE DATABASE db_maison_medical(
+	TABLE personne,
+	TABLE patient,
+	-- code omis par clarté
+);`,
+                `-- D
+CREATE DATABASE db_maison_medical
+  WITH TABLES(
+	TABLE personne,
+	-- code omis par clarté)
+);`
+            ],
+            question: "Sélectionnez la valide pour créer une base de données",
+            propositions: [
+            ],
+            reponses: [
+                { texte: "Aucune des propositions.", valeur: false },
+                { texte: "A", valeur: true },
+                { texte: "B", valeur: false },
+                { texte: "C", valeur: false },
+                { texte: "D", valeur: false },
+            ],
+            nbrReponseCorrecte: () => {
+                return this.reponses.filter(p => p.valeur === true).length;
+            }
+        },
+        {
+            id: "13",
+            difficulte: 1,
+            codeSnippets: [],
+            question: "Considérant les relations décrites sur le schéma, quelle effet aura la suppression de la table dossier_medical ",
+            propositions: [
+            ],
+            reponses: [
+                { texte: "Aucune des propositions.", valeur: false },
+                { texte: "N'aura pas d'impacte sur les données de la table patient", valeur: true },
+                { texte: "Supprimer toutes les données de la table patient par 'cascade'", valeur: false },
+                { texte: "Supprimer les patient de la table patient par 'cascade', mais uniquement si ils ont un dossier médical", valeur: false },
+            ],
+            nbrReponseCorrecte: () => {
+                return this.reponses.filter(p => p.valeur === true).length;
+            }
+        },
+
+        {
+            id: "16",
+            difficulte: 1,
+            codeSnippets: [
+                `ALTER TABLE dossier_medical DROP CONSTRAINT dossier_medical_pkey;
+ALTER TABLE dossier_medical ADD PRIMARY KEY(identifiant_patient);`
+            ],
+            question: "Par erreur, la PK (dossier_medical_pkey) de la table dossier_medical a été initialisée sur la colonne 'digital'. On souhaite corriger cette erreur avec les 2 requêtes suivantes. Cochez la bonne réponse.",
+            propositions: [
+            ],
+            reponses: [
+                { texte: "La contrainte de PK est correctement passée de la colonne digital à la colonne identifiant_patient", valeur: true },
+                { texte: "La contrainte de PK n'est pas correctement modifiée. La PRIMARY KEY doit être retirée et réappliquée dans la même requête pour ne pas compremettre l'intégrité des données.", valeur: false },
+                { texte: "La contrainte de PK n'est pas correctement modifiée. Erreur de syntaxe", valeur: false },
+            ],
+            nbrReponseCorrecte: () => {
+                return this.reponses.filter(p => p.valeur === true).length;
+            }
+        },
+        {
+            id: "19",
+            difficulte: 2,
+            codeSnippets: [],
+            question: "Considérant la table praticien déjà créée et avec la clé primaire renseignée sur le diagramme. Je souhaite ajouter une clé primaire sur la colonne debut_contrat. Sélectionnez la bonne proposition",
+            propositions: [
+            ],
+            reponses: [
+                { texte: "Aucune des propositions suivantes.", valeur: false },
+                { texte: "Impossible d'ajouter la clé : il ne peut y avoir qu'une clé primaire par table", valeur: true },
+                { texte: "Impossible d'ajouter la clé : type incohérent", valeur: false },
+                { texte: "Il est possible que cela fonctionne ou pas. Cela dépend des données de la table.", valeur: false },
+                { texte: "La clé est ajoutée car le type de la colonne n'est pas nullable. L'intégrité des données est assurée.", valeur: false },
+            ],
+            nbrReponseCorrecte: () => {
+                return this.reponses.filter(p => p.valeur === true).length;
+            }
+        },
+        {
+            id: "22",
+            difficulte: 1,
+            codeSnippets: [`CREATE TABLE personne(
+  identifiant_interne varchar(32) PRIMARY KEY,
+  prenom varchar(32),
+  nom varchar(32),
+  telephone varchar(32)
+);`],
+            question: "Considérant que la table 'personne' n'est pas encore créée, cochez la proposition valide pour la requête suivante.",
+            propositions: [],
+            reponses: [
+                { texte: "Aucune des propositions suivantes.", valeur: true },
+                { texte: "Erreur de syntaxe", valeur: false },
+                { texte: "Erreur de type", valeur: false },
+                { texte: "Erreur dans la définition de la contrainte de clé primaire", valeur: false },
+            ],
+            nbrReponseCorrecte: () => {
+                return this.reponses.filter(p => p.valeur === true).length;
+            }
+        },
+        {
+            id: "24",
+            difficulte: 1,
+            codeSnippets: [
+                `ALTER TABLE praticien 
+  ADD CONSTRAINT fk_praticien_personne FOREIGN KEY (identifiant_praticien) 
+  REFERENCES personne (identifiant_interne);`
+            ],
+            question: "Après avoir défini cette contrainte de clé étrangère, quel aura l'impacte de la suppression d'un 'praticien'?",
+            propositions: [
+            ],
+            reponses: [
+                { texte: "Erreur : impossible de supprimer le praticien, il faut passer par la personne liée", valeur: false },
+                { texte: "Un praticien est supprimé", valeur: true },
+                { texte: "Un praticien et la personne liée sont supprimés", valeur: false },
+                { texte: "Une personne est supprimée", valeur: false },
+            ],
+            nbrReponseCorrecte: () => {
+                return this.reponses.filter(p => p.valeur === true).length;
+            }
+        },
+        {
+            id: "26",
+            difficulte: 1,
+            codeSnippets: [],
+            question: "Lors de la création d'une clé étrangère, quelle comportement 'ON DELETE' est appliqué par défaut",
+            propositions: [
+            ],
+            reponses: [
+                { texte: "Aucune des propositions.", valeur: true },
+                { texte: "CASCADE", valeur: false },
+                { texte: "RESTRICT", valeur: false },
+                { texte: "SET DEFAULT", valeur: false },
+            ],
+            nbrReponseCorrecte: () => {
+                return this.reponses.filter(p => p.valeur === true).length;
+            }
+        },
+        {
+            id: "31",
+            difficulte: 2,
+            codeSnippets: [
+                `-- A
+INSERT INTO personne
+VALUES('JDOE', 'Jon', 'Doe', '+3247777777');`,
+                `-- B
+INSERT INTO personne (identifiant_interne, prenom, nom)
+VALUES('JLEN', 'John', 'Lennon');`,
+                `-- C
+INSERT INTO personne (identifiant_interne, prenom, nom, telephone)
+VALUES('JARB', 'Jon', 'Arbuckle', '+35247777777');`,
+                `-- D
+INSERT INTO personne (telephone, prenom, nom, identifiant_interne)
+VALUES('+3347777777', 'Jon', 'Bon Jovi', 'JBON');`,
+            ],
+            question: "Laquelle de ces requête permet de créer une personne",
+            propositions: [
+            ],
+            reponses: [
+                { texte: "Aucune des propositions ci-dessous.", valeur: false },
+                { texte: "Toutes les requêtes.", valeur: false },
+                { texte: "Aucune des requêtes.", valeur: false },
+                { texte: "Les requêtes A, B et C.", valeur: false },
+                { texte: "Les requêtes B, C et D.", valeur: false },
+                { texte: "Les requêtes A, C, et D.", valeur: true },
+            ],
+            nbrReponseCorrecte: () => {
+                return this.reponses.filter(p => p.valeur === true).length;
+            }
+        },
+        {
+            id: "40",
+            questionnaire: ['A', 'B'],
+            difficulte: 1,
+            codeSnippets: [`-- A
+SELECT * FROM specialite_medicale`, `-- B
+SELECT nom, description FROM specialite_medicale`],
+            question: "Sans considération pour l'ordre des colonnes ou des rangées, sélectionnez la bonne affirmation pour ces deux requêtes",
+            propositions: [
+            ],
+            reponses: [
+                { texte: "La requête A récupère plus de colonnes que la B", valeur: false },
+                { texte: "La requête B récupère plus de colonnes que la A", valeur: false },
+                { texte: "Les deux requêtes récupère les mêmes informations", valeur: true },
+            ],
+            nbrReponseCorrecte: () => {
+                return this.reponses.filter(p => p.valeur === true).length;
+            }
+        },
+        {
+            id: "41",
+            questionnaire: ['A', 'B'],
+            difficulte: 1,
+            codeSnippets: [`-- A
+WHERE description = ''`, `-- B
+WHERE description LIKE '%'`, `--C
+WHERE description LIKE '_'`],
+            question: "Laquelle de ces propositions permet de récupérer toutes les specialités médicales lors d'un `SELECT * FROM specialite_medicale`",
+            propositions: [
+            ],
+            reponses: [
+                { texte: "Toutes les propositions.", valeur: false },
+                { texte: "Aucune des propositions.", valeur: false },
+                { texte: "La proposition A", valeur: false },
+                { texte: "La proposition B", valeur: true },
+                { texte: "La proposition C", valeur: false },
+            ],
+            nbrReponseCorrecte: () => {
+                return this.reponses.filter(p => p.valeur === true).length;
+            }
+        },
+        {
+            id: "42",
+            difficulte: 1,
+            codeSnippets: [`SELECT * FROM specialite_medicale as sm
+[---] JOIN praticien_specialite_medicale AS psm
+ON psm.nom_specialite_medicale = sm.nom;`],
+            question: "Je ne souhaite récupérer que les spécialités médicales attribuées à au moins un praticien. Quelle mot clé utiliser à la place des [---]",
+            propositions: [
+            ],
+            reponses: [
+                { texte: "Toutes les propositions.", valeur: false },
+                { texte: "Aucune des propositions.", valeur: false },
+                { texte: "LEFT", valeur: false },
+                { texte: "INNER", valeur: true },
+                { texte: "RIGHT", valeur: false },
+                { texte: "CROSS", valeur: false },
+            ],
+            nbrReponseCorrecte: () => {
+                return this.reponses.filter(p => p.valeur === true).length;
+            }
+        },
+        {
+            id: "43",
+            difficulte: 2,
+            codeSnippets: [`-- A
+SELECT identifiant_interne FROM personne AS p
+JOIN patient AS pa 
+ON pa.identifiant_interne = p.identifiant_interne;`, `-- B
+SELECT identifiant_interne FROM personne AS p
+JOIN praticien AS pr 
+ON pr.identifiant_praticien = p.identifiant_interne;`],
+            question: "Ces requêtes sont utilisées. Cochez la bonne réponse",
+            propositions: [],
+            reponses: [
+                { texte: "La requête A et B fonctionnent", valeur: false },
+                { texte: "La requête A fonctionne. La B échoue.", valeur: false },
+                { texte: "La requête A échoue. La requête B fonctionne", valeur: true },
+                { texte: "La requête A et B échouent", valeur: false },
+            ],
+            nbrReponseCorrecte: () => {
+                return this.reponses.filter(p => p.valeur === true).length;
+            }
+        },
+        {
+            id: "44",
+            difficulte: 2,
+            codeSnippets: [`-- A
+SELECT * FROM specialite_medicale as sm
+INNER JOIN praticien_specialite_medicale AS psm
+ON psm.nom_specialite_medicale = sm.nom;`, `-- B
+SELECT * FROM specialite_medicale as sm
+JOIN praticien_specialite_medicale AS psm
+ON psm.nom_specialite_medicale = sm.nom;`],
+            question: "Les deux requêtes sont utilisées. Cochez la bonne réponse",
+            propositions: [
+            ],
+            reponses: [
+                { texte: "La requête A retourne plus de rangées que la B", valeur: false },
+                { texte: "La requête B retourne plus de rangées que la A", valeur: false },
+                { texte: "Les deux requêtes retournent le même nombre de rangées", valeur: true },
+            ],
+            nbrReponseCorrecte: () => {
+                return this.reponses.filter(p => p.valeur === true).length;
+            }
+        },
+        {
+            id: "48",
+            difficulte: 2,
+            codeSnippets: [
+                `-- A
+SELECT * FROM conge
+WHERE date_debut > CURRENT_DATE AND date_fin < CURRENT_DATE;`,
+                `-- B
+SELECT * FROM conge
+WHERE date_debut > CURRENT_DATE OR date_fin < CURRENT_DATE;`,
+                `-- C
+SELECT * FROM conge
+WHERE date_debut <= CURRENT_DATE AND date_fin > CURRENT_DATE;`,
+                `-- D
+SELECT * FROM conge
+WHERE date_debut <= CURRENT_DATE OR date_fin > CURRENT_DATE;`
+            ],
+            question: "Laquelle de ces requêtes permet de récupérer les identifiant des praticiens en congé aujourd'hui et n'ayant pris qu'un seul jour de congé? (ils ne sont donc en congé ni hier ni demain)",
+            propositions: [],
+            reponses: [
+                { texte: "Toutes les propositions.", valeur: false },
+                { texte: "Aucune des propositions.", valeur: true },
+                { texte: "La requête A", valeur: false },
+                { texte: "La requête B", valeur: false },
+                { texte: "La requête C", valeur: false },
+                { texte: "La requête D", valeur: false },
+            ],
+            nbrReponseCorrecte: () => {
+                return this.reponses.filter(p => p.valeur === true).length;
+            }
+        },
+        {
+            id: "49",
+            difficulte: 1,
+            codeSnippets: [`CREATE TABLE maison_medicale(
+  nom varchar(64) PRIMARY KEY,
+  adresse varchar(256),
+  telephone varchar(32),
+  mail varchar(256),
+  site_web varchar(256)
+);`],
+            question: "Je souhaite créer la table 'maison_medicale' et j'utilise cette requête. Cochez la bonne réponse",
+            propositions: [],
+            reponses: [
+                { texte: "Aucune des propositions.", valeur: false },
+                { texte: "La table est créée", valeur: true },
+                { texte: "Erreur pour la déclaration de la clé primaire", valeur: false },
+                { texte: "Erreur pour la déclaration des types", valeur: false },
+            ],
+            nbrReponseCorrecte: () => {
+                return this.reponses.filter(p => p.valeur === true).length;
+            }
+        },
+        {
+            id: "50",
+            difficulte: 3,
+            codeSnippets: [`-- A
+SELECT pr.identifiant_praticien FROM praticien AS pr
+JOIN praticien_maison_medicale AS p_mm
+ON p_mm.identifiant_praticien = pr.identifiant_praticien
+WHERE p_mm.nom_maison_medicale = 'Arlon';`,
+                `-- B
+SELECT p_mm.identifiant_praticien FROM maison_medicale AS mm
+JOIN praticien_maison_medicale AS p_mm
+ON p_mm.nom_maison_medicale = mm.nom
+WHERE mm.nom = 'Arlon';`,
+                `-- C
+SELECT identifiant_praticien FROM praticien_maison_medicale
+WHERE nom_maison_medicale = 'Arlon'`],
+            question: "Je souhaite récupérer l'identifiant des praticiens de la maison médicale d'arlon. Considérant ces trois requêtes, sélectionnez la bonne réponse",
+            propositions: [],
+            reponses: [
+                { texte: "Aucune des propositions.", valeur: false },
+                { texte: "La requête A, B et C retournent les valeurs voulues", valeur: true },
+                { texte: "La requête A et B retournent les valeurs voulues", valeur: false },
+                { texte: "La requête A et C retournent les valeurs voulues", valeur: false },
+                { texte: "La requête B et C retournent les valeurs voulues", valeur: false },
+            ],
+            nbrReponseCorrecte: () => {
+                return this.reponses.filter(p => p.valeur === true).length;
+            }
+        },
+    ]
+
+    const QCMElementSet = new Set(QCMElement.map(e => e.id));
+    if (QCMElementSet.size != QCMElement.length)
+        console.error("duplicata dans les id du qcm")
+
+    function populateBody() {
+        const main = document.getElementById("qcm")
+        let renumerotation = 21;
+        QCMElement.sort((a, b) => +a > +b ? 1 : -1).forEach(e => {
+            const hr = document.createElement("hr");
+            hr.style.width = "75%"
+            hr.style.marginTop = "16px"
+            hr.style.marginBottom = "24px"
+            // main.after(hr);
+            const element = document.createElement("p");
+            element.id = `question-${e.id}`
+            element.textContent = `${renumerotation}) ${e.question}`;
+            main.after(element);
+            renumerotation--;
+            const ul = document.createElement("ul");
+            ul.id = `proposition-${e.id}`;
+
+            const propositions = e.propositions.forEach(p => {
+                let prop = document.createElement("li");
+                prop.textContent = p;
+                ul.appendChild(prop);
+            });
+            element.after(ul);
+
+            const codeWrapper = document.createElement("div");
+            codeWrapper.id = `code-snippets-${e.id}`;
+            codeWrapper.classList.add("container")
+
+            e.codeSnippets.forEach(c => {
+                let pre = document.createElement("pre");
+                pre.textContent = c;
+                pre.classList.add("code-snippet")
+                pre.classList.add("block")
+                codeWrapper.appendChild(pre);
+            })
+            element.after(codeWrapper)
+
+            const fieldset = document.createElement("fieldset");
+            fieldset.id = `fieldset-${e.id}`
+            const legend = document.createElement("legend");
+            if (e.nbrReponseCorrecte === 1)
+                legend.textContent = "Choisir une unique réponse";
+            else
+                legend.textContent = "Choisir une ou plusieurs réponse(s)";
+
+            let i = 1;
+            e.reponses.forEach(r => {
+                const div = document.createElement("div");
+                const reponse = document.createElement("input");
+                reponse.type = "checkbox"
+                reponse.id = `answer-${i}-${e.id}`
+                reponse.name = e.id
+                const label = document.createElement("label");
+                label.textContent = `${i}) ${r.texte}`;
+                label.htmlFor = reponse.id;
+                div.appendChild(reponse);
+                div.appendChild(label);
+                fieldset.appendChild(div)
+                i++;
+            })
+            ul.after(fieldset);
+        });
+    }
+    populateBody();
+</script>
+
+<style>
+    * {
+        font-size: 0.95em;
+    }
+</style>
+
+</html>
