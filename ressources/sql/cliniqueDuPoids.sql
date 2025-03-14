@@ -84,3 +84,36 @@ ALTER TABLE
     info_personnelle ADD CONSTRAINT patient_id_foreign FOREIGN KEY(id_patient) REFERENCES patient(id);
 ALTER TABLE
     pesee ADD CONSTRAINT patient_id_foreign FOREIGN KEY(id_patient) REFERENCES patient(id);
+
+-- Queries de l'examen pour test
+-- INSERT INTO patient VALUES (1, '09-09-2024');
+-- INSERT INTO patient (id, validite_inscription) VALUES  (2, '09-09-2024');
+-- INSERT INTO patient (id, validite_inscription) VALUES  (id = 2, validite_inscription = '09-09-2024');
+-- INSERT INTO patient (id) VALUES  (3);
+-- SELECT * FROM objectif WHERE id_patient = 5 AND id_patient = 6;
+-- SELECT * FROM patient
+-- LEFT JOIN info_personnelle
+-- 	ON id = id_patient;
+
+-- SELECT * from patient
+-- LEFT JOIN info_personnelle
+-- ON patient.id = info_personnelle.id_patient
+-- WHERE validite_inscription < CURRENT_DATE 
+
+-- SELECT * from patient
+-- WHERE validite_inscription > CURRENT_DATE 
+	
+-- SELECT 
+	
+-- SELECT info_personnelle.nom, 
+-- 	info_personnelle.prenom, 
+-- 	validite_inscription, 
+-- 	praticien.nom, 
+-- 	praticien.prenom 
+-- FROM praticien_patient
+-- JOIN patient 
+-- 	ON patient.id = praticien_patient.id_patient
+-- JOIN praticien
+-- 	ON praticien.id = praticien_patient.id_praticien
+-- JOIN info_personnelle
+-- 	ON patient.id = info_personnelle.id_patient;

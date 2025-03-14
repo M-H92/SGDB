@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <script type="module" src="../../scripts/addNavbar.js"></script>
+  <script type="module" src="../../scripts/syntaxHighlighting.js"></script>
+  <link rel="stylesheet" href="../../ressources/style.css" />
+</head>
+
+<body>
+  <main>
+    <h1 id="relations">Relations</h1>
+    <ol>
+      <li>Introduction</li>
+      <li>Fonctions</li>
+      <li>ALTER et UPDATE</li>
+      <li>WHERE</li>
+      <li>Conclusion</li>
+    </ol>
+    <hr />
+    <h2 id="introduction">Introduction</h2>
+    <p>Dans ce chapitre, nous allons étendre les possibilités de récupération de données avec l'utilisation de fonctions
+      ainsi que nous confronter à un problème d'identité de données au fur et à mesure que nous ajoutons des données
+      dans notre table <br>
+      Nous verrons comment résoudre se problème en ajoutant une série de mot clés à notre boite à outils SQL
+    </p>
+    <h2 id="fonctions">Fonctions</h2>
+    <p>
+      Le simple fait de récupérer des données rend déjà les
+      <abbr class="db-tooltip" title="DataBase => Base de données">DB</abbr>
+      très puissantes. Mais elles peuvent faire plus que ça. Entre autres, elles peuvent déjà <i> traiter </i> la donnée
+    </p>
+    <p>
+      Dans notre cas, nous allons essayer de récupérer le poids maximal de notre chat dans la table weight de la
+      <abbr class="db-tooltip" title="DataBase => Base de données">DB</abbr>
+      fat_cat_clinic. <br />
+      Pour ce faire, nous allons utiliser une <strong>fonction</strong>.
+    </p>
+    <p>
+      Vous avez certainement déjà entendu parler de
+      <strong>fonctions</strong> dans votre cours de programmation. <br>
+      Si ce n'est le cas, voyez ça pour l'instant commme
+      des moyens d'obtenir de nouvelles fonctionnalités. <br>
+      Le concept sera détaillé dans le cours adéquat.
+    </p>
+    <p>
+      Une fonction s'utilise en l'appelant par son nom et en spécifiant entre parenthèses, des
+      <strong>arguments</strong>.
+    </p>
+    <p>
+      Selon la fonction, les arguments disposent de rôles différents. Ici, nous allons utiliser la fonction
+    <pre class="code-snippet line sql">MAX(argument)</pre> <br />
+    Cette fonction est une <strong>fonction d'aggrégation</strong> et permet de retourner le "maximum" pour les
+    données d'une colonnes spécifiées en argument
+    </p>
+    <p>Essayez le code suivant</p>
+    <pre class="code-snippet block sql"> SELECT MAX(weight) FROM weight; </pre>
+    <p>
+      Vous devriez obtenir le poids maximum de notre chat. <br />
+      Notez que la colonne retournée ne dispose pas d'un nom très explicite. <br />
+      Vous pouvez la renommer avec un <strong>alias</strong> grâce au mot clé
+    <pre class="code-snippet line sql">AS</pre>. Essayez donc ceci :
+    </p>
+    <pre class="code-snippet block sql"> SELECT MAX(weight) AS max_weight FROM weight</pre>
+    <p>Le résultat est tout de même plus clair !</p>
+    <p>
+      En vrac, voici quelques autres fonctions d'aggrégation : MIN, MAX,
+      <abbr title="Average => moyenne">AVG</abbr>, <abbr title="Somme">SUM</abbr>, COUNT. <br />
+      Une liste plus complète est disponible
+      <a href="https://www.postgresql.org/docs/16/functions-aggregate.html"> ici </a>
+    </p>
+    <p>
+      Essayez donc d'afficher le poids moyen de notre chat avant de passer au prochain point. Quelque chose devrait vous
+      gêner dans l'affichage des résultats et je vous conseille vivement d'aller
+      voir le lien cité plus haut pour résoudre ce problème
+    </p>
+    <h2 id="alter">Alter</h2>
+    <p>
+      Pour l'instant, tout fonctionne comme prévu. Mais nous allons rapidement changer ça en ajoutant quelques
+      enregistrement de poids pour un autre chat dans notre base de données. <br />
+      Pas de problèmes. Vous savez déjà comment faire ! Un petit coup d'
+    <pre class="code-snippet line sql">INSERT</pre> et le tour est joué... <br />
+    Sauf qu'il s'agit d'un maine coon pouvant atteindre jusqu'à 8kg en temps normal. <br />
+    D'un seul coup plus moyen de distinguer un enregistrement suspect en rapport avec le poids de votre chat
+    d'un enregistrement tout à fait normal pour un maine coon...
+    </p>
+    <p>
+      Si nous avions pensé à ce problème avant de créer notre table, nous aurions certainement ajouté une colonne
+      permettant de distinguer de quel chat il s'agit. Par exemple <i>name</i> ou <i>cat</i> <br />
+      Heureusement pour nous, pas besoin de supprimer notre table et toutes les données enregistrées pour recréer une
+      table avec cette colonne supplémentaire <br />
+      Effectivement, il est possible de modifier la définition d'une table grâce à la commande
+    <pre class="code-snippet line sql">ALTER</pre>. <br />
+    Essayez donc ce code :
+    </p>
+    <pre class="code-snippet block sql">
+ALTER TABLE weight 
+ADD cat varchar(32);</pre>
+    <p>
+      Ce code permet <i>d'altérer</i> la table weight pour y ajouter une colonne nommée <i>cat</i> de type
+      <strong>varchar</strong>
+    </p>
+    <p>
+      Le type <strong>varchar</strong> permet de stocker du texte d'un nombre de caractères allant jusqu'au nombre
+      précisé lors de la définition de la colonne. Plus d'info via
+      <a href="https://www.postgresql.org/docs/current/datatype-character.html"> ce lien </a>
+    </p>
+    <p>
+      Sélectionnez toutes les informations de la table weight pour vérifier que cela ai bien fonctionné... Et voyez un
+      résultat surprenant... <br />
+      La colonne <i>cat</i> est remplie de l'information <strong>[null]</strong>. <br />
+      Rassurez vous, c'est normal ! <i>null</i> signifie simplement qu'il n'y a pas de données. <br />
+      Nous n'avons effectivement jamais renseigné de nom pour nos enregistrements de poids jusqu'à présent vu que la
+      colonne n'existait pas.
+    </p>
+    <p>Corrigeons ce problème avec le bout de code suivant :</p>
+    <pre class="code-snippet block sql">
+UPDATE weight
+SET cat = 'Monza';</pre>
+    <p>
+      Pour ceux qui ont fait un peu d'anglais, vous comprendrez vite que le mot clé
+    <pre class="code-snippet line sql">UPDATE</pre>
+    permet de <strong>modifier</strong> les valeurs contenues dans une table. <br />
+    Le mot clé
+    <pre class="code-snippet line sql">SET</pre> permet de spécifier la colonne ainsi que la valeur à attribuer à
+    celle-ci.
+    <br />
+    Notez encore la mention <i>Monza</i> écrite entre des <kbd>'</kbd>. <br />
+    Il s'agit du nom de mon chat et est écrit entre apostrophes car il s'agit d'une <span class="tooltip"
+      title="chaine de caractère">string</span>.
+    <br />
+    D'une manière générale, vous croiserez souvent les textes entourés par des
+    <kbd>'</kbd> ou bien <kbd>"</kbd>
+    </p>
+    <p> Sélectionnez à nouveau les informations de la table <i>weight</i> pour voir que chaque enregistrement est
+      maintenant au nom de <i>Monza</i></p>
+    <h2>WHERE</h2>
+    <p>
+      Nous pouvons maintenant insérer des enregistrements pour le chat de ma belle-soeur. Plume, le maine coon. <br>
+    </p>
+    <pre class="code-snippet block sql">
+INSERT INTO weight (weight, date, cat) 
+  VALUES (6.6, '2024-08-05', 'plume')
+    ,(6.7, '2024-07-03', 'plume') 
+    ,(6.5, '2024-06-02', 'plume') 
+    ,(6.6, '2024-05-10', 'plume') 
+    ,(6.4, '2024-04-02', 'plume') 
+    ,(6.4, '2024-03-06', 'plume') 
+    ,(6.5, '2024-02-03', 'plume');</pre>
+    <p>
+      Sélectionnons toutes les données de notre table weight. <br>
+      Plus moyen de se tromper. Les records disposent chacun d'un nom de chat. Soit Monza, soit Plume <br>
+    </p>
+    <p>
+      Par contre, au fur et à mesure que le nombre de records augmente, il va devenir de plus en plus complexe
+      d'analyser ceux qui nous intéressent. <br>
+      Si je dois récupérer les pesées sur 1 an de mon chat, je ne dois regarder que 12 valeurs. <br>
+      Si j'ai une dizaine de chat dans ma base de données, je dois maintenant analyser 120 valeurs en faisant attention
+      à bien discerner celles qui m'intéressent <br>
+      Pour nous faciliter la tâche, nous allons déléguer ce problème de discernement des valeurs à la base de données
+      grâce au mot clé <strong>WHERE</strong>
+    </p>
+    <pre class="code-snippet block sql">
+SELECT * FROM weight
+WHERE cat = 'Monza'</pre>
+    <p>
+      Une rapide lecture des résultats permettra de comprendre que nous n'avons plus que les résultats pour lesquels la
+      colonne 'cat' contient la valeur 'Monza' <br>
+      Le mot clé <strong>WHERE</strong> permettant de mettre des conditions sur nos queries. <br>
+      Que ce soit sur les <strong>SELECT</strong>, mais aussi sur les <strong>UPDATE</strong> <br>
+      Et justement, si vous avez copié le code proposé ci-dessus, vous remarquerez que "Plume" est écrit avec une
+      minuscule dans chaque record. <br>
+      Essayez d'utiliser le mot clé <strong>UPDATE</strong> dans une <strong>query</strong> de type
+      <strong>UPDATE</strong> pour rectifier le tir et utiliser correctement "Plume" plutôt que "plume".
+    </p>
+    <p>
+      Tant que vous êtes dans l'expérimentation, essayez de modifier les requêtes récupérant le poids maximum, minimum
+      ou moyen à l'aide d'une clause <strong>WHERE</strong> <br>
+      Tout simplement en limitant la recherche aux chats dont le nom est 'Monza' ou 'Plume'. <br>
+      Essayez aussi la fonction <strong>COUNT</strong> qui a maintenant d'autant plus de sens que vous pouvez l'utilisez
+      en combinaison avec un <strong>WHERE</strong> <br>
+      Je vous suggère aussi de tester les limites de l'opérateur <kbd>=</kbd> lors de la comparaison de noms avec des
+      recherches sur 'Monza' et 'monza' et de le confronter à l'opérateur <strong>LIKE</strong> ou
+      <strong>ILIKE</strong> (attention, ce dernier est spécifique à
+      PGSQL)
+    </p>
+    <h2 id="conclusion">Conclusion</h2>
+    <p>
+      Dans ce chapitre, nous avons appris comment profiter des fonctions pour améliorer les résultats de nos recherches.
+      <br>
+      Nous avons aussi vu comment modifier une table existante en ajoutant des colonnes et modifier des records déjà
+      existant. <br>
+      Enfin, nous avons appris comment limiter les résultats de nos recherches avec le mot clé <strong>WHERE</strong>
+    </p>
+  </main>
+</body>
+
+</html>
