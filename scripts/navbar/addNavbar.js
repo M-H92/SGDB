@@ -1,5 +1,5 @@
 import { getNavbar } from "./navbar.js";
-import { getConfig } from "../../../config/config.js";
+import { getConfig } from "../../config/config.js";
 
 const { ROOT_PATH } = getConfig();
 
