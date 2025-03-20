@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script type="module" src="../../../scripts/syntaxHighlighting.js"></script>
+    <script type="module" src="../../../scripts/navbar/addNavbar.js"></script>
+    <link rel="stylesheet" href="../../../../ressources/style.css" />
+  </head>
+
+  <body>
+    <main>
+      <p class="nota-bene info">
+        Section en cours de création. Ci-dessous, des notes. Ne pas les prendre
+        en considération
+      </p>
+      <h1>Fonctions</h1>
+      <ol>
+        <li>Introduction</li>
+        <li>Conclusion</li>
+      </ol>
+      <hr />
+      <h2 id="introduction">Introduction</h2>
+      <p></p>
+      <h2>Écrire une fonction</h2>
+      <p></p>
+      <pre class="code-snippet block sql">
+-- CREATE OR REPLACE FUNCTION foo_sum(int, int) RETURNS int AS
+-- '
+--   SELECT $1 + $2;
+-- ' LANGUAGE SQL
+-- CREATE OR REPLACE FUNCTION foo_sum(int, int) RETURNS int AS
+-- $$
+--   SELECT $1 + $2;
+-- $$ LANGUAGE SQL
+SELECT foo_sum(12,12);
+-- CREATE OR REPLACE FUNCTION foo_sb(int, int) RETURNS int AS
+-- $foo$
+--   SELECT $1 - $2;
+-- $foo$ LANGUAGE SQL
+SELECT foo_sb(12,2);
+        </pre
+      >
+      <p>
+        CREATE FUNCTION nom_fonction(type) RETURNS type_retour AS <br />
+        avec le corps de la fonction entre '' <br />
+        On peut aussi utiliser un double $ pour délimiter le corps <br />
+        On peut créer son propre mot clé à insérer entre les doubles $ <br />
+        => Dépend du langage utilisé. Si j'ai besoin de ' dans mon code, alors,
+        j'utilise des $. <br />
+        Si j'ai besoin de doubles $ (par examples en pearl), alors, je mets un
+        mot clé entre
+      </p>
+      <p>Accessible dans la db dans laquelle je déclare ma fonction</p>
+      <p>utilisable dans un SELECT</p>
+      <p>
+        Pas possible de faire un 'CALL ma_fonction()' comme avec un 'CALL
+        ma_stored_proc'
+      </p>
+      <p>Attention à bien spécifier le language utilisé pour la fonction</p>
+      <p>Peut exécuter n'importe quel type de query SQL</p>
+      <p>
+        Même si pas de valeur de retour (returns void), besoin de mettre dans un
+        SELECT. On aura alors une colonne avec une valeur "null"
+      </p>
+      <p>On peut choisir de retourner une (ou plusieurs ?) valeurs</p>
+      <p>
+        !!! Le type de retour déclaré est comparé au type de retour réel at run
+        time => Attention à la gestion des erreurs et à tester correctement
+      </p>
+      <p>
+        On peut tout à fait faire référence à des tables de la db. Vraiment des
+        queries comme on veut
+      </p>
+      <p>
+        Possible de donner des noms aux params de fonction et on peut utiliser
+        les noms des params plutôt que les numéros de params
+      </p>
+      <pre class="code-snippet block sql">
+CREATE OR REPLACE FUNCTION foo_sum(valeur1 int, valeur2 int) RETURNS int AS
+'
+  SELECT valeur1 + valeur2;
+' LANGUAGE SQL
+            </pre
+      >
+      <p>
+        Attention aux ambiguités avec les noms de colonnes et de params si les
+        noms sont les même
+      </p>
+      <p>
+        Attention. Si on souhaite modifier une fonction, DROP FUNCTION (si on
+        souhaite changer les params. Pas le contenu ? Tester)
+      </p>
+      <p>On peut retourner un type simple => int, varchar, bigint, ...</p>
+      <p>
+        On peut aussi retourner des "composites" (des rows)
+        <br />
+        On aura donc un retour équivalent a (une unique row ? non? dans
+        l'exemple, il utilisait un LIMIT 1. Tester sans ), mais sous la forme
+        d'un csv
+      </p>
+      <p>
+        Exemple : on considère une table foo avec les colonnes fizz et buzz et
+        on déclare une function tel que
+      </p>
+      <pre class="code-snippet block sql">
+            CREATE OR REPLACE FUNCTION get_foo() RETURNS foo AS -- Notez le type de retour qui porte le nom de la table
+            $$
+                SELECT * FROM foo
+                LIMIT 1
+            $$ 
+            LANGUAGE SQL
+        </pre
+      >
+      <p>
+        Cette fonction get_foo() retourne une colonne nommée "get_foo" qui
+        contiendra les valeurs de fizz et buzz sous la forme d'un CSV entouré de
+        () <br />
+        ('fiiz', 'buzz')
+      </p>
+      <p>
+        On peut séparer le format pour récupérer sous la forme d'une table avec
+        un appel de ce genre
+      </p>
+      <pre class="code-snippet block sql">
+            -- retourne deux colonnes sous la forme d'une table 
+            SELECT (get_foo()).*; 
+            -- résultat
+            -- fizz   | buzz
+            -- 'fizz' | 'buzz'
+            -- retourne uniquement les colonnes sélectionnées
+            SELECT (get_foo()).fizz;
+            -- résultat
+            -- fizz   
+            --'fizz' 
+            -- retourne aussi uniquement la colonnes sélectionnée, mais syntaxe différente
+            SELECT fizz(get_foo());
+            -- résultat
+            -- fizz   
+            --'fizz' 
+            -- Ou avec un FROM comme une table
+            SELECT fizz, buzz FROM get_foo();
+            -- résultat
+            -- fizz   | buzz
+            -- 'fizz' | 'buzz'
+            -- Ce qui permet de considérer le résultat comme une table
+        </pre
+      >
+      <p>
+        Plutôt que de retourner des rows, on peut retourner des "tables" avec le
+        mot clé "SETOF" (non? Le mot clé SETOF semble implicite quand on
+        renseigne une table comme type de retour sans l'utiliser)<br />
+        En fait, non. SETOF permet de retourner un type existant déjà défini qui
+        peut être, entre autre, une table
+        <br />
+        Le mot clé "TABLE" peut aussi être utilisé et on aura alors un type de
+        retour défini "à la volée" uniquement pour cette fonction
+      </p>
+      <pre class="code-snippet block sql">
+            CREATE OR REPLACE FUNCTION get_foo() RETURNS SETOF foo AS -- ...
+        </pre
+      >
+      <pre class="code-snippet block sql">
+CREATE OR REPLACE FUNCTION get_praticien_table(id varchar) 
+--Ici, returns table avec une définition de table équivalent à la définition lors d'une création de table
+RETURNS TABLE (
+	identifiant_interne varchar(32),
+	prenom varchar(32),
+	nom varchar(32),
+	telephone varchar(32),
+	debut_contrat date,
+	fin_contrat date
+) AS
+$$
+	SELECT pe.*, pr.debut_contrat, pr.fin_contrat FROM praticien AS pr
+	INNER JOIN personne AS pe ON pe.identifiant_interne = pr.identifiant_praticien
+	WHERE pe.identifiant_interne = id;
+$$
+LANGUAGE SQL;
+
+SELECT * FROM get_praticien_table('JDOE');
+        </pre
+      >
+      <p>
+        Attention que dans ce cas, l'ordre des colonnes dans la déclaration de
+        la table de retour et dans le select a de l'importance. La requête
+        suivante n'aurait pas été correcte
+      </p>
+      <pre class="code-snippet block sql">
+            CREATE OR REPLACE FUNCTION get_praticien_table_faux(id varchar) 
+            --Ici, returns table avec une définition de table équivalent à la définition lors d'une création de table
+            RETURNS TABLE (
+                identifiant_interne varchar(32),
+                debut_contrat date,
+                fin_contrat date
+                prenom varchar(32),
+                nom varchar(32),
+                telephone varchar(32),
+            ) AS
+            $$
+                SELECT pe.*, pr.debut_contrat, pr.fin_contrat FROM praticien AS pr
+                INNER JOIN personne AS pe ON pe.identifiant_interne = pr.identifiant_praticien
+                WHERE pe.identifiant_interne = id;
+            $$
+            LANGUAGE SQL;
+            
+            ERROR:  L'instruction finale renvoie character varying au lieu de date pour la colonne 2.le type de retour ne correspond pas à la fonction déclarant renvoyer record 
+
+-- ERREUR:  le type de retour ne correspond pas à la fonction déclarant renvoyer record
+-- SQL state: 42P13
+-- Detail: L'instruction finale renvoie character varying au lieu de date pour la colonne 2.
+-- Context: Fonction SQL « get_praticien_table_faux »
+                    </pre
+      >
+      <p>
+        Ici, l'erreur est claire. Le type n'est pas bon (date vs varchar). Mais
+        attention si les types sont identiques avec des valeurs différentes
+        <br />
+        par exemple, début contrat et fin contrat sont tout les deux des dates
+        et inverser les deux donneraient des résultats erronés "semblant"
+        correctes !
+      </p>
+      <p>
+        On peut ajouter des valeurs par défaut aux params. Mais comme en C#, les
+        params avec valeur par défaut doivent être en fin de déclaration des
+        params de la fonction
+      </p>
+      <pre>
+            -- Remarquez que le param par défaut est le dernier param
+            -- Si on souhaite plusieurs params par défaut, ils doivent tous être "à la fin"
+                CREATE OR REPLACE FUNCTION foo_avec_default(ma_variable int, ma_variable_defaut int DEFAULT 10)
+                RETURNS -- ...
+
+                --Appel de la fonction
+                SELECT foo_avec_default(10, 25);
+                -- ou
+                SELECT foo_avec_default(10);
+            </pre
+      >
+      <p>
+        Attention aux comportements très différents qui ne sont pas explicites
+        avec un default => à éviter <br />
+        Par exemple, une fonction qui retourne un nombre positif ou négatif
+        selon un param par défaut boolean "inversion" <br />
+        Très bien si on le connait. Mais si on ne connait pas et qu'il est actif
+        par défaut, perte de temps de debug en vue
+      </p>
+      <p>
+        Attention à la suppression des fonctions <br />
+        Que faire si la fonction est utilisée par des vues ou autres ? <br />
+        Que faire si plusieurs fonctions existent avec une liste d'arguments
+        différents? <br />
+        Que faire si la fonction existe plusieurs fois dans différents schema?
+      </p>
+      <pre class="code-snippet block sql">
+            DROP FUNCTION IF EXISTS foo(arguments) CASCADE
+            -- DROP FUNCTION pour supprimer une fonction
+            -- IF EXISTS. Pas requis. Permet de ne pas lever une exception si la fonction n'existe pas (on aura juste un warning)
+            -- foo(arguments) le nom de la fonction avec la liste des arguments
+            -- la liste des arguments permet de supprimer explicitement cet exemplaire de la fonction mais n'est pas nécessaire si il n'existe qu'un exemplaire de la fonction
+            -- DROP FUNCTION foo; -- fonctionnera aussi
+            -- CASCADE permet aussi de supprimer toutes les views, fonctions, stored proc etc etc qui utilisent la fonction en train d'être supprimé
+            -- Dangereux
+            -- La variante "RESTRICT" existe et empêchera la suppression de la fonction
+        </pre
+      >
+
+      <h2>Différences entre functions, vues et procédures stockées</h2>
+      <p>function retournant une table vs vue</p>
+      <p>
+        On peut limiter les champs dans les deux cas, mais dans le cas de la
+        fonction, on peut aussi limiter la marge de manoeuvre de l'utilisateur
+        en fournissant une liste prédéfinie de paramètres qu'il peut modifier
+        <br />
+        Par exemple, une fonction get_articles(id) qui retourne uniquement
+        l'article si on en connait l'id plutôt qu'une vue view_article qui
+        retournerait tout les articles et sur laquelle l'utilisateur pourrait
+        faire un where <br />
+        => Dans la fonction, on pourra "forcer" le where sur un argument <br />
+        Pareil pour retourner une valeur d'aggrégat (vente_totale(article_id))
+        <br />
+      </p>
+      <h2 id="conclusion">Conclusion</h2>
+      <p></p>
+    </main>
+  </body>
+</html>

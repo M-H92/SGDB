@@ -1,41 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script type="module" src="../../scripts/sidebar/addSidebar.js"></script>
+    <script type="module" src="../../scripts/syntaxHighlighting.js"></script>
+    <link rel="stylesheet" href="../../ressources/style.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Document</title>
-  <script type="module" src="../../scripts/addNavbar.js"></script>
-  <script type="module" src="../../scripts/syntaxHighlighting.js"></script>
-  <link rel="stylesheet" href="../../ressources/style.css" />
-</head>
-
-<body>
-  <main id="mainElement">
-    <h1>Questionnaire bonus</h1>
-    <ol>
-      <li>Introduction</li>
-      <li>Diagramme de base de données</li>
-      <li>QCM</li>
-      <li>Question ouverte</li>
-    </ol>
-    <hr />
-    <h2 id="introduction">Introduction</h2>
-    <p>
-      Ci-dessous, un complément au chapitre 12. <br />
-      Il se compose aussi d'un QCM reprenant la plupart des concepts vu
-      jusqu'à présent dans ce cours ainsi qu'une question ouverte demandant la
-      création d'un diagramme de base de données. <br />
-      Essayez de répondre au maximum de question sans vous référencer au cours
-    </p>
-    <h2 id="diagramme-de-base-de-donnees">Diagramme de base de données</h2>
-    <img src="../../ressources/img/cliniqueDuPoids.png" alt="database-diagram" style="width: 100%" />
-    <p class="nota-bene info">
-      On considère que toute colonne disposent d'une contrainte empêchant les
-      valeurs nulles
-    </p>
-    <h2 id="qcm">QCM</h2>
-    <!-- <h2 id="question-ouverte">Question ouverte</h2>
+  <body>
+    <main id="mainElement">
+      <h1>Questionnaire bonus</h1>
+      <ol>
+        <li>Introduction</li>
+        <li>Diagramme de base de données</li>
+        <li>QCM</li>
+        <li>Question ouverte</li>
+      </ol>
+      <hr />
+      <h2 id="introduction">Introduction</h2>
+      <p>
+        Ci-dessous, un complément au chapitre 12. <br />
+        Il se compose aussi d'un QCM reprenant la plupart des concepts vu
+        jusqu'à présent dans ce cours ainsi qu'une question ouverte demandant la
+        création d'un diagramme de base de données. <br />
+        Essayez de répondre au maximum de question sans vous référencer au cours
+      </p>
+      <h2 id="diagramme-de-base-de-donnees">Diagramme de base de données</h2>
+      <img
+        src="../../ressources/img/cliniqueDuPoids.png"
+        alt="database-diagram"
+        style="width: 100%"
+      />
+      <p class="nota-bene info">
+        On considère que toute colonne disposent d'une contrainte empêchant les
+        valeurs nulles
+      </p>
+      <h2 id="qcm">QCM</h2>
+      <!-- <h2 id="question-ouverte">Question ouverte</h2>
       <p>
         Sur base des information ci-dessous, créer un diagramme de base de
         données qui puisse garder une trace, pour de multiple utilisateurs, des
@@ -86,657 +89,702 @@
         ne considère pas les exercices avec variation de répétitions ou de
         poids)
       </p> -->
-  </main>
-</body>
-<script>
-  const QCMElement = [
-    {
-      id: "1",
-      difficulte: 1,
-      question:
-        "Trouvez toutes les relations correspondant à une relation 1..1 (ou 0..1) dans ces propositions :",
-      codeSnippets: [],
-      propositions: [
-        "1) praticien - patient",
-        "2) patient - pesee",
-        "3) patient - ingredient",
-      ],
-      reponses: [
-        { texte: "Toutes les propositions.", valeur: false },
-        { texte: "Aucune des propositions.", valeur: true },
-        { texte: "Les propositions 1 et 2.", valeur: false },
-        { texte: "Les propositions 2 et 3.", valeur: false },
-        { texte: "Les propositions 1 et 3.", valeur: false },
-      ],
-      nbrReponseCorrecte: () => {
-        return this.reponses.filter((p) => p.valeur === true).length;
-      },
-    },
-    {
-      id: "2",
-      difficulte: 1,
-      codeSnippets: [],
-      question:
-        "Trouvez toutes les relations correspondant à une relation 1..n (ou 0..n) dans ces propositions :",
-      propositions: [
-        "1) patient - praticien",
-        "2) patient - objectif",
-        "3) patient - pesee",
-      ],
-      reponses: [
-        { texte: "Toutes les propositions.", valeur: false },
-        { texte: "Aucune des propositions.", valeur: false },
-        { texte: "Les propositions 1 et 2.", valeur: false },
-        { texte: "Les propositions 2 et 3.", valeur: true },
-        { texte: "Les propositions 1 et 3.", valeur: false },
-      ],
-      nbrReponseCorrecte: () => {
-        return this.reponses.filter((p) => p.valeur === true).length;
-      },
-    },
-    {
-      id: "3",
-      difficulte: 1,
-      codeSnippets: [],
-      question:
-        "Trouvez toutes les relations correspondant à une relation n..ndans ces propositions :",
-      propositions: [
-        "1) patient - praticien",
-        "2) patient - objectif",
-        "3) patient - pesee",
-      ],
-      reponses: [
-        { texte: "Toutes les propositions.", valeur: false },
-        { texte: "Aucune des propositions.", valeur: false },
-        { texte: "Uniquement la 1", valeur: true },
-        { texte: "Uniquement la 2", valeur: false },
-        { texte: "Uniquement la 3", valeur: false },
-      ],
-      nbrReponseCorrecte: () => {
-        return this.reponses.filter((p) => p.valeur === true).length;
-      },
-    },
-    {
-      id: "4",
-      difficulte: 1,
-      codeSnippets: [],
-      question:
-        "Puis-je insérer deux ingrédients avec le même nom (par exemple, deux record 'carotte')",
-      propositions: [],
-      reponses: [
-        {
-          texte: "Oui",
-          valeur: true,
+    </main>
+  </body>
+  <script>
+    const QCMElement = [
+      {
+        id: "1",
+        difficulte: 1,
+        question:
+          "Trouvez toutes les relations correspondant à une relation 1..1 (ou 0..1) dans ces propositions :",
+        codeSnippets: [],
+        propositions: [
+          "1) praticien - patient",
+          "2) patient - pesee",
+          "3) patient - ingredient",
+        ],
+        reponses: [
+          { texte: "Toutes les propositions.", valeur: false },
+          { texte: "Aucune des propositions.", valeur: true },
+          { texte: "Les propositions 1 et 2.", valeur: false },
+          { texte: "Les propositions 2 et 3.", valeur: false },
+          { texte: "Les propositions 1 et 3.", valeur: false },
+        ],
+        nbrReponseCorrecte: () => {
+          return this.reponses.filter((p) => p.valeur === true).length;
         },
-        {
-          texte: "Non",
-          valeur: false,
+      },
+      {
+        id: "2",
+        difficulte: 1,
+        codeSnippets: [],
+        question:
+          "Trouvez toutes les relations correspondant à une relation 1..n (ou 0..n) dans ces propositions :",
+        propositions: [
+          "1) patient - praticien",
+          "2) patient - objectif",
+          "3) patient - pesee",
+        ],
+        reponses: [
+          { texte: "Toutes les propositions.", valeur: false },
+          { texte: "Aucune des propositions.", valeur: false },
+          { texte: "Les propositions 1 et 2.", valeur: false },
+          { texte: "Les propositions 2 et 3.", valeur: true },
+          { texte: "Les propositions 1 et 3.", valeur: false },
+        ],
+        nbrReponseCorrecte: () => {
+          return this.reponses.filter((p) => p.valeur === true).length;
         },
-      ],
-      nbrReponseCorrecte: () => {
-        return this.reponses.filter((p) => p.valeur === true).length;
       },
-    },
-    {
-      id: "5",
-      difficulte: 1,
-      codeSnippets: [],
-      question:
-        "Est-ce que deux patient peuvent avoir le même nom et prénom (par exemple, deux 'Marie Dupont')",
-      propositions: [],
-      reponses: [
-        { texte: "Oui", valeur: true },
-        { texte: "Non", valeur: false },
-      ],
-      nbrReponseCorrecte: () => {
-        return this.reponses.filter((p) => p.valeur === true).length;
-      },
-    },
-    {
-      id: "6",
-      difficulte: 1,
-      codeSnippets: [],
-      question:
-        "Sur base du schéma uniquement, un objectif peut-il avoir une date de début plus récente que sa date de fin?",
-      propositions: [],
-      reponses: [
-        { texte: "Oui", valeur: true },
-        { texte: "Non", valeur: false },
-      ],
-      nbrReponseCorrecte: () => {
-        return this.reponses.filter((p) => p.valeur === true).length;
-      },
-    },
-    {
-      id: "7",
-      difficulte: 1,
-      codeSnippets: [],
-      question:
-        "Laquelle de ces conditions permet de récupérer un patient dont l'inscription n'est plus valide?",
-      propositions: [],
-      reponses: [
-        { texte: "Aucune des propositions suivantes.", valeur: false },
-        { texte: "Toutes les propositions suivantes.", valeur: false },
-        {
-          texte: "WHERE patient.validite_inscription is null",
-          valeur: false,
+      {
+        id: "3",
+        difficulte: 1,
+        codeSnippets: [],
+        question:
+          "Trouvez toutes les relations correspondant à une relation n..ndans ces propositions :",
+        propositions: [
+          "1) patient - praticien",
+          "2) patient - objectif",
+          "3) patient - pesee",
+        ],
+        reponses: [
+          { texte: "Toutes les propositions.", valeur: false },
+          { texte: "Aucune des propositions.", valeur: false },
+          { texte: "Uniquement la 1", valeur: true },
+          { texte: "Uniquement la 2", valeur: false },
+          { texte: "Uniquement la 3", valeur: false },
+        ],
+        nbrReponseCorrecte: () => {
+          return this.reponses.filter((p) => p.valeur === true).length;
         },
-        { texte: "WHERE praticien.fin_contrat < CURRENT_DATE", valeur: true },
-      ],
-      nbrReponseCorrecte: () => {
-        return this.reponses.filter((p) => p.valeur === true).length;
       },
-    },
-    {
-      id: "8",
-      difficulte: 1,
-      codeSnippets: [],
-      question: "Laquelle de ces PK est auto incrémentée",
-      propositions: [],
-      reponses: [
-        { texte: "Aucune des propositions.", valeur: true },
-        { texte: "Toutes les suivante.", valeur: false },
-        { texte: "praticien_patient.id_patient", valeur: false },
-        { texte: "praticien_patient.id_praticien", valeur: false },
-      ],
-      nbrReponseCorrecte: () => {
-        return this.reponses.filter((p) => p.valeur === true).length;
+      {
+        id: "4",
+        difficulte: 1,
+        codeSnippets: [],
+        question:
+          "Puis-je insérer deux ingrédients avec le même nom (par exemple, deux record 'carotte')",
+        propositions: [],
+        reponses: [
+          {
+            texte: "Oui",
+            valeur: true,
+          },
+          {
+            texte: "Non",
+            valeur: false,
+          },
+        ],
+        nbrReponseCorrecte: () => {
+          return this.reponses.filter((p) => p.valeur === true).length;
+        },
       },
-    },
-    {
-      id: "9",
-      difficulte: 1,
-      codeSnippets: [],
-      question:
-        "Sous quelle condition deux pesées peuvent-elle être faite le même jour?",
-      propositions: [],
-      reponses: [
-        { texte: "Jamais, la date faisant partie de la PK", valeur: false },
-        {
-          texte: "Toujours, il n'y a pas de restriction l'empêchant",
-          valeur: false,
+      {
+        id: "5",
+        difficulte: 1,
+        codeSnippets: [],
+        question:
+          "Est-ce que deux patient peuvent avoir le même nom et prénom (par exemple, deux 'Marie Dupont')",
+        propositions: [],
+        reponses: [
+          { texte: "Oui", valeur: true },
+          { texte: "Non", valeur: false },
+        ],
+        nbrReponseCorrecte: () => {
+          return this.reponses.filter((p) => p.valeur === true).length;
         },
-        {
-          texte: "Oui, sous condition que le patient soit différent",
-          valeur: true,
-        },
-        {
-          texte:
-            "Oui, sous condition que la valeur (la donnée de la colonne valeur) soit différente",
-          valeur: false,
-        },
-      ],
-      nbrReponseCorrecte: () => {
-        return this.reponses.filter((p) => p.valeur === true).length;
       },
-    },
-    {
-      id: "10",
-      difficulte: 1,
-      codeSnippets: [],
-      question: "Pour une PK, laquelle de ces propositions est fausse",
-      propositions: [],
-      reponses: [
-        { texte: "Une PK doit être une valeur unique", valeur: false },
-        { texte: "Une table ne peut avoir qu'une PK", valeur: true },
-        {
-          texte: "Une PK est requise pour chaque table",
-          valeur: true,
+      {
+        id: "6",
+        difficulte: 1,
+        codeSnippets: [],
+        question:
+          "Sur base du schéma uniquement, un objectif peut-il avoir une date de début plus récente que sa date de fin?",
+        propositions: [],
+        reponses: [
+          { texte: "Oui", valeur: true },
+          { texte: "Non", valeur: false },
+        ],
+        nbrReponseCorrecte: () => {
+          return this.reponses.filter((p) => p.valeur === true).length;
         },
-      ],
-      nbrReponseCorrecte: () => {
-        return this.reponses.filter((p) => p.valeur === true).length;
       },
-    },
-    {
-      id: "11",
-      difficulte: 1,
-      codeSnippets: [
-        `-- A
+      {
+        id: "7",
+        difficulte: 1,
+        codeSnippets: [],
+        question:
+          "Laquelle de ces conditions permet de récupérer un patient dont l'inscription n'est plus valide?",
+        propositions: [],
+        reponses: [
+          { texte: "Aucune des propositions suivantes.", valeur: false },
+          { texte: "Toutes les propositions suivantes.", valeur: false },
+          {
+            texte: "WHERE patient.validite_inscription is null",
+            valeur: false,
+          },
+          { texte: "WHERE praticien.fin_contrat < CURRENT_DATE", valeur: true },
+        ],
+        nbrReponseCorrecte: () => {
+          return this.reponses.filter((p) => p.valeur === true).length;
+        },
+      },
+      {
+        id: "8",
+        difficulte: 1,
+        codeSnippets: [],
+        question: "Laquelle de ces PK est auto incrémentée",
+        propositions: [],
+        reponses: [
+          { texte: "Aucune des propositions.", valeur: true },
+          { texte: "Toutes les suivante.", valeur: false },
+          { texte: "praticien_patient.id_patient", valeur: false },
+          { texte: "praticien_patient.id_praticien", valeur: false },
+        ],
+        nbrReponseCorrecte: () => {
+          return this.reponses.filter((p) => p.valeur === true).length;
+        },
+      },
+      {
+        id: "9",
+        difficulte: 1,
+        codeSnippets: [],
+        question:
+          "Sous quelle condition deux pesées peuvent-elle être faite le même jour?",
+        propositions: [],
+        reponses: [
+          { texte: "Jamais, la date faisant partie de la PK", valeur: false },
+          {
+            texte: "Toujours, il n'y a pas de restriction l'empêchant",
+            valeur: false,
+          },
+          {
+            texte: "Oui, sous condition que le patient soit différent",
+            valeur: true,
+          },
+          {
+            texte:
+              "Oui, sous condition que la valeur (la donnée de la colonne valeur) soit différente",
+            valeur: false,
+          },
+        ],
+        nbrReponseCorrecte: () => {
+          return this.reponses.filter((p) => p.valeur === true).length;
+        },
+      },
+      {
+        id: "10",
+        difficulte: 1,
+        codeSnippets: [],
+        question: "Pour une PK, laquelle de ces propositions est fausse",
+        propositions: [],
+        reponses: [
+          { texte: "Une PK doit être une valeur unique", valeur: false },
+          { texte: "Une table ne peut avoir qu'une PK", valeur: true },
+          {
+            texte: "Une PK est requise pour chaque table",
+            valeur: true,
+          },
+        ],
+        nbrReponseCorrecte: () => {
+          return this.reponses.filter((p) => p.valeur === true).length;
+        },
+      },
+      {
+        id: "11",
+        difficulte: 1,
+        codeSnippets: [
+          `-- A
       CREATE DATABASE clinique_du_poids;`,
-        `-- B
+          `-- B
       CREATE DATABASE clinique_du_poids(EMPTY);`,
-        `-- C
+          `-- C
       CREATE DATABASE clinique_du_poids(
       	TABLE praticien,
       	TABLE patient,
       	-- code omis par clarté
       );`,
-        `-- D
+          `-- D
       CREATE DATABASE clinique_du_poids
         WITH TABLES(
       	TABLE praticien,
       	-- code omis par clarté
         )
       );`,
-      ],
-      question:
-        "Sélectionnez la requête valide pour créer une base de données",
-      propositions: [],
-      reponses: [
-        { texte: "Aucune des propositions.", valeur: false },
-        { texte: "A", valeur: true },
-        { texte: "B", valeur: false },
-        { texte: "C", valeur: false },
-        { texte: "D", valeur: false },
-      ],
-      nbrReponseCorrecte: () => {
-        return this.reponses.filter((p) => p.valeur === true).length;
+        ],
+        question:
+          "Sélectionnez la requête valide pour créer une base de données",
+        propositions: [],
+        reponses: [
+          { texte: "Aucune des propositions.", valeur: false },
+          { texte: "A", valeur: true },
+          { texte: "B", valeur: false },
+          { texte: "C", valeur: false },
+          { texte: "D", valeur: false },
+        ],
+        nbrReponseCorrecte: () => {
+          return this.reponses.filter((p) => p.valeur === true).length;
+        },
       },
-    },
-    {
-      id: "12",
-      difficulte: 1,
-      codeSnippets: [
-        `CREATE TABLE patient(
+      {
+        id: "12",
+        difficulte: 1,
+        codeSnippets: [
+          `CREATE TABLE patient(
     id BIGINT PRIMARY KEY,
     validite_inscription DATE NOT NULL
 );`,
-      ],
-      question: "Quel est le résultat de cette requête?",
-      propositions: [],
-      reponses: [
-        { texte: "Réussite, la table est créée", valeur: true },
-        { texte: "Erreur, les types sont mal définits", valeur: false },
-        {
-          texte:
-            "Erreur, impossible de définir une PK à la création de la table",
-          valeur: false,
+        ],
+        question: "Quel est le résultat de cette requête?",
+        propositions: [],
+        reponses: [
+          { texte: "Réussite, la table est créée", valeur: true },
+          { texte: "Erreur, les types sont mal définits", valeur: false },
+          {
+            texte:
+              "Erreur, impossible de définir une PK à la création de la table",
+            valeur: false,
+          },
+          {
+            texte: "Aucune des autres propositions",
+            valeur: false,
+          },
+        ],
+        nbrReponseCorrecte: () => {
+          return this.reponses.filter((p) => p.valeur === true).length;
         },
-        {
-          texte: "Aucune des autres propositions",
-          valeur: false,
-        },
-      ],
-      nbrReponseCorrecte: () => {
-        return this.reponses.filter((p) => p.valeur === true).length;
       },
-    },
-    {
-      id: "13",
-      difficulte: 1,
-      codeSnippets: [
-        `CREATE TABLE pesee(
+      {
+        id: "13",
+        difficulte: 1,
+        codeSnippets: [
+          `CREATE TABLE pesee(
     id_patient INTEGER NOT NULL,
     date_pesee DATE NOT NULL,
     valeur DECIMAL(8, 2) NOT NULL
 );
 ALTER TABLE
     pesee ADD PRIMARY KEY(id_patient, date_pesee);`,
-      ],
-      question: "Quel est le résultat de cette requête?",
-      propositions: [],
-      reponses: [
-        { texte: "Réussite, la table est créée", valeur: true },
-        { texte: "Erreur, les types sont mal définits", valeur: false },
-        {
-          texte: "Erreur, impossible de définir une PK sur deux champs",
-          valeur: false,
+        ],
+        question: "Quel est le résultat de cette requête?",
+        propositions: [],
+        reponses: [
+          { texte: "Réussite, la table est créée", valeur: true },
+          { texte: "Erreur, les types sont mal définits", valeur: false },
+          {
+            texte: "Erreur, impossible de définir une PK sur deux champs",
+            valeur: false,
+          },
+          {
+            texte:
+              "Erreur, la PK doit être définie dans la requête de création de la table",
+            valeur: false,
+          },
+        ],
+        nbrReponseCorrecte: () => {
+          return this.reponses.filter((p) => p.valeur === true).length;
         },
-        {
-          texte:
-            "Erreur, la PK doit être définie dans la requête de création de la table",
-          valeur: false,
-        },
-      ],
-      nbrReponseCorrecte: () => {
-        return this.reponses.filter((p) => p.valeur === true).length;
       },
-    },
-    {
-      id: "14",
-      difficulte: 1,
-      codeSnippets: [],
-      question:
-        "Considérant les relations décrites sur le schéma, quel effet aura la suppression de la table info_personelle sur la table patient",
-      propositions: [],
-      reponses: [
-        { texte: "Aucune des propositions.", valeur: false },
-        {
-          texte: "Pas d'impacte",
-          valeur: true,
+      {
+        id: "14",
+        difficulte: 1,
+        codeSnippets: [],
+        question:
+          "Considérant les relations décrites sur le schéma, quel effet aura la suppression de la table info_personelle sur la table patient",
+        propositions: [],
+        reponses: [
+          { texte: "Aucune des propositions.", valeur: false },
+          {
+            texte: "Pas d'impacte",
+            valeur: true,
+          },
+          {
+            texte:
+              "Suppression de toutes les données de la table patient par 'cascade'",
+            valeur: false,
+          },
+          {
+            texte:
+              "Suppression des patient de la table patient par 'cascade', mais uniquement si ils disposent de données dans la table info_personnelle",
+            valeur: false,
+          },
+        ],
+        nbrReponseCorrecte: () => {
+          return this.reponses.filter((p) => p.valeur === true).length;
         },
-        {
-          texte:
-            "Suppression de toutes les données de la table patient par 'cascade'",
-          valeur: false,
-        },
-        {
-          texte:
-            "Suppression des patient de la table patient par 'cascade', mais uniquement si ils disposent de données dans la table info_personnelle",
-          valeur: false,
-        },
-      ],
-      nbrReponseCorrecte: () => {
-        return this.reponses.filter((p) => p.valeur === true).length;
       },
-    },
-    {
-      id: "15",
-      difficulte: 1,
-      codeSnippets: [
-        `-- A
+      {
+        id: "15",
+        difficulte: 1,
+        codeSnippets: [
+          `-- A
 CREATE TABLE ingredient(
   id BIGINT PRIMARY KEY,
   -- reste des colonnes
 ); `,
-        `-- B
+          `-- B
 CREATE TABLE ingredient(
   id BIGINT,
   -- reste des colonnes
   PRIMARY KEY(id)
 );`,
-        `-- C
+          `-- C
 CREATE TABLE ingredient(
   id BIGINT,
   -- reste des colonnes
 );
 ALTER TABLE ingredient
 ADD PRIMARY KEY(id);`,
-      ],
-      question: "Laquelle des propositions suivante est correcte",
-      propositions: [],
-      reponses: [
-        {
-          texte:
-            "Toutes les requêtes présentées permettent de créer la table ingredient et sa PK",
-          valeur: true,
+        ],
+        question: "Laquelle des propositions suivante est correcte",
+        propositions: [],
+        reponses: [
+          {
+            texte:
+              "Toutes les requêtes présentées permettent de créer la table ingredient et sa PK",
+            valeur: true,
+          },
+          {
+            texte:
+              "Aucune des requêtes présentées ne permettent de créer la table ingredient et sa PK",
+            valeur: false,
+          },
+          {
+            texte: "La requête A permet de créer la table ingredient et sa PK",
+            valeur: false,
+          },
+          {
+            texte: "La requête B permet de créer la table ingredient et sa PK",
+            valeur: false,
+          },
+          {
+            texte: "La requête C permet de créer la table ingredient et sa PK",
+            valeur: false,
+          },
+          {
+            texte:
+              "La requête A ainsi que la C permettent de créer la table ingredient et sa PK",
+            valeur: false,
+          },
+        ],
+        nbrReponseCorrecte: () => {
+          return this.reponses.filter((p) => p.valeur === true).length;
         },
-        {
-          texte:
-            "Aucune des requêtes présentées ne permettent de créer la table ingredient et sa PK",
-          valeur: false,
-        },
-        {
-          texte: "La requête A permet de créer la table ingredient et sa PK",
-          valeur: false,
-        },
-        {
-          texte: "La requête B permet de créer la table ingredient et sa PK",
-          valeur: false,
-        },
-        {
-          texte: "La requête C permet de créer la table ingredient et sa PK",
-          valeur: false,
-        },
-        {
-          texte:
-            "La requête A ainsi que la C permettent de créer la table ingredient et sa PK",
-          valeur: false,
-        },
-      ],
-      nbrReponseCorrecte: () => {
-        return this.reponses.filter((p) => p.valeur === true).length;
       },
-    },
-    {
-      id: "15",
-      difficulte: 1,
-      codeSnippets: [
-        `-- A
+      {
+        id: "15",
+        difficulte: 1,
+        codeSnippets: [
+          `-- A
 CREATE TABLE ingredient(
   id BIGINT PRIMARY KEY,
   -- reste des colonnes
 ); `,
-        `-- B
+          `-- B
 CREATE TABLE ingredient(
   id BIGINT,
   -- reste des colonnes
   PRIMARY KEY(id)
 );`,
-        `-- C
+          `-- C
 CREATE TABLE ingredient(
   id BIGINT,
   -- reste des colonnes
 );
 ALTER TABLE ingredient
 ADD PRIMARY KEY(id);`,
-      ],
-      question: "Laquelle des propositions suivante est correcte",
-      propositions: [],
-      reponses: [
-        {
-          texte:
-            "Toutes les requêtes présentées permettent de créer la table ingredient et sa PK",
-          valeur: true,
+        ],
+        question: "Laquelle des propositions suivante est correcte",
+        propositions: [],
+        reponses: [
+          {
+            texte:
+              "Toutes les requêtes présentées permettent de créer la table ingredient et sa PK",
+            valeur: true,
+          },
+          {
+            texte:
+              "Aucune des requêtes présentées ne permettent de créer la table ingredient et sa PK",
+            valeur: false,
+          },
+          {
+            texte: "La requête A permet de créer la table ingredient et sa PK",
+            valeur: false,
+          },
+          {
+            texte: "La requête B permet de créer la table ingredient et sa PK",
+            valeur: false,
+          },
+          {
+            texte: "La requête C permet de créer la table ingredient et sa PK",
+            valeur: false,
+          },
+          {
+            texte:
+              "La requête A ainsi que la C permettent de créer la table ingredient et sa PK",
+            valeur: false,
+          },
+        ],
+        nbrReponseCorrecte: () => {
+          return this.reponses.filter((p) => p.valeur === true).length;
         },
-        {
-          texte:
-            "Aucune des requêtes présentées ne permettent de créer la table ingredient et sa PK",
-          valeur: false,
-        },
-        {
-          texte: "La requête A permet de créer la table ingredient et sa PK",
-          valeur: false,
-        },
-        {
-          texte: "La requête B permet de créer la table ingredient et sa PK",
-          valeur: false,
-        },
-        {
-          texte: "La requête C permet de créer la table ingredient et sa PK",
-          valeur: false,
-        },
-        {
-          texte:
-            "La requête A ainsi que la C permettent de créer la table ingredient et sa PK",
-          valeur: false,
-        },
-      ],
-      nbrReponseCorrecte: () => {
-        return this.reponses.filter((p) => p.valeur === true).length;
       },
-    },
-    {
-      id: "16",
-      difficulte: 1,
-      codeSnippets: [
-        `INSERT INTO patient VALUES (1, '09-09-2024');`,
-      ],
-      question: "Considérant la table patient et info_personnelle comme vide, quel est le résultat de cette requête?",
-      propositions: [],
-      reponses: [
-        {
-          texte: "Aucune des propositions ci-dessous",
-          valeur: false,
+      {
+        id: "16",
+        difficulte: 1,
+        codeSnippets: [`INSERT INTO patient VALUES (1, '09-09-2024');`],
+        question:
+          "Considérant la table patient et info_personnelle comme vide, quel est le résultat de cette requête?",
+        propositions: [],
+        reponses: [
+          {
+            texte: "Aucune des propositions ci-dessous",
+            valeur: false,
+          },
+          {
+            texte:
+              "Réussite, un patient un enregistrement est créé dans la table patient",
+            valeur: true,
+          },
+          {
+            texte:
+              "Échec, la contrainte de clé étrangère n'est pas respectée avec info_personnelle",
+            valeur: false,
+          },
+          {
+            texte:
+              "Échec, la syntaxe n'est pas bonne, il est nécessaire de renseigner les noms des colonnes impactées",
+            valeur: false,
+          },
+        ],
+        nbrReponseCorrecte: () => {
+          return this.reponses.filter((p) => p.valeur === true).length;
         },
-        {
-          texte:
-            "Réussite, un patient un enregistrement est créé dans la table patient",
-          valeur: true,
-        },
-        {
-          texte:
-            "Échec, la contrainte de clé étrangère n'est pas respectée avec info_personnelle",
-          valeur: false,
-        },
-        {
-          texte: "Échec, la syntaxe n'est pas bonne, il est nécessaire de renseigner les noms des colonnes impactées",
-          valeur: false,
-        },
-      ],
-      nbrReponseCorrecte: () => {
-        return this.reponses.filter((p) => p.valeur === true).length;
       },
-    },
-    {
-      id: "17",
-      difficulte: 1,
-      codeSnippets: [
-        `-- A
+      {
+        id: "17",
+        difficulte: 1,
+        codeSnippets: [
+          `-- A
 INSERT INTO patient VALUES (2, '09-09-2024');`,
-        `-- B
-INSERT INTO patient (id, validite_inscription) VALUES  (2, '09-09-2024');`
-      ],
-      question: "Considérant la table patient et info_personnelle comme vide, laquelle de ces deux requêtes permet d'insérer un enregistrement dans la table patient?",
-      propositions: [],
-      reponses: [
-        {
-          texte: "Aucune des propositions ci-dessous",
-          valeur: false,
+          `-- B
+INSERT INTO patient (id, validite_inscription) VALUES  (2, '09-09-2024');`,
+        ],
+        question:
+          "Considérant la table patient et info_personnelle comme vide, laquelle de ces deux requêtes permet d'insérer un enregistrement dans la table patient?",
+        propositions: [],
+        reponses: [
+          {
+            texte: "Aucune des propositions ci-dessous",
+            valeur: false,
+          },
+          {
+            texte: "Les deux requêtes",
+            valeur: true,
+          },
+          {
+            texte: "La requête A uniquement",
+            valeur: false,
+          },
+          {
+            texte: "La requête B uniquement",
+            valeur: false,
+          },
+        ],
+        nbrReponseCorrecte: () => {
+          return this.reponses.filter((p) => p.valeur === true).length;
         },
-        {
-          texte:
-            "Les deux requêtes",
-          valeur: true,
-        },
-        {
-          texte:
-            "La requête A uniquement",
-          valeur: false,
-        },
-        {
-          texte: "La requête B uniquement",
-          valeur: false,
-        },
-      ],
-      nbrReponseCorrecte: () => {
-        return this.reponses.filter((p) => p.valeur === true).length;
       },
-    },
 
-    {
-      id: "18",
-      difficulte: 1,
-      codeSnippets: [
-        `INSERT INTO patient (id) VALUES  (3);`,
-      ],
-      question: "Considérant la table patient et info_personnelle comme vide, quel sera le résultat de cette requête?",
-      propositions: [],
-      reponses: [
-        {
-          texte: "Réussite, un enregistrement est ajouté dans la table patient",
-          valeur: false,
+      {
+        id: "18",
+        difficulte: 1,
+        codeSnippets: [`INSERT INTO patient (id) VALUES  (3);`],
+        question:
+          "Considérant la table patient et info_personnelle comme vide, quel sera le résultat de cette requête?",
+        propositions: [],
+        reponses: [
+          {
+            texte:
+              "Réussite, un enregistrement est ajouté dans la table patient",
+            valeur: false,
+          },
+          {
+            texte:
+              "Échec, aucun n'enregistrement n'est ajouté dans la table patient",
+            valeur: true,
+          },
+        ],
+        nbrReponseCorrecte: () => {
+          return this.reponses.filter((p) => p.valeur === true).length;
         },
-        {
-          texte:
-            "Échec, aucun n'enregistrement n'est ajouté dans la table patient",
-          valeur: true,
-        },
-      ],
-      nbrReponseCorrecte: () => {
-        return this.reponses.filter((p) => p.valeur === true).length;
       },
-    },
-    {
-      id: "19",
-      difficulte: 1,
-      codeSnippets: [
-        `SELECT * FROM objectif WHERE id_patient = 4;`,
-      ],
-      question: "Considérant la table patient comme vide, quel sera le résultat de cette requête?",
-      propositions: [],
-      reponses: [
-        {
-          texte: "La requête s'exécute correctement", valeur: true,
+      {
+        id: "19",
+        difficulte: 1,
+        codeSnippets: [`SELECT * FROM objectif WHERE id_patient = 4;`],
+        question:
+          "Considérant la table patient comme vide, quel sera le résultat de cette requête?",
+        propositions: [],
+        reponses: [
+          {
+            texte: "La requête s'exécute correctement",
+            valeur: true,
+          },
+          {
+            texte: "La requête retourne une erreur",
+            valeur: false,
+          },
+        ],
+        nbrReponseCorrecte: () => {
+          return this.reponses.filter((p) => p.valeur === true).length;
         },
-        {
-          texte: "La requête retourne une erreur", valeur: false,
-        },
-      ],
-      nbrReponseCorrecte: () => {
-        return this.reponses.filter((p) => p.valeur === true).length;
       },
-    },
-    {
-      id: "20",
-      difficulte: 1,
-      codeSnippets: [
-        `SELECT * FROM objectif WHERE id_patient = 5 AND id_patient = 6;`,
-      ],
-      question: "Considérant que la base de données contient des informations pour les patients d'id 5 et 6, quel sera le résultat de cette requête?",
-      propositions: [],
-      reponses: [
-        {
-          texte: "Les données des objectifs des patients 5 et 6 sont récupérées", valeur: true,
+      {
+        id: "20",
+        difficulte: 1,
+        codeSnippets: [
+          `SELECT * FROM objectif WHERE id_patient = 5 AND id_patient = 6;`,
+        ],
+        question:
+          "Considérant que la base de données contient des informations pour les patients d'id 5 et 6, quel sera le résultat de cette requête?",
+        propositions: [],
+        reponses: [
+          {
+            texte:
+              "Les données des objectifs des patients 5 et 6 sont récupérées",
+            valeur: true,
+          },
+          {
+            texte:
+              "Les données des objectifs des patients 5 et 6 NE SONT PAS récupérées",
+            valeur: true,
+          },
+        ],
+        nbrReponseCorrecte: () => {
+          return this.reponses.filter((p) => p.valeur === true).length;
         },
-        {
-          texte: "Les données des objectifs des patients 5 et 6 NE SONT PAS récupérées", valeur: true,
-        },
-      ],
-      nbrReponseCorrecte: () => {
-        return this.reponses.filter((p) => p.valeur === true).length;
       },
-    },
-    {
-      id: "21",
-      difficulte: 1,
-      codeSnippets: [
-        `-- A
+      {
+        id: "21",
+        difficulte: 1,
+        codeSnippets: [
+          `-- A
   SELECT * FROM patient
   LEFT JOIN info_personnelle
 	ON id = id_patient;`,
-        `-- B
+          `-- B
   SELECT * FROM patient
   RIGHT JOIN info_personnelle
 	ON id = id_patient;`,
-        `-- C
+          `-- C
   SELECT * FROM patient
   INNER JOIN info_personnelle
 	ON id = id_patient;`,
-        `-- D
+          `-- D
   SELECT * FROM patient
   JOIN info_personnelle
 	ON id = id_patient;`,
-      ],
-      question: "Je souhaite récupérer toutes les informations de la table patient ainsi que les informations de la table info_personnelle si elles existent, quelle requête utiliser parmis les suivantes",
-      propositions: [],
-      reponses: [
-        { texte: "Toutes ces requêtes retournent l'information demandée", valeur: false, },
-        { texte: "Aucune de ces requêtes ne retournent l'information demandée", valeur: false, },
-        { texte: "La requête A retourne l'information demandée", valeur: true, },
-        { texte: "La requête B retourne l'information demandée", valeur: false, },
-        { texte: "La requête C retourne l'information demandée", valeur: false, },
-        { texte: "La requête D retourne l'information demandée", valeur: false, },
-      ],
-      nbrReponseCorrecte: () => {
-        return this.reponses.filter((p) => p.valeur === true).length;
+        ],
+        question:
+          "Je souhaite récupérer toutes les informations de la table patient ainsi que les informations de la table info_personnelle si elles existent, quelle requête utiliser parmis les suivantes",
+        propositions: [],
+        reponses: [
+          {
+            texte: "Toutes ces requêtes retournent l'information demandée",
+            valeur: false,
+          },
+          {
+            texte:
+              "Aucune de ces requêtes ne retournent l'information demandée",
+            valeur: false,
+          },
+          {
+            texte: "La requête A retourne l'information demandée",
+            valeur: true,
+          },
+          {
+            texte: "La requête B retourne l'information demandée",
+            valeur: false,
+          },
+          {
+            texte: "La requête C retourne l'information demandée",
+            valeur: false,
+          },
+          {
+            texte: "La requête D retourne l'information demandée",
+            valeur: false,
+          },
+        ],
+        nbrReponseCorrecte: () => {
+          return this.reponses.filter((p) => p.valeur === true).length;
+        },
       },
-    },
-    {
-      id: "22",
-      difficulte: 1,
-      codeSnippets: [
-        `-- A
+      {
+        id: "22",
+        difficulte: 1,
+        codeSnippets: [
+          `-- A
 SELECT * from patient
 INNER JOIN info_personnelle
 ON patient.id = info_personnelle.id_patient
 WHERE validite_inscription < CURRENT_DATE `,
-        `-- B
+          `-- B
 SELECT * from patient
 LEFT JOIN info_personnelle
 ON patient.id = info_personnelle.id_patient
 WHERE validite_inscription < CURRENT_DATE `,
-        `-- C
+          `-- C
 SELECT * from patient
 RIGHT JOIN info_personnelle
 ON patient.id = info_personnelle.id_patient
 WHERE validite_inscription > CURRENT_DATE`,
-        `-- D
+          `-- D
 SELECT * from patient
 RIGHT JOIN info_personnelle
 ON patient.id = info_personnelle.id_patient
 WHERE validite_inscription > CURRENT_DATE`,
-      ],
-      question: "Je souhaite récupérer les adresse mail des patients pour lesquelles la date de validite d'inscription est dépassée. Si un patient n'a pas renseigné d'information personnelles, je ne souhaite pas qu'il soit compris dans les résultats. Quelle requête utiliser parmis les suivantes",
-      propositions: [],
-      reponses: [
-        { texte: "Toutes ces requêtes retournent l'information demandée", valeur: false, },
-        { texte: "Aucune de ces requêtes ne retournent l'information demandée", valeur: false, },
-        { texte: "La requête A retourne l'information demandée", valeur: true, },
-        { texte: "La requête B retourne l'information demandée", valeur: false, },
-        { texte: "La requête C retourne l'information demandée", valeur: false, },
-        { texte: "La requête D retourne l'information demandée", valeur: false, },
-      ],
-      nbrReponseCorrecte: () => {
-        return this.reponses.filter((p) => p.valeur === true).length;
+        ],
+        question:
+          "Je souhaite récupérer les adresse mail des patients pour lesquelles la date de validite d'inscription est dépassée. Si un patient n'a pas renseigné d'information personnelles, je ne souhaite pas qu'il soit compris dans les résultats. Quelle requête utiliser parmis les suivantes",
+        propositions: [],
+        reponses: [
+          {
+            texte: "Toutes ces requêtes retournent l'information demandée",
+            valeur: false,
+          },
+          {
+            texte:
+              "Aucune de ces requêtes ne retournent l'information demandée",
+            valeur: false,
+          },
+          {
+            texte: "La requête A retourne l'information demandée",
+            valeur: true,
+          },
+          {
+            texte: "La requête B retourne l'information demandée",
+            valeur: false,
+          },
+          {
+            texte: "La requête C retourne l'information demandée",
+            valeur: false,
+          },
+          {
+            texte: "La requête D retourne l'information demandée",
+            valeur: false,
+          },
+        ],
+        nbrReponseCorrecte: () => {
+          return this.reponses.filter((p) => p.valeur === true).length;
+        },
       },
-    },
-    {
-      id: "22",
-      difficulte: 1,
-      codeSnippets: [
-        `SELECT info_personnelle.nom, 
+      {
+        id: "22",
+        difficulte: 1,
+        codeSnippets: [
+          `SELECT info_personnelle.nom, 
 	info_personnelle.prenom, 
 	validite_inscription, 
 	praticien.nom, 
@@ -748,1444 +796,1452 @@ JOIN praticien
 	ON praticien.id = praticien_patient.id_praticien
 JOIN info_personnelle
 	ON patient.id = info_personnelle.id_patient;`,
-      ],
-      question: "Je souhaite récupérer les noms et prénoms des patients, la date de validite de leur inscription ainsi que les noms et prenom des praticiens qui s'occupent de ces patients. Considérant que je ne souhaite pas d'enregistrement pour lesquelles il manquerait l'une de ces informations, est-ce que cette requête satisfait ma demande?",
-      propositions: [],
-      reponses: [
-        { texte: "Oui, cette requête retourne les informations demandées (et uniquement les informations demandées)", valeur: true, },
-        { texte: "Non, cette requête ne retourne pas les informations demandées (ou pas toutes les informations demandéées)", valeur: false, },
-      ],
-      nbrReponseCorrecte: () => {
-        return this.reponses.filter((p) => p.valeur === true).length;
+        ],
+        question:
+          "Je souhaite récupérer les noms et prénoms des patients, la date de validite de leur inscription ainsi que les noms et prenom des praticiens qui s'occupent de ces patients. Considérant que je ne souhaite pas d'enregistrement pour lesquelles il manquerait l'une de ces informations, est-ce que cette requête satisfait ma demande?",
+        propositions: [],
+        reponses: [
+          {
+            texte:
+              "Oui, cette requête retourne les informations demandées (et uniquement les informations demandées)",
+            valeur: true,
+          },
+          {
+            texte:
+              "Non, cette requête ne retourne pas les informations demandées (ou pas toutes les informations demandéées)",
+            valeur: false,
+          },
+        ],
+        nbrReponseCorrecte: () => {
+          return this.reponses.filter((p) => p.valeur === true).length;
+        },
       },
-    },
 
-    //       {
-    //         id: "15",
-    //         difficulte: 1,
-    //         codeSnippets: [
-    //           `ALTER TABLE dossier_medical SWITCH CONSTRAINT dossier_medical_pkey
-    // FROM dossier_medical.digital TO dossier_medical.identifiant_patient;`,
-    //         ],
-    //         question:
-    //           "Par erreur, la PK (dossier_medical_pkey) de la table dossier_medical a été initialisée sur la colonne 'digital'. On souhaite corriger cette erreur avec la requête suivante. Cochez la bonne réponse.",
-    //         propositions: [],
-    //         reponses: [
-    //           {
-    //             texte:
-    //               "La contrainte de PK est correctement passée de la colonne digital à la colonne identifiant_patient",
-    //             valeur: false,
-    //           },
-    //           {
-    //             texte:
-    //               "La contrainte de PK n'est pas correctement modifiée. La colonne FROM et la colonne TO doivent avoir le même type",
-    //             valeur: false,
-    //           },
-    //           {
-    //             texte:
-    //               "La contrainte de PK n'est pas correctement modifiée. Erreur de syntaxe",
-    //             valeur: true,
-    //           },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "16",
-    //         difficulte: 1,
-    //         codeSnippets: [
-    //           `ALTER TABLE dossier_medical DROP CONSTRAINT dossier_medical_pkey;
-    // ALTER TABLE dossier_medical ADD PRIMARY KEY(identifiant_patient);`,
-    //         ],
-    //         question:
-    //           "Par erreur, la PK (dossier_medical_pkey) de la table dossier_medical a été initialisée sur la colonne 'digital'. On souhaite corriger cette erreur avec les 2 requêtes suivantes. Cochez la bonne réponse.",
-    //         propositions: [],
-    //         reponses: [
-    //           {
-    //             texte:
-    //               "La contrainte de PK est correctement passée de la colonne digital à la colonne identifiant_patient",
-    //             valeur: true,
-    //           },
-    //           {
-    //             texte:
-    //               "La contrainte de PK n'est pas correctement modifiée. La PRIMARY KEY doit être retirée et réappliquée dans la même requête pour ne pas compremettre l'intégrité des données.",
-    //             valeur: false,
-    //           },
-    //           {
-    //             texte:
-    //               "La contrainte de PK n'est pas correctement modifiée. Erreur de syntaxe",
-    //             valeur: false,
-    //           },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "17",
-    //         difficulte: 1,
-    //         codeSnippets: [
-    //           `-- A
-    // CREATE TABLE conge(
-    //   identifiant_praticien varchar(32),
-    //   date_debut date,
-    //   -- reste des colonnes
-    //   PRIMARY KEY(identifiant_praticien, date_debut)
-    // );`,
-    //           `-- B
-    // CREATE TABLE conge(
-    //   identifiant_praticien varchar(32) PRIMARY KEY,
-    //   date_debut date PRIMARY KEY,
-    //   -- reste des colonnes
-    // );`,
-    //         ],
-    //         question: "Pour les requêtes suivantes cocher la bonne proposition",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Aucune des propositions suivantes", valeur: false },
-    //           {
-    //             texte:
-    //               "Les deux requêtes permettent de créer une table 'conge avec une clé primaire sur 'identifiant_praticien' et 'date_debut' ",
-    //             valeur: false,
-    //           },
-    //           {
-    //             texte:
-    //               "La requête A uniquement permet de créer une table 'conge' avec une clé primaire sur 'identifiant_praticien' et 'date_debut' ",
-    //             valeur: true,
-    //           },
-    //           {
-    //             texte:
-    //               "La requête B uniquement permet de créer une table 'conge' avec une clé primaire sur 'identifiant_praticien' et 'date_debut' ",
-    //             valeur: false,
-    //           },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "18",
-    //         difficulte: 1,
-    //         codeSnippets: [
-    //           `CREATE DATABASE conge(
-    //   identifiant_praticien varchar(32),
-    //   date_debut date,
-    //   date_fin date,
-    //   statut varchar(32),
-    //   PRIMARY KEY(identifiant_praticien, date_debut)
-    // );`,
-    //         ],
-    //         question:
-    //           "Pour créer la table 'conge', cette requête est utilisée. Quelle en sera le résultat?",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Aucune des propositions suivantes", valeur: false },
-    //           { texte: "Erreur de type", valeur: false },
-    //           { texte: "Erreur de contrainte de clé primaire", valeur: false },
-    //           { texte: "Erreur de syntaxe", valeur: true },
-    //           { texte: "Création de la table 'conge'", valeur: false },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "19",
-    //         difficulte: 2,
-    //         codeSnippets: [],
-    //         question:
-    //           "Considérant la table praticien déjà créée et avec la clé primaire renseignée sur le diagramme. Je souhaite ajouter une clé primaire sur la colonne debut_contrat. Sélectionnez la bonne proposition",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Aucune des propositions suivantes.", valeur: false },
-    //           {
-    //             texte:
-    //               "Impossible d'ajouter la clé : il ne peut y avoir qu'une clé primaire par table",
-    //             valeur: true,
-    //           },
-    //           {
-    //             texte: "Impossible d'ajouter la clé : type incohérent",
-    //             valeur: false,
-    //           },
-    //           {
-    //             texte:
-    //               "Il est possible que cela fonctionne ou pas. Cela dépend des données de la table.",
-    //             valeur: false,
-    //           },
-    //           {
-    //             texte:
-    //               "La clé est ajoutée car le type de la colonne n'est pas nullable. L'intégrité des données est assurée.",
-    //             valeur: false,
-    //           },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "20",
-    //         difficulte: 2,
-    //         codeSnippets: [],
-    //         question: `Par simplicité, je souhaite modifier la clé primaire de la table 'praticien'.
-    //       Cochez la ou les propositions valides.
-    //       On considère que je ne fais strictement que ces 3 étapes et dans cet ordre`,
-    //         propositions: [
-    //           `1) Je retire la clé actuelle,`,
-    //           `2) Je rajoute une colonne 'id' de type 'int' `,
-    //           `3) Je crée une contrainte de primary key sur id. `,
-    //         ],
-    //         reponses: [
-    //           { texte: "Aucune des propositions suivantes.", valeur: false },
-    //           { texte: "Erreur lors du retrait de la clé", valeur: false },
-    //           { texte: "Erreur lors de l'ajout de la colonne", valeur: false },
-    //           {
-    //             texte: "Erreur lors de l'ajout de la contrainte de clé primaire",
-    //             valeur: true,
-    //           },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "21",
-    //         difficulte: 2,
-    //         codeSnippets: [],
-    //         question:
-    //           "Considérant la table praticien déjà créée et sans clé primaire. Je souhaite ajouter une clé primaire sur la colonne debut_contrat. Sélectionnez la ou les bonnes propositions",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Aucune des propositions suivantes.", valeur: false },
-    //           {
-    //             texte: "Impossible d'ajouter la clé : type incohérent",
-    //             valeur: false,
-    //           },
-    //           {
-    //             texte:
-    //               "Il est possible que cela fonctionne ou pas. Cela dépend des données de la table.",
-    //             valeur: true,
-    //           },
-    //           {
-    //             texte:
-    //               "La clé est ajoutée car le type de la colonne n'est pas nullable. L'intégrité des données est assurée.",
-    //             valeur: false,
-    //           },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "22",
-    //         difficulte: 1,
-    //         codeSnippets: [
-    //           `CREATE TABLE personne(
-    //   identifiant_interne varchar(32) PRIMARY KEY,
-    //   prenom varchar(32),
-    //   nom varchar(32),
-    //   telephone varchar(32)
-    // );`,
-    //         ],
-    //         question:
-    //           "Considérant que la table 'personne' n'est pas encore créée, cochez la proposition valide pour la requête suivante.",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Aucune des propositions suivantes.", valeur: true },
-    //           { texte: "Erreur de syntaxe", valeur: false },
-    //           { texte: "Erreur de type", valeur: false },
-    //           {
-    //             texte: "Erreur dans la définition de la contrainte de clé primaire",
-    //             valeur: false,
-    //           },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "23",
-    //         difficulte: 1,
-    //         codeSnippets: [
-    //           `-- A
-    // ALTER TABLE praticien ALTER COLUMN debut_contrat SET NOT NULL;`,
-    //           `-- B
-    // ALTER TABLE praticien ALTER COLUMN fin_contrat SET NULL;`,
-    //         ],
-    //         question:
-    //           "Considérant la table praticien décrite dans le diagramme, sélectionnez laquelle de ces requêtes est correcte",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Toutes les propositions.", valeur: false },
-    //           { texte: "Aucune des propositions.", valeur: false },
-    //           { texte: "La requête A", valeur: true },
-    //           { texte: "La requête B", valeur: false },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "24",
-    //         difficulte: 1,
-    //         codeSnippets: [
-    //           `ALTER TABLE praticien
-    //   ADD CONSTRAINT fk_praticien_personne FOREIGN KEY (identifiant_praticien)
-    //   REFERENCES personne (identifiant_interne);`,
-    //         ],
-    //         question:
-    //           "Après avoir défini cette contrainte de clé étrangère, quel aura l'impacte de la suppression d'un 'praticien'?",
-    //         propositions: [],
-    //         reponses: [
-    //           {
-    //             texte:
-    //               "Erreur : impossible de supprimer le praticien, il faut passer par la personne liée",
-    //             valeur: false,
-    //           },
-    //           { texte: "Un praticien est supprimé", valeur: true },
-    //           {
-    //             texte: "Un praticien et la personne liée sont supprimés",
-    //             valeur: false,
-    //           },
-    //           { texte: "Une personne est supprimée", valeur: false },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "25",
-    //         difficulte: 1,
-    //         codeSnippets: [
-    //           `ALTER TABLE praticien
-    //   ADD CONSTRAINT fk_praticien_personne FOREIGN KEY (identifiant_praticien)
-    //   REFERENCES personne (identifiant_interne);`,
-    //         ],
-    //         question:
-    //           "Cochez toutes les propositions 'possibles' à la suppression d'une 'personne' après avoir défini cette contrainte de clé étrangère",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Aucune des propositions suivantes", valeur: true },
-    //           {
-    //             texte: "Erreur, impossible de supprimer la personne",
-    //             valeur: true,
-    //           },
-    //           { texte: "Suppression de la personne", valeur: true },
-    //           { texte: "Suppression d'un praticien", valeur: true },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "26",
-    //         difficulte: 1,
-    //         codeSnippets: [],
-    //         question:
-    //           "Lors de la création d'une clé étrangère, quelle comportement 'ON DELETE' est appliqué par défaut",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Aucune des propositions.", valeur: true },
-    //           { texte: "CASCADE", valeur: false },
-    //           { texte: "RESTRICT", valeur: false },
-    //           { texte: "SET DEFAULT", valeur: false },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "27",
-    //         difficulte: 1,
-    //         codeSnippets: [],
-    //         question:
-    //           "Lors de la création d'une clé étrangère, quelle comportement 'ON UPDATE' est appliqué par défaut",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Aucune des propositions.", valeur: false },
-    //           { texte: "SET NULL", valeur: false },
-    //           { texte: "THROW", valeur: false },
-    //           { texte: "NO ACTION", valeur: true },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "28",
-    //         difficulte: 1,
-    //         codeSnippets: [
-    //           `ALTER TABLE praticien
-    //   ADD CONSTRAINT fk_praticien_personne FOREIGN KEY (identifiant_praticien)
-    //   REFERENCES personne (identifiant_interne);
-    // ALTER TABLE patient
-    //   ADD CONSTRAINT fk_patient_personne FOREIGN KEY (identifiant_interne)
-    //   REFERENCES personne (identifiant_interne);`,
-    //         ],
-    //         question:
-    //           "Cochez la ou les informations correctes après application du code suivant",
-    //         propositions: [],
-    //         reponses: [
-    //           {
-    //             texte:
-    //               "Une personne peut exister sans être un praticien, mais elle doit être un patient",
-    //             valeur: false,
-    //           },
-    //           {
-    //             texte:
-    //               "Une personne peut exister sans être un patient, mais elle doit alors être un praticien",
-    //             valeur: false,
-    //           },
-    //           {
-    //             texte:
-    //               "Une personne peut exister sans être ni un praticien, ni un patient",
-    //             valeur: false,
-    //           },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "29",
-    //         difficulte: 1,
-    //         codeSnippets: [
-    //           `-- A
-    // ALTER TABLE patient ADD COLUMN inscrit_maison_medical boolean;`,
-    //           `-- B
-    // UPDATE TABLE patient ADD COLUMN inscrit_maison_medical boolean;`,
-    //           `-- C
-    // MODIFY TABLE patient ADD COLUMN inscrit_maison_medical boolean;`,
-    //         ],
-    //         question:
-    //           "Considérant que la table 'patient' a été créée sans la colonne 'inscrit_maison_medicale', quelle requête permet d'ajouter cette colonne?",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Aucune des propositions.", valeur: false },
-    //           { texte: "La requête A", valeur: false },
-    //           { texte: "La requête B", valeur: false },
-    //           { texte: "La requête C", valeur: false },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "30",
-    //         difficulte: 1,
-    //         codeSnippets: [],
-    //         question:
-    //           "Considérant que la table 'patient' a été créée sans la colonne 'inscrit_maison_medicale', on tente de l'ajouter en modifiant par après. Cochez là ou les bonnes réponses",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Aucune des propositions.", valeur: false },
-    //           {
-    //             texte:
-    //               "Impossible d'ajouter une colonne dans une table existante. Il faut la supprimer et la créer avec toutes les colonnes",
-    //             valeur: false,
-    //           },
-    //           {
-    //             texte:
-    //               "Il est possible de rajouter cette nouvelle colonne, mais, pour chaque ligne de la table, une valeur [null] sera attribuée à la nouvelle colonne",
-    //             valeur: true,
-    //           },
-    //           {
-    //             texte:
-    //               "Il est possible de rajouter cette nouvelle colonne, mais elle n'entre en compte que pour les lignes insérées par après",
-    //             valeur: false,
-    //           },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "31",
-    //         difficulte: 2,
-    //         codeSnippets: [
-    //           `-- A
-    // INSERT INTO personne
-    // VALUES('JDOE', 'Jon', 'Doe', '+3247777777');`,
-    //           `-- B
-    // INSERT INTO personne (identifiant_interne, prenom, nom)
-    // VALUES('JLEN', 'John', 'Lennon');`,
-    //           `-- C
-    // INSERT INTO personne (identifiant_interne, prenom, nom, telephone)
-    // VALUES('JARB', 'Jon', 'Arbuckle', '+35247777777');`,
-    //           `-- D
-    // INSERT INTO personne (telephone, prenom, nom, identifiant_interne)
-    // VALUES('+3347777777', 'Jon', 'Bon Jovi', 'JBON');`,
-    //         ],
-    //         question: "Laquelle de ces requête permet de créer une personne",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Aucune des propositions ci-dessous.", valeur: false },
-    //           { texte: "Toutes les requêtes.", valeur: false },
-    //           { texte: "Aucune des requêtes.", valeur: false },
-    //           { texte: "Les requêtes A, B et C.", valeur: false },
-    //           { texte: "Les requêtes B, C et D.", valeur: false },
-    //           { texte: "Les requêtes A, C, et D.", valeur: true },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "32",
-    //         difficulte: 1,
-    //         codeSnippets: [
-    //           `INSERT INTO personne (identifiant_interne, prenom, nom)
-    // VALUES('BMAR', 'Bob', 'Marley'),
-    // ('BLEN', 'Bob', 'Lennon'),
-    // ('BAFF', 'Bob', 'Affet');`,
-    //         ],
-    //         question: "Quel sera le résultat de cette requête?",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Aucune des propositions.", valeur: false },
-    //           { texte: "Erreur, aucune personne n'est enregistrée", valeur: false },
-    //           {
-    //             texte: "Erreur, seule la première personne est enregistrée",
-    //             valeur: false,
-    //           },
-    //           { texte: "Les trois personnes enregistrées", valeur: false },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "33",
-    //         difficulte: 1,
-    //         codeSnippets: [
-    //           `INSERT INTO personne
-    // VALUES('SLJA', 'Sammuel L.', 'Jackson', '0032477777777');`,
-    //           `INSERT INTO personne (identifiant_interne, prenom, nom, telephone)
-    // VALUES('SLJA', 'Sammuel L.', 'Jackson', '0032477777777');`,
-    //         ],
-    //         question: "Prise individuellement, ces deux requêtes",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Aucune des propositions ci-dessous", valeur: false },
-    //           { texte: "Les deux propositions ci-dessous", valeur: false },
-    //           { texte: "Résultent en une erreur", valeur: false },
-    //           { texte: "Sont fonctionnellement identique", valeur: true },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "34",
-    //         difficulte: 2,
-    //         codeSnippets: [
-    //           `INSERT INTO patient
-    // (SELECT identifiant_interne FROM personne)`,
-    //         ],
-    //         question: "Quel aura pour effet cette requête?",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Aucune des propositions.", valeur: true },
-    //           {
-    //             texte: "Toutes les propositions suivantes spécifiant une erreur.",
-    //             valeur: false,
-    //           },
-    //           { texte: "Erreur, clause WHERE manquante", valeur: false },
-    //           {
-    //             texte: "Erreur, mot-clé INSERT et SELECT incompatible",
-    //             valeur: false,
-    //           },
-    //           {
-    //             texte:
-    //               "Réussite, plusieurs patients sont insérés en base de données",
-    //             valeur: false,
-    //           },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "35",
-    //         difficulte: 1,
-    //         codeSnippets: [
-    //           `-- A
-    // SELECT identifiant_interne FROM personne
-    // WHERE identifiant_interne NOT IN
-    // (SELECT pr.identifiant_praticien FROM praticien as pr
-    // LEFT JOIN personne as pe
-    // 	on pr.identifiant_praticien = pe.identifiant_interne)`,
-    //           `-- B
-    // SELECT identifiant_interne FROM personne as pe
-    // LEFT JOIN praticien as pr
-    // ON pr.identifiant_praticien = pe.identifiant_interne
-    // WHERE pr.identifiant_praticien IS NULL`,
-    //         ],
-    //         question:
-    //           "Pour ces deux requêtes, sélectionnez les bonnes propositions",
-    //         propositions: [],
-    //         reponses: [
-    //           {
-    //             texte: "Elles résultent toutes les deux en une erreur",
-    //             valeur: false,
-    //           },
-    //           { texte: "La requête A échoue et la B réussi", valeur: false },
-    //           { texte: "La requête B échoue et la A réussi", valeur: false },
-    //           {
-    //             texte:
-    //               "Les deux requêtes réussissent et produisent le même résultat",
-    //             valeur: true,
-    //           },
-    //           {
-    //             texte:
-    //               "Les deux requêtes réussissent et produisent un résultat différent",
-    //             valeur: false,
-    //           },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "36",
-    //         difficulte: 1,
-    //         codeSnippets: [
-    //           `INSERT INTO patient (identifiant_interne, nom_generaliste, telephone_generaliste, personne_contact, inscrit_maison_medical)
-    // VALUES ('SLEG', 'Dupont Luc', '0035245784575', 'SLEG', false);`,
-    //         ],
-    //         question:
-    //           "Considérant qu'un enregistrement existe dans la table 'personne' avec l'identifiant_interne 'SLEG', quel sera le résultat de cette requête",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Aucune des valeurs ci-dessous", valeur: false },
-    //           {
-    //             texte:
-    //               "Erreur, la valeur SLEG est déjà utilisée et une PRIMARY KEY ne peut être dupliquée",
-    //             valeur: false,
-    //           },
-    //           {
-    //             texte:
-    //               "Erreur, la valeur SLEG ne peut être utilisée, dans la table patient, pour deux FOREIGN KEY différente",
-    //             valeur: false,
-    //           },
-    //           {
-    //             texte: "Réussite, un patient est enregistré en base de données",
-    //             valeur: true,
-    //           },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "37",
-    //         difficulte: 1,
-    //         codeSnippets: [
-    //           `INSERT INTO specialite_medicale(nom, description)
-    // VALUES ('Pédiatrie', '');
-    // INSERT INTO praticien_specialite_medicale (identifiant_praticien, nom_specialite_medicale)
-    // VALUES ('JDOE', 'Pédiatrie');`,
-    //         ],
-    //         question:
-    //           "Considérant qu'un praticien est enregistré avec l'identifiant JDOE, on tente d'exécuter ces deux requêtes. Quel sera le résultat?",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Erreur, les deux requêtes échouent", valeur: false },
-    //           {
-    //             texte: "Réussite partielle, une des requête échoue",
-    //             valeur: false,
-    //           },
-    //           { texte: "Réussite, les deux requêtes fonctionnent", valeur: true },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "38",
-    //         difficulte: 1,
-    //         codeSnippets: [
-    //           `INSERT INTO praticien_specialite_medicale (identifiant_praticien, nom_specialite_medicale)
-    // VALUES ('JDOE', 'Généraliste');
-    // INSERT INTO specialite_medicale(nom, description)
-    // VALUES ('Généraliste', '');`,
-    //         ],
-    //         question:
-    //           "Considérant qu'un praticien est enregistré avec l'identifiant JDOE, on tente d'exécuter ces deux requêtes. Quel sera le résultat?",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Erreur, les deux requêtes échouent", valeur: false },
-    //           {
-    //             texte: "Réussite partielle, une des requête échoue",
-    //             valeur: false,
-    //           },
-    //           { texte: "Réussite, les deux requêtes fonctionnent", valeur: true },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "39",
-    //         difficulte: 1,
-    //         codeSnippets: [
-    //           `INSERT INTO specialite_medicale(nom, description)
-    // VALUES ('', '');`,
-    //         ],
-    //         question:
-    //           "Considérant une table 'specialite_medicale' sans données, quel sera le résultat de cette requête?",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Aucune des propositions ci-dessous", valeur: false },
-    //           {
-    //             texte: "Erreur, une valeur est requise pour la PRIMARY KEY",
-    //             valeur: false,
-    //           },
-    //           { texte: "Erreur, syntaxe incorrecte", valeur: false },
-    //           { texte: "Réussite", valeur: true },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "40",
-    //         questionnaire: ["A", "B"],
-    //         difficulte: 1,
-    //         codeSnippets: [
-    //           `-- A
-    // SELECT * FROM specialite_medicale`,
-    //           `-- B
-    // SELECT nom, description FROM specialite_medicale`,
-    //         ],
-    //         question:
-    //           "Sans considération pour l'ordre des colonnes ou des rangées, sélectionnez la bonne affirmation pour ces deux requêtes",
-    //         propositions: [],
-    //         reponses: [
-    //           {
-    //             texte: "La requête A récupère plus de colonnes que la B",
-    //             valeur: false,
-    //           },
-    //           {
-    //             texte: "La requête B récupère plus de colonnes que la A",
-    //             valeur: false,
-    //           },
-    //           {
-    //             texte: "Les deux requêtes récupère les mêmes informations",
-    //             valeur: true,
-    //           },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "41",
-    //         questionnaire: ["A", "B"],
-    //         difficulte: 1,
-    //         codeSnippets: [
-    //           `-- A
-    // WHERE description = ''`,
-    //           `-- B
-    // WHERE description LIKE '%'`,
-    //           `--C
-    // WHERE description LIKE '_'`,
-    //         ],
-    //         question:
-    //           "Laquelle de ces propositions permet de récupérer toutes les specialités médicales lors d'un `SELECT * FROM specialite_medicale`",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Toutes les propositions.", valeur: false },
-    //           { texte: "Aucune des propositions.", valeur: false },
-    //           { texte: "La proposition A", valeur: false },
-    //           { texte: "La proposition B", valeur: false },
-    //           { texte: "La proposition C", valeur: false },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "42",
-    //         difficulte: 1,
-    //         codeSnippets: [
-    //           `SELECT * FROM specialite_medicale as sm
-    // [---] JOIN praticien_specialite_medicale AS psm
-    // ON psm.nom_specialite_medicale = sm.nom;`,
-    //         ],
-    //         question:
-    //           "Je ne souhaite récupérer que les spécialités médicales attribuées à au moins un praticien. Quelle mot clé utiliser à la place des [---]",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Toutes les propositions.", valeur: false },
-    //           { texte: "Aucune des propositions.", valeur: false },
-    //           { texte: "LEFT", valeur: false },
-    //           { texte: "INNER", valeur: true },
-    //           { texte: "RIGHT", valeur: false },
-    //           { texte: "CROSS", valeur: false },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "43",
-    //         difficulte: 2,
-    //         codeSnippets: [
-    //           `-- A
-    // SELECT identifiant_interne FROM personne AS p
-    // JOIN patient AS pa
-    // ON pa.identifiant_interne = p.identifiant_interne;`,
-    //           `-- B
-    // SELECT identifiant_interne FROM personne AS p
-    // JOIN praticien AS pr
-    // ON pr.identifiant_praticien = p.identifiant_interne;`,
-    //         ],
-    //         question: "Ces requêtes sont utilisées. Cochez la bonne réponse",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "La requête A et B fonctionnent", valeur: false },
-    //           { texte: "La requête A fonctionne. La B échoue.", valeur: false },
-    //           {
-    //             texte: "La requête A échoue. La requête B fonctionne",
-    //             valeur: true,
-    //           },
-    //           { texte: "La requête A et B échouent", valeur: false },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "44",
-    //         difficulte: 2,
-    //         codeSnippets: [
-    //           `-- A
-    // SELECT * FROM specialite_medicale as sm
-    // INNER JOIN praticien_specialite_medicale AS psm
-    // ON psm.nom_specialite_medicale = sm.nom;`,
-    //           `-- B
-    // SELECT * FROM specialite_medicale as sm
-    // JOIN praticien_specialite_medicale AS psm
-    // ON psm.nom_specialite_medicale = sm.nom;`,
-    //         ],
-    //         question: "Les deux requêtes sont utilisées. Cochez la bonne réponse",
-    //         propositions: [],
-    //         reponses: [
-    //           {
-    //             texte: "La requête A retourne plus de rangées que la B",
-    //             valeur: false,
-    //           },
-    //           {
-    //             texte: "La requête B retourne plus de rangées que la A",
-    //             valeur: false,
-    //           },
-    //           {
-    //             texte: "Les deux requêtes retournent le même nombre de rangées",
-    //             valeur: true,
-    //           },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "45",
-    //         difficulte: 3,
-    //         codeSnippets: [
-    //           `-- A
-    // SELECT identifiant_interne FROM personne AS p
-    // LEFT JOIN praticien AS pr
-    // ON pr.identifiant_praticien = p.identifiant_interne;`,
-    //           `-- B
-    // SELECT identifiant_interne FROM praticien AS pr
-    // LEFT JOIN personne AS p
-    // ON pr.identifiant_praticien = p.identifiant_interne;`,
-    //         ],
-    //         question:
-    //           "Considérant que des données existent pour des praticiens et des patients, cochez la bonne réponse pour comparer ces deux requêtes",
-    //         propositions: [],
-    //         reponses: [
-    //           {
-    //             texte: "La requête A retourne plus de rangées que la requête B",
-    //             valeur: true,
-    //           },
-    //           {
-    //             texte: "La requête B retourne plus de rangées que la requête A",
-    //             valeur: false,
-    //           },
-    //           {
-    //             texte: "Les deux requêtes retournent le même nombre de rangées",
-    //             valeur: false,
-    //           },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "46",
-    //         difficulte: 3,
-    //         codeSnippets: [
-    //           `-- A
-    // SELECT identifiant_interne FROM personne AS p
-    // RIGHT JOIN praticien AS pr
-    // ON pr.identifiant_praticien = p.identifiant_interne;`,
-    //           `-- B
-    // SELECT identifiant_interne FROM personne AS p
-    // LEFT JOIN praticien AS pr
-    // ON pr.identifiant_praticien = p.identifiant_interne;`,
-    //         ],
-    //         question:
-    //           "Considérant que des données existent pour des praticiens et des patients, cochez la bonne réponse pour comparer ces deux requêtes",
-    //         propositions: [],
-    //         reponses: [
-    //           {
-    //             texte: "La requête A retourne plus de rangées que la requête B",
-    //             valeur: false,
-    //           },
-    //           {
-    //             texte: "La requête B retourne plus de rangées que la requête A",
-    //             valeur: true,
-    //           },
-    //           {
-    //             texte: "Les deux requêtes retournent le même nombre de rangées",
-    //             valeur: false,
-    //           },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "47",
-    //         difficulte: 1,
-    //         codeSnippets: [
-    //           `-- A
-    // SELECT * FROM conge
-    // WHERE date_debut > CURRENT_DATE AND date_fin < CURRENT_DATE;`,
-    //           `-- B
-    // SELECT * FROM conge
-    // WHERE date_debut > CURRENT_DATE OR date_fin < CURRENT_DATE;`,
-    //           `-- C
-    // SELECT * FROM conge
-    // WHERE date_debut <= CURRENT_DATE AND date_fin > CURRENT_DATE;`,
-    //           `-- D
-    // SELECT * FROM conge
-    // WHERE date_debut <= CURRENT_DATE OR date_fin > CURRENT_DATE;`,
-    //         ],
-    //         question:
-    //           "Laquelle de ces requêtes permet de récupérer les identifiant des praticiens en congé aujourd'hui",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Toutes les propositions.", valeur: false },
-    //           { texte: "Aucune des propositions.", valeur: false },
-    //           { texte: "La requête A", valeur: false },
-    //           { texte: "La requête B", valeur: false },
-    //           { texte: "La requête C", valeur: true },
-    //           { texte: "La requête D", valeur: false },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "48",
-    //         difficulte: 2,
-    //         codeSnippets: [
-    //           `-- A
-    // SELECT * FROM conge
-    // WHERE date_debut > CURRENT_DATE AND date_fin < CURRENT_DATE;`,
-    //           `-- B
-    // SELECT * FROM conge
-    // WHERE date_debut > CURRENT_DATE OR date_fin < CURRENT_DATE;`,
-    //           `-- C
-    // SELECT * FROM conge
-    // WHERE date_debut <= CURRENT_DATE AND date_fin > CURRENT_DATE;`,
-    //           `-- D
-    // SELECT * FROM conge
-    // WHERE date_debut <= CURRENT_DATE OR date_fin > CURRENT_DATE;`,
-    //         ],
-    //         question:
-    //           "Laquelle de ces requêtes permet de récupérer les identifiant des praticiens en congé aujourd'hui et n'ayant pris qu'un seul jour de congé? (ils ne sont donc en congé ni hier ni demain)",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Toutes les propositions.", valeur: false },
-    //           { texte: "Aucune des propositions.", valeur: true },
-    //           { texte: "La requête A", valeur: false },
-    //           { texte: "La requête B", valeur: false },
-    //           { texte: "La requête C", valeur: false },
-    //           { texte: "La requête D", valeur: false },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "49",
-    //         difficulte: 1,
-    //         codeSnippets: [
-    //           `CREATE TABLE maison_medicale(
-    //   nom varchar(64) PRIMARY KEY,
-    //   adresse varchar(256),
-    //   telephone varchar(32),
-    //   mail varchar(256),
-    //   site_web varchar(256)
-    // );`,
-    //         ],
-    //         question:
-    //           "Je souhaite créer la table 'maison_medicale' et j'utilise cette requête. Cochez la bonne réponse",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Aucune des propositions.", valeur: false },
-    //           { texte: "La table est créée", valeur: true },
-    //           {
-    //             texte: "Erreur pour la déclaration de la clé primaire",
-    //             valeur: false,
-    //           },
-    //           { texte: "Erreur pour la déclaration des types", valeur: false },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "50",
-    //         difficulte: 3,
-    //         codeSnippets: [
-    //           `-- A
-    // SELECT pr.identifiant_praticien FROM praticien AS pr
-    // JOIN praticien_maison_medicale AS p_mm
-    // ON p_mm.identifiant_praticien = pr.identifiant_praticien
-    // WHERE p_mm.nom_maison_medicale = 'Arlon';`,
-    //           `-- B
-    // SELECT p_mm.identifiant_praticien FROM maison_medicale AS mm
-    // JOIN praticien_maison_medicale AS p_mm
-    // ON p_mm.nom_maison_medicale = mm.nom
-    // WHERE mm.nom = 'Arlon';`,
-    //           `-- C
-    // SELECT identifiant_praticien FROM praticien_maison_medicale
-    // WHERE nom_maison_medicale = 'Arlon'`,
-    //         ],
-    //         question:
-    //           "Je souhaite récupérer l'identifiant des praticiens de la maison médicale d'arlon. Considérant ces trois requêtes, sélectionnez la bonne réponse",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Aucune des propositions.", valeur: false },
-    //           {
-    //             texte: "La requête A, B et C retournent les valeurs voulues",
-    //             valeur: true,
-    //           },
-    //           {
-    //             texte: "La requête A et B retournent les valeurs voulues",
-    //             valeur: false,
-    //           },
-    //           {
-    //             texte: "La requête A et C retournent les valeurs voulues",
-    //             valeur: false,
-    //           },
-    //           {
-    //             texte: "La requête B et C retournent les valeurs voulues",
-    //             valeur: false,
-    //           },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "51",
-    //         difficulte: 1,
-    //         codeSnippets: [
-    //           `UPDATE conge SET statut = 'Accepté'
-    // WHERE date_debut > CURRENT_DATE;`,
-    //         ],
-    //         question:
-    //           "Je souhaite accepter tout les congés posés à venir. Est-ce que cette requête répond à mon besoin?",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Aucune des propositions.", valeur: false },
-    //           {
-    //             texte: "Oui, tout les congés futurs sont maintenant acceptés",
-    //             valeur: true,
-    //           },
-    //           {
-    //             texte:
-    //               "Erreur, statut ne peut pas prendre la valeur 'Accepté'. Uniquement true ou false",
-    //             valeur: true,
-    //           },
-    //           {
-    //             texte: "Erreur, impossible de combiner les clauses UPDATE et WHERE",
-    //             valeur: true,
-    //           },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    //       {
-    //         id: "52",
-    //         difficulte: 1,
-    //         codeSnippets: [`DELETE FROM conge WHERE statut = 'Refusé'`],
-    //         question:
-    //           "Je souhaite supprimer les congés refusés. Pour cela, j'utilise cette requête. Cochez la bonne réponse",
-    //         propositions: [],
-    //         reponses: [
-    //           { texte: "Aucune des propositions.", valeur: false },
-    //           {
-    //             texte: "Les congés dont le statut est 'Refusé' sont supprimés",
-    //             valeur: true,
-    //           },
-    //           {
-    //             texte: "Erreur, impossible de combiner les clauses DELETE et WHERE",
-    //             valeur: false,
-    //           },
-    //         ],
-    //         nbrReponseCorrecte: () => {
-    //           return this.reponses.filter((p) => p.valeur === true).length;
-    //         },
-    //       },
-    // {
-    //   id: "53",
-    //   difficulte: 1,
-    //   codeSnippets: [],
-    //   question: "",
-    //   propositions: [
-    //     "1) ",
-    //     "2) ",
-    //     "3) ",
-    //     "4) ",
-    //     "5) ",
-    //   ],
-    //   reponses: [
-    //     { texte: "Toutes les propositions.", valeur: false },
-    //     { texte: "Aucune des propositions.", valeur: false },
-    //     { texte: "", valeur: false },
-    //   ],
-    //   nbrReponseCorrecte: () => {
-    //     return this.reponses.filter(p => p.valeur === true).length;
-    //   }
-    // },
-    // {
-    //   id: "54",
-    //   difficulte: 1,
-    //   codeSnippets: [],
-    //   question: "",
-    //   propositions: [
-    //     "1) ",
-    //     "2) ",
-    //     "3) ",
-    //     "4) ",
-    //     "5) ",
-    //   ],
-    //   reponses: [
-    //     { texte: "Toutes les propositions.", valeur: false },
-    //     { texte: "Aucune des propositions.", valeur: false },
-    //     { texte: "", valeur: false },
-    //   ],
-    //   nbrReponseCorrecte: () => {
-    //     return this.reponses.filter(p => p.valeur === true).length;
-    //   }
-    // },
-    // {
-    //   id: "55",
-    //   difficulte: 1,
-    //   codeSnippets: [],
-    //   question: "",
-    //   propositions: [
-    //     "1) ",
-    //     "2) ",
-    //     "3) ",
-    //     "4) ",
-    //     "5) ",
-    //   ],
-    //   reponses: [
-    //     { texte: "Toutes les propositions.", valeur: false },
-    //     { texte: "Aucune des propositions.", valeur: false },
-    //     { texte: "", valeur: false },
-    //   ],
-    //   nbrReponseCorrecte: () => {
-    //     return this.reponses.filter(p => p.valeur === true).length;
-    //   }
-    // },
-    // {
-    //   id: "56",
-    //   difficulte: 1,
-    //   codeSnippets: [],
-    //   question: "",
-    //   propositions: [
-    //     "1) ",
-    //     "2) ",
-    //     "3) ",
-    //     "4) ",
-    //     "5) ",
-    //   ],
-    //   reponses: [
-    //     { texte: "Toutes les propositions.", valeur: false },
-    //     { texte: "Aucune des propositions.", valeur: false },
-    //     { texte: "", valeur: false },
-    //   ],
-    //   nbrReponseCorrecte: () => {
-    //     return this.reponses.filter(p => p.valeur === true).length;
-    //   }
-    // },
-    // {
-    //   id: "57",
-    //   difficulte: 1,
-    //   codeSnippets: [],
-    //   question: "",
-    //   propositions: [
-    //     "1) ",
-    //     "2) ",
-    //     "3) ",
-    //     "4) ",
-    //     "5) ",
-    //   ],
-    //   reponses: [
-    //     { texte: "Toutes les propositions.", valeur: false },
-    //     { texte: "Aucune des propositions.", valeur: false },
-    //     { texte: "", valeur: false },
-    //   ],
-    //   nbrReponseCorrecte: () => {
-    //     return this.reponses.filter(p => p.valeur === true).length;
-    //   }
-    // },
-    // {
-    //   id: "58",
-    //   difficulte: 1,
-    //   codeSnippets: [],
-    //   question: "",
-    //   propositions: [
-    //     "1) ",
-    //     "2) ",
-    //     "3) ",
-    //     "4) ",
-    //     "5) ",
-    //   ],
-    //   reponses: [
-    //     { texte: "Toutes les propositions.", valeur: false },
-    //     { texte: "Aucune des propositions.", valeur: false },
-    //     { texte: "", valeur: false },
-    //   ],
-    //   nbrReponseCorrecte: () => {
-    //     return this.reponses.filter(p => p.valeur === true).length;
-    //   }
-    // },
-    // {
-    //   id: "59",
-    //   difficulte: 1,
-    //   codeSnippets: [],
-    //   question: "",
-    //   propositions: [
-    //     "1) ",
-    //     "2) ",
-    //     "3) ",
-    //     "4) ",
-    //     "5) ",
-    //   ],
-    //   reponses: [
-    //     { texte: "Toutes les propositions.", valeur: false },
-    //     { texte: "Aucune des propositions.", valeur: false },
-    //     { texte: "", valeur: false },
-    //   ],
-    //   nbrReponseCorrecte: () => {
-    //     return this.reponses.filter(p => p.valeur === true).length;
-    //   }
-    // },
-    // {
-    //   id: "60",
-    //   difficulte: 1,
-    //   codeSnippets: [],
-    //   question: "",
-    //   propositions: [
-    //     "1) ",
-    //     "2) ",
-    //     "3) ",
-    //     "4) ",
-    //     "5) ",
-    //   ],
-    //   reponses: [
-    //     { texte: "Toutes les propositions.", valeur: false },
-    //     { texte: "Aucune des propositions.", valeur: false },
-    //     { texte: "", valeur: false },
-    //   ],
-    //   nbrReponseCorrecte: () => {
-    //     return this.reponses.filter(p => p.valeur === true).length;
-    //   }
-    // },
-    // {
-    //   id: "61",
-    //   difficulte: 1,
-    //   codeSnippets: [],
-    //   question: "",
-    //   propositions: [
-    //     "1) ",
-    //     "2) ",
-    //     "3) ",
-    //     "4) ",
-    //     "5) ",
-    //   ],
-    //   reponses: [
-    //     { texte: "Toutes les propositions.", valeur: false },
-    //     { texte: "Aucune des propositions.", valeur: false },
-    //     { texte: "", valeur: false },
-    //   ],
-    //   nbrReponseCorrecte: () => {
-    //     return this.reponses.filter(p => p.valeur === true).length;
-    //   }
-    // },
-    // {
-    //   id: "62",
-    //   difficulte: 1,
-    //   codeSnippets: [],
-    //   question: "",
-    //   propositions: [
-    //     "1) ",
-    //     "2) ",
-    //     "3) ",
-    //     "4) ",
-    //     "5) ",
-    //   ],
-    //   reponses: [
-    //     { texte: "Toutes les propositions.", valeur: false },
-    //     { texte: "Aucune des propositions.", valeur: false },
-    //     { texte: "", valeur: false },
-    //   ],
-    //   nbrReponseCorrecte: () => {
-    //     return this.reponses.filter(p => p.valeur === true).length;
-    //   }
-    // },
-    // {
-    //   id: "63",
-    //   difficulte: 1,
-    //   codeSnippets: [],
-    //   question: "",
-    //   propositions: [
-    //     "1) ",
-    //     "2) ",
-    //     "3) ",
-    //     "4) ",
-    //     "5) ",
-    //   ],
-    //   reponses: [
-    //     { texte: "Toutes les propositions.", valeur: false },
-    //     { texte: "Aucune des propositions.", valeur: false },
-    //     { texte: "", valeur: false },
-    //   ],
-    //   nbrReponseCorrecte: () => {
-    //     return this.reponses.filter(p => p.valeur === true).length;
-    //   }
-    // },
-    // {
-    //   id: "64",
-    //   difficulte: 1,
-    //   codeSnippets: [],
-    //   question: "",
-    //   propositions: [
-    //     "1) ",
-    //     "2) ",
-    //     "3) ",
-    //     "4) ",
-    //     "5) ",
-    //   ],
-    //   reponses: [
-    //     { texte: "Toutes les propositions.", valeur: false },
-    //     { texte: "Aucune des propositions.", valeur: false },
-    //     { texte: "", valeur: false },
-    //   ],
-    //   nbrReponseCorrecte: () => {
-    //     return this.reponses.filter(p => p.valeur === true).length;
-    //   }
-    // },
-    // {
-    //   id: "65",
-    //   difficulte: 1,
-    //   codeSnippets: [],
-    //   question: "",
-    //   propositions: [
-    //     "1) ",
-    //     "2) ",
-    //     "3) ",
-    //     "4) ",
-    //     "5) ",
-    //   ],
-    //   reponses: [
-    //     { texte: "Toutes les propositions.", valeur: false },
-    //     { texte: "Aucune des propositions.", valeur: false },
-    //     { texte: "", valeur: false },
-    //   ],
-    //   nbrReponseCorrecte: () => {
-    //     return this.reponses.filter(p => p.valeur === true).length;
-    //   }
-    // },
-  ];
+      //       {
+      //         id: "15",
+      //         difficulte: 1,
+      //         codeSnippets: [
+      //           `ALTER TABLE dossier_medical SWITCH CONSTRAINT dossier_medical_pkey
+      // FROM dossier_medical.digital TO dossier_medical.identifiant_patient;`,
+      //         ],
+      //         question:
+      //           "Par erreur, la PK (dossier_medical_pkey) de la table dossier_medical a été initialisée sur la colonne 'digital'. On souhaite corriger cette erreur avec la requête suivante. Cochez la bonne réponse.",
+      //         propositions: [],
+      //         reponses: [
+      //           {
+      //             texte:
+      //               "La contrainte de PK est correctement passée de la colonne digital à la colonne identifiant_patient",
+      //             valeur: false,
+      //           },
+      //           {
+      //             texte:
+      //               "La contrainte de PK n'est pas correctement modifiée. La colonne FROM et la colonne TO doivent avoir le même type",
+      //             valeur: false,
+      //           },
+      //           {
+      //             texte:
+      //               "La contrainte de PK n'est pas correctement modifiée. Erreur de syntaxe",
+      //             valeur: true,
+      //           },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "16",
+      //         difficulte: 1,
+      //         codeSnippets: [
+      //           `ALTER TABLE dossier_medical DROP CONSTRAINT dossier_medical_pkey;
+      // ALTER TABLE dossier_medical ADD PRIMARY KEY(identifiant_patient);`,
+      //         ],
+      //         question:
+      //           "Par erreur, la PK (dossier_medical_pkey) de la table dossier_medical a été initialisée sur la colonne 'digital'. On souhaite corriger cette erreur avec les 2 requêtes suivantes. Cochez la bonne réponse.",
+      //         propositions: [],
+      //         reponses: [
+      //           {
+      //             texte:
+      //               "La contrainte de PK est correctement passée de la colonne digital à la colonne identifiant_patient",
+      //             valeur: true,
+      //           },
+      //           {
+      //             texte:
+      //               "La contrainte de PK n'est pas correctement modifiée. La PRIMARY KEY doit être retirée et réappliquée dans la même requête pour ne pas compremettre l'intégrité des données.",
+      //             valeur: false,
+      //           },
+      //           {
+      //             texte:
+      //               "La contrainte de PK n'est pas correctement modifiée. Erreur de syntaxe",
+      //             valeur: false,
+      //           },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "17",
+      //         difficulte: 1,
+      //         codeSnippets: [
+      //           `-- A
+      // CREATE TABLE conge(
+      //   identifiant_praticien varchar(32),
+      //   date_debut date,
+      //   -- reste des colonnes
+      //   PRIMARY KEY(identifiant_praticien, date_debut)
+      // );`,
+      //           `-- B
+      // CREATE TABLE conge(
+      //   identifiant_praticien varchar(32) PRIMARY KEY,
+      //   date_debut date PRIMARY KEY,
+      //   -- reste des colonnes
+      // );`,
+      //         ],
+      //         question: "Pour les requêtes suivantes cocher la bonne proposition",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Aucune des propositions suivantes", valeur: false },
+      //           {
+      //             texte:
+      //               "Les deux requêtes permettent de créer une table 'conge avec une clé primaire sur 'identifiant_praticien' et 'date_debut' ",
+      //             valeur: false,
+      //           },
+      //           {
+      //             texte:
+      //               "La requête A uniquement permet de créer une table 'conge' avec une clé primaire sur 'identifiant_praticien' et 'date_debut' ",
+      //             valeur: true,
+      //           },
+      //           {
+      //             texte:
+      //               "La requête B uniquement permet de créer une table 'conge' avec une clé primaire sur 'identifiant_praticien' et 'date_debut' ",
+      //             valeur: false,
+      //           },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "18",
+      //         difficulte: 1,
+      //         codeSnippets: [
+      //           `CREATE DATABASE conge(
+      //   identifiant_praticien varchar(32),
+      //   date_debut date,
+      //   date_fin date,
+      //   statut varchar(32),
+      //   PRIMARY KEY(identifiant_praticien, date_debut)
+      // );`,
+      //         ],
+      //         question:
+      //           "Pour créer la table 'conge', cette requête est utilisée. Quelle en sera le résultat?",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Aucune des propositions suivantes", valeur: false },
+      //           { texte: "Erreur de type", valeur: false },
+      //           { texte: "Erreur de contrainte de clé primaire", valeur: false },
+      //           { texte: "Erreur de syntaxe", valeur: true },
+      //           { texte: "Création de la table 'conge'", valeur: false },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "19",
+      //         difficulte: 2,
+      //         codeSnippets: [],
+      //         question:
+      //           "Considérant la table praticien déjà créée et avec la clé primaire renseignée sur le diagramme. Je souhaite ajouter une clé primaire sur la colonne debut_contrat. Sélectionnez la bonne proposition",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Aucune des propositions suivantes.", valeur: false },
+      //           {
+      //             texte:
+      //               "Impossible d'ajouter la clé : il ne peut y avoir qu'une clé primaire par table",
+      //             valeur: true,
+      //           },
+      //           {
+      //             texte: "Impossible d'ajouter la clé : type incohérent",
+      //             valeur: false,
+      //           },
+      //           {
+      //             texte:
+      //               "Il est possible que cela fonctionne ou pas. Cela dépend des données de la table.",
+      //             valeur: false,
+      //           },
+      //           {
+      //             texte:
+      //               "La clé est ajoutée car le type de la colonne n'est pas nullable. L'intégrité des données est assurée.",
+      //             valeur: false,
+      //           },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "20",
+      //         difficulte: 2,
+      //         codeSnippets: [],
+      //         question: `Par simplicité, je souhaite modifier la clé primaire de la table 'praticien'.
+      //       Cochez la ou les propositions valides.
+      //       On considère que je ne fais strictement que ces 3 étapes et dans cet ordre`,
+      //         propositions: [
+      //           `1) Je retire la clé actuelle,`,
+      //           `2) Je rajoute une colonne 'id' de type 'int' `,
+      //           `3) Je crée une contrainte de primary key sur id. `,
+      //         ],
+      //         reponses: [
+      //           { texte: "Aucune des propositions suivantes.", valeur: false },
+      //           { texte: "Erreur lors du retrait de la clé", valeur: false },
+      //           { texte: "Erreur lors de l'ajout de la colonne", valeur: false },
+      //           {
+      //             texte: "Erreur lors de l'ajout de la contrainte de clé primaire",
+      //             valeur: true,
+      //           },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "21",
+      //         difficulte: 2,
+      //         codeSnippets: [],
+      //         question:
+      //           "Considérant la table praticien déjà créée et sans clé primaire. Je souhaite ajouter une clé primaire sur la colonne debut_contrat. Sélectionnez la ou les bonnes propositions",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Aucune des propositions suivantes.", valeur: false },
+      //           {
+      //             texte: "Impossible d'ajouter la clé : type incohérent",
+      //             valeur: false,
+      //           },
+      //           {
+      //             texte:
+      //               "Il est possible que cela fonctionne ou pas. Cela dépend des données de la table.",
+      //             valeur: true,
+      //           },
+      //           {
+      //             texte:
+      //               "La clé est ajoutée car le type de la colonne n'est pas nullable. L'intégrité des données est assurée.",
+      //             valeur: false,
+      //           },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "22",
+      //         difficulte: 1,
+      //         codeSnippets: [
+      //           `CREATE TABLE personne(
+      //   identifiant_interne varchar(32) PRIMARY KEY,
+      //   prenom varchar(32),
+      //   nom varchar(32),
+      //   telephone varchar(32)
+      // );`,
+      //         ],
+      //         question:
+      //           "Considérant que la table 'personne' n'est pas encore créée, cochez la proposition valide pour la requête suivante.",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Aucune des propositions suivantes.", valeur: true },
+      //           { texte: "Erreur de syntaxe", valeur: false },
+      //           { texte: "Erreur de type", valeur: false },
+      //           {
+      //             texte: "Erreur dans la définition de la contrainte de clé primaire",
+      //             valeur: false,
+      //           },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "23",
+      //         difficulte: 1,
+      //         codeSnippets: [
+      //           `-- A
+      // ALTER TABLE praticien ALTER COLUMN debut_contrat SET NOT NULL;`,
+      //           `-- B
+      // ALTER TABLE praticien ALTER COLUMN fin_contrat SET NULL;`,
+      //         ],
+      //         question:
+      //           "Considérant la table praticien décrite dans le diagramme, sélectionnez laquelle de ces requêtes est correcte",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Toutes les propositions.", valeur: false },
+      //           { texte: "Aucune des propositions.", valeur: false },
+      //           { texte: "La requête A", valeur: true },
+      //           { texte: "La requête B", valeur: false },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "24",
+      //         difficulte: 1,
+      //         codeSnippets: [
+      //           `ALTER TABLE praticien
+      //   ADD CONSTRAINT fk_praticien_personne FOREIGN KEY (identifiant_praticien)
+      //   REFERENCES personne (identifiant_interne);`,
+      //         ],
+      //         question:
+      //           "Après avoir défini cette contrainte de clé étrangère, quel aura l'impacte de la suppression d'un 'praticien'?",
+      //         propositions: [],
+      //         reponses: [
+      //           {
+      //             texte:
+      //               "Erreur : impossible de supprimer le praticien, il faut passer par la personne liée",
+      //             valeur: false,
+      //           },
+      //           { texte: "Un praticien est supprimé", valeur: true },
+      //           {
+      //             texte: "Un praticien et la personne liée sont supprimés",
+      //             valeur: false,
+      //           },
+      //           { texte: "Une personne est supprimée", valeur: false },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "25",
+      //         difficulte: 1,
+      //         codeSnippets: [
+      //           `ALTER TABLE praticien
+      //   ADD CONSTRAINT fk_praticien_personne FOREIGN KEY (identifiant_praticien)
+      //   REFERENCES personne (identifiant_interne);`,
+      //         ],
+      //         question:
+      //           "Cochez toutes les propositions 'possibles' à la suppression d'une 'personne' après avoir défini cette contrainte de clé étrangère",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Aucune des propositions suivantes", valeur: true },
+      //           {
+      //             texte: "Erreur, impossible de supprimer la personne",
+      //             valeur: true,
+      //           },
+      //           { texte: "Suppression de la personne", valeur: true },
+      //           { texte: "Suppression d'un praticien", valeur: true },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "26",
+      //         difficulte: 1,
+      //         codeSnippets: [],
+      //         question:
+      //           "Lors de la création d'une clé étrangère, quelle comportement 'ON DELETE' est appliqué par défaut",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Aucune des propositions.", valeur: true },
+      //           { texte: "CASCADE", valeur: false },
+      //           { texte: "RESTRICT", valeur: false },
+      //           { texte: "SET DEFAULT", valeur: false },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "27",
+      //         difficulte: 1,
+      //         codeSnippets: [],
+      //         question:
+      //           "Lors de la création d'une clé étrangère, quelle comportement 'ON UPDATE' est appliqué par défaut",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Aucune des propositions.", valeur: false },
+      //           { texte: "SET NULL", valeur: false },
+      //           { texte: "THROW", valeur: false },
+      //           { texte: "NO ACTION", valeur: true },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "28",
+      //         difficulte: 1,
+      //         codeSnippets: [
+      //           `ALTER TABLE praticien
+      //   ADD CONSTRAINT fk_praticien_personne FOREIGN KEY (identifiant_praticien)
+      //   REFERENCES personne (identifiant_interne);
+      // ALTER TABLE patient
+      //   ADD CONSTRAINT fk_patient_personne FOREIGN KEY (identifiant_interne)
+      //   REFERENCES personne (identifiant_interne);`,
+      //         ],
+      //         question:
+      //           "Cochez la ou les informations correctes après application du code suivant",
+      //         propositions: [],
+      //         reponses: [
+      //           {
+      //             texte:
+      //               "Une personne peut exister sans être un praticien, mais elle doit être un patient",
+      //             valeur: false,
+      //           },
+      //           {
+      //             texte:
+      //               "Une personne peut exister sans être un patient, mais elle doit alors être un praticien",
+      //             valeur: false,
+      //           },
+      //           {
+      //             texte:
+      //               "Une personne peut exister sans être ni un praticien, ni un patient",
+      //             valeur: false,
+      //           },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "29",
+      //         difficulte: 1,
+      //         codeSnippets: [
+      //           `-- A
+      // ALTER TABLE patient ADD COLUMN inscrit_maison_medical boolean;`,
+      //           `-- B
+      // UPDATE TABLE patient ADD COLUMN inscrit_maison_medical boolean;`,
+      //           `-- C
+      // MODIFY TABLE patient ADD COLUMN inscrit_maison_medical boolean;`,
+      //         ],
+      //         question:
+      //           "Considérant que la table 'patient' a été créée sans la colonne 'inscrit_maison_medicale', quelle requête permet d'ajouter cette colonne?",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Aucune des propositions.", valeur: false },
+      //           { texte: "La requête A", valeur: false },
+      //           { texte: "La requête B", valeur: false },
+      //           { texte: "La requête C", valeur: false },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "30",
+      //         difficulte: 1,
+      //         codeSnippets: [],
+      //         question:
+      //           "Considérant que la table 'patient' a été créée sans la colonne 'inscrit_maison_medicale', on tente de l'ajouter en modifiant par après. Cochez là ou les bonnes réponses",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Aucune des propositions.", valeur: false },
+      //           {
+      //             texte:
+      //               "Impossible d'ajouter une colonne dans une table existante. Il faut la supprimer et la créer avec toutes les colonnes",
+      //             valeur: false,
+      //           },
+      //           {
+      //             texte:
+      //               "Il est possible de rajouter cette nouvelle colonne, mais, pour chaque ligne de la table, une valeur [null] sera attribuée à la nouvelle colonne",
+      //             valeur: true,
+      //           },
+      //           {
+      //             texte:
+      //               "Il est possible de rajouter cette nouvelle colonne, mais elle n'entre en compte que pour les lignes insérées par après",
+      //             valeur: false,
+      //           },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "31",
+      //         difficulte: 2,
+      //         codeSnippets: [
+      //           `-- A
+      // INSERT INTO personne
+      // VALUES('JDOE', 'Jon', 'Doe', '+3247777777');`,
+      //           `-- B
+      // INSERT INTO personne (identifiant_interne, prenom, nom)
+      // VALUES('JLEN', 'John', 'Lennon');`,
+      //           `-- C
+      // INSERT INTO personne (identifiant_interne, prenom, nom, telephone)
+      // VALUES('JARB', 'Jon', 'Arbuckle', '+35247777777');`,
+      //           `-- D
+      // INSERT INTO personne (telephone, prenom, nom, identifiant_interne)
+      // VALUES('+3347777777', 'Jon', 'Bon Jovi', 'JBON');`,
+      //         ],
+      //         question: "Laquelle de ces requête permet de créer une personne",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Aucune des propositions ci-dessous.", valeur: false },
+      //           { texte: "Toutes les requêtes.", valeur: false },
+      //           { texte: "Aucune des requêtes.", valeur: false },
+      //           { texte: "Les requêtes A, B et C.", valeur: false },
+      //           { texte: "Les requêtes B, C et D.", valeur: false },
+      //           { texte: "Les requêtes A, C, et D.", valeur: true },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "32",
+      //         difficulte: 1,
+      //         codeSnippets: [
+      //           `INSERT INTO personne (identifiant_interne, prenom, nom)
+      // VALUES('BMAR', 'Bob', 'Marley'),
+      // ('BLEN', 'Bob', 'Lennon'),
+      // ('BAFF', 'Bob', 'Affet');`,
+      //         ],
+      //         question: "Quel sera le résultat de cette requête?",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Aucune des propositions.", valeur: false },
+      //           { texte: "Erreur, aucune personne n'est enregistrée", valeur: false },
+      //           {
+      //             texte: "Erreur, seule la première personne est enregistrée",
+      //             valeur: false,
+      //           },
+      //           { texte: "Les trois personnes enregistrées", valeur: false },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "33",
+      //         difficulte: 1,
+      //         codeSnippets: [
+      //           `INSERT INTO personne
+      // VALUES('SLJA', 'Sammuel L.', 'Jackson', '0032477777777');`,
+      //           `INSERT INTO personne (identifiant_interne, prenom, nom, telephone)
+      // VALUES('SLJA', 'Sammuel L.', 'Jackson', '0032477777777');`,
+      //         ],
+      //         question: "Prise individuellement, ces deux requêtes",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Aucune des propositions ci-dessous", valeur: false },
+      //           { texte: "Les deux propositions ci-dessous", valeur: false },
+      //           { texte: "Résultent en une erreur", valeur: false },
+      //           { texte: "Sont fonctionnellement identique", valeur: true },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "34",
+      //         difficulte: 2,
+      //         codeSnippets: [
+      //           `INSERT INTO patient
+      // (SELECT identifiant_interne FROM personne)`,
+      //         ],
+      //         question: "Quel aura pour effet cette requête?",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Aucune des propositions.", valeur: true },
+      //           {
+      //             texte: "Toutes les propositions suivantes spécifiant une erreur.",
+      //             valeur: false,
+      //           },
+      //           { texte: "Erreur, clause WHERE manquante", valeur: false },
+      //           {
+      //             texte: "Erreur, mot-clé INSERT et SELECT incompatible",
+      //             valeur: false,
+      //           },
+      //           {
+      //             texte:
+      //               "Réussite, plusieurs patients sont insérés en base de données",
+      //             valeur: false,
+      //           },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "35",
+      //         difficulte: 1,
+      //         codeSnippets: [
+      //           `-- A
+      // SELECT identifiant_interne FROM personne
+      // WHERE identifiant_interne NOT IN
+      // (SELECT pr.identifiant_praticien FROM praticien as pr
+      // LEFT JOIN personne as pe
+      // 	on pr.identifiant_praticien = pe.identifiant_interne)`,
+      //           `-- B
+      // SELECT identifiant_interne FROM personne as pe
+      // LEFT JOIN praticien as pr
+      // ON pr.identifiant_praticien = pe.identifiant_interne
+      // WHERE pr.identifiant_praticien IS NULL`,
+      //         ],
+      //         question:
+      //           "Pour ces deux requêtes, sélectionnez les bonnes propositions",
+      //         propositions: [],
+      //         reponses: [
+      //           {
+      //             texte: "Elles résultent toutes les deux en une erreur",
+      //             valeur: false,
+      //           },
+      //           { texte: "La requête A échoue et la B réussi", valeur: false },
+      //           { texte: "La requête B échoue et la A réussi", valeur: false },
+      //           {
+      //             texte:
+      //               "Les deux requêtes réussissent et produisent le même résultat",
+      //             valeur: true,
+      //           },
+      //           {
+      //             texte:
+      //               "Les deux requêtes réussissent et produisent un résultat différent",
+      //             valeur: false,
+      //           },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "36",
+      //         difficulte: 1,
+      //         codeSnippets: [
+      //           `INSERT INTO patient (identifiant_interne, nom_generaliste, telephone_generaliste, personne_contact, inscrit_maison_medical)
+      // VALUES ('SLEG', 'Dupont Luc', '0035245784575', 'SLEG', false);`,
+      //         ],
+      //         question:
+      //           "Considérant qu'un enregistrement existe dans la table 'personne' avec l'identifiant_interne 'SLEG', quel sera le résultat de cette requête",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Aucune des valeurs ci-dessous", valeur: false },
+      //           {
+      //             texte:
+      //               "Erreur, la valeur SLEG est déjà utilisée et une PRIMARY KEY ne peut être dupliquée",
+      //             valeur: false,
+      //           },
+      //           {
+      //             texte:
+      //               "Erreur, la valeur SLEG ne peut être utilisée, dans la table patient, pour deux FOREIGN KEY différente",
+      //             valeur: false,
+      //           },
+      //           {
+      //             texte: "Réussite, un patient est enregistré en base de données",
+      //             valeur: true,
+      //           },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "37",
+      //         difficulte: 1,
+      //         codeSnippets: [
+      //           `INSERT INTO specialite_medicale(nom, description)
+      // VALUES ('Pédiatrie', '');
+      // INSERT INTO praticien_specialite_medicale (identifiant_praticien, nom_specialite_medicale)
+      // VALUES ('JDOE', 'Pédiatrie');`,
+      //         ],
+      //         question:
+      //           "Considérant qu'un praticien est enregistré avec l'identifiant JDOE, on tente d'exécuter ces deux requêtes. Quel sera le résultat?",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Erreur, les deux requêtes échouent", valeur: false },
+      //           {
+      //             texte: "Réussite partielle, une des requête échoue",
+      //             valeur: false,
+      //           },
+      //           { texte: "Réussite, les deux requêtes fonctionnent", valeur: true },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "38",
+      //         difficulte: 1,
+      //         codeSnippets: [
+      //           `INSERT INTO praticien_specialite_medicale (identifiant_praticien, nom_specialite_medicale)
+      // VALUES ('JDOE', 'Généraliste');
+      // INSERT INTO specialite_medicale(nom, description)
+      // VALUES ('Généraliste', '');`,
+      //         ],
+      //         question:
+      //           "Considérant qu'un praticien est enregistré avec l'identifiant JDOE, on tente d'exécuter ces deux requêtes. Quel sera le résultat?",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Erreur, les deux requêtes échouent", valeur: false },
+      //           {
+      //             texte: "Réussite partielle, une des requête échoue",
+      //             valeur: false,
+      //           },
+      //           { texte: "Réussite, les deux requêtes fonctionnent", valeur: true },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "39",
+      //         difficulte: 1,
+      //         codeSnippets: [
+      //           `INSERT INTO specialite_medicale(nom, description)
+      // VALUES ('', '');`,
+      //         ],
+      //         question:
+      //           "Considérant une table 'specialite_medicale' sans données, quel sera le résultat de cette requête?",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Aucune des propositions ci-dessous", valeur: false },
+      //           {
+      //             texte: "Erreur, une valeur est requise pour la PRIMARY KEY",
+      //             valeur: false,
+      //           },
+      //           { texte: "Erreur, syntaxe incorrecte", valeur: false },
+      //           { texte: "Réussite", valeur: true },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "40",
+      //         questionnaire: ["A", "B"],
+      //         difficulte: 1,
+      //         codeSnippets: [
+      //           `-- A
+      // SELECT * FROM specialite_medicale`,
+      //           `-- B
+      // SELECT nom, description FROM specialite_medicale`,
+      //         ],
+      //         question:
+      //           "Sans considération pour l'ordre des colonnes ou des rangées, sélectionnez la bonne affirmation pour ces deux requêtes",
+      //         propositions: [],
+      //         reponses: [
+      //           {
+      //             texte: "La requête A récupère plus de colonnes que la B",
+      //             valeur: false,
+      //           },
+      //           {
+      //             texte: "La requête B récupère plus de colonnes que la A",
+      //             valeur: false,
+      //           },
+      //           {
+      //             texte: "Les deux requêtes récupère les mêmes informations",
+      //             valeur: true,
+      //           },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "41",
+      //         questionnaire: ["A", "B"],
+      //         difficulte: 1,
+      //         codeSnippets: [
+      //           `-- A
+      // WHERE description = ''`,
+      //           `-- B
+      // WHERE description LIKE '%'`,
+      //           `--C
+      // WHERE description LIKE '_'`,
+      //         ],
+      //         question:
+      //           "Laquelle de ces propositions permet de récupérer toutes les specialités médicales lors d'un `SELECT * FROM specialite_medicale`",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Toutes les propositions.", valeur: false },
+      //           { texte: "Aucune des propositions.", valeur: false },
+      //           { texte: "La proposition A", valeur: false },
+      //           { texte: "La proposition B", valeur: false },
+      //           { texte: "La proposition C", valeur: false },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "42",
+      //         difficulte: 1,
+      //         codeSnippets: [
+      //           `SELECT * FROM specialite_medicale as sm
+      // [---] JOIN praticien_specialite_medicale AS psm
+      // ON psm.nom_specialite_medicale = sm.nom;`,
+      //         ],
+      //         question:
+      //           "Je ne souhaite récupérer que les spécialités médicales attribuées à au moins un praticien. Quelle mot clé utiliser à la place des [---]",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Toutes les propositions.", valeur: false },
+      //           { texte: "Aucune des propositions.", valeur: false },
+      //           { texte: "LEFT", valeur: false },
+      //           { texte: "INNER", valeur: true },
+      //           { texte: "RIGHT", valeur: false },
+      //           { texte: "CROSS", valeur: false },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "43",
+      //         difficulte: 2,
+      //         codeSnippets: [
+      //           `-- A
+      // SELECT identifiant_interne FROM personne AS p
+      // JOIN patient AS pa
+      // ON pa.identifiant_interne = p.identifiant_interne;`,
+      //           `-- B
+      // SELECT identifiant_interne FROM personne AS p
+      // JOIN praticien AS pr
+      // ON pr.identifiant_praticien = p.identifiant_interne;`,
+      //         ],
+      //         question: "Ces requêtes sont utilisées. Cochez la bonne réponse",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "La requête A et B fonctionnent", valeur: false },
+      //           { texte: "La requête A fonctionne. La B échoue.", valeur: false },
+      //           {
+      //             texte: "La requête A échoue. La requête B fonctionne",
+      //             valeur: true,
+      //           },
+      //           { texte: "La requête A et B échouent", valeur: false },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "44",
+      //         difficulte: 2,
+      //         codeSnippets: [
+      //           `-- A
+      // SELECT * FROM specialite_medicale as sm
+      // INNER JOIN praticien_specialite_medicale AS psm
+      // ON psm.nom_specialite_medicale = sm.nom;`,
+      //           `-- B
+      // SELECT * FROM specialite_medicale as sm
+      // JOIN praticien_specialite_medicale AS psm
+      // ON psm.nom_specialite_medicale = sm.nom;`,
+      //         ],
+      //         question: "Les deux requêtes sont utilisées. Cochez la bonne réponse",
+      //         propositions: [],
+      //         reponses: [
+      //           {
+      //             texte: "La requête A retourne plus de rangées que la B",
+      //             valeur: false,
+      //           },
+      //           {
+      //             texte: "La requête B retourne plus de rangées que la A",
+      //             valeur: false,
+      //           },
+      //           {
+      //             texte: "Les deux requêtes retournent le même nombre de rangées",
+      //             valeur: true,
+      //           },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "45",
+      //         difficulte: 3,
+      //         codeSnippets: [
+      //           `-- A
+      // SELECT identifiant_interne FROM personne AS p
+      // LEFT JOIN praticien AS pr
+      // ON pr.identifiant_praticien = p.identifiant_interne;`,
+      //           `-- B
+      // SELECT identifiant_interne FROM praticien AS pr
+      // LEFT JOIN personne AS p
+      // ON pr.identifiant_praticien = p.identifiant_interne;`,
+      //         ],
+      //         question:
+      //           "Considérant que des données existent pour des praticiens et des patients, cochez la bonne réponse pour comparer ces deux requêtes",
+      //         propositions: [],
+      //         reponses: [
+      //           {
+      //             texte: "La requête A retourne plus de rangées que la requête B",
+      //             valeur: true,
+      //           },
+      //           {
+      //             texte: "La requête B retourne plus de rangées que la requête A",
+      //             valeur: false,
+      //           },
+      //           {
+      //             texte: "Les deux requêtes retournent le même nombre de rangées",
+      //             valeur: false,
+      //           },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "46",
+      //         difficulte: 3,
+      //         codeSnippets: [
+      //           `-- A
+      // SELECT identifiant_interne FROM personne AS p
+      // RIGHT JOIN praticien AS pr
+      // ON pr.identifiant_praticien = p.identifiant_interne;`,
+      //           `-- B
+      // SELECT identifiant_interne FROM personne AS p
+      // LEFT JOIN praticien AS pr
+      // ON pr.identifiant_praticien = p.identifiant_interne;`,
+      //         ],
+      //         question:
+      //           "Considérant que des données existent pour des praticiens et des patients, cochez la bonne réponse pour comparer ces deux requêtes",
+      //         propositions: [],
+      //         reponses: [
+      //           {
+      //             texte: "La requête A retourne plus de rangées que la requête B",
+      //             valeur: false,
+      //           },
+      //           {
+      //             texte: "La requête B retourne plus de rangées que la requête A",
+      //             valeur: true,
+      //           },
+      //           {
+      //             texte: "Les deux requêtes retournent le même nombre de rangées",
+      //             valeur: false,
+      //           },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "47",
+      //         difficulte: 1,
+      //         codeSnippets: [
+      //           `-- A
+      // SELECT * FROM conge
+      // WHERE date_debut > CURRENT_DATE AND date_fin < CURRENT_DATE;`,
+      //           `-- B
+      // SELECT * FROM conge
+      // WHERE date_debut > CURRENT_DATE OR date_fin < CURRENT_DATE;`,
+      //           `-- C
+      // SELECT * FROM conge
+      // WHERE date_debut <= CURRENT_DATE AND date_fin > CURRENT_DATE;`,
+      //           `-- D
+      // SELECT * FROM conge
+      // WHERE date_debut <= CURRENT_DATE OR date_fin > CURRENT_DATE;`,
+      //         ],
+      //         question:
+      //           "Laquelle de ces requêtes permet de récupérer les identifiant des praticiens en congé aujourd'hui",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Toutes les propositions.", valeur: false },
+      //           { texte: "Aucune des propositions.", valeur: false },
+      //           { texte: "La requête A", valeur: false },
+      //           { texte: "La requête B", valeur: false },
+      //           { texte: "La requête C", valeur: true },
+      //           { texte: "La requête D", valeur: false },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "48",
+      //         difficulte: 2,
+      //         codeSnippets: [
+      //           `-- A
+      // SELECT * FROM conge
+      // WHERE date_debut > CURRENT_DATE AND date_fin < CURRENT_DATE;`,
+      //           `-- B
+      // SELECT * FROM conge
+      // WHERE date_debut > CURRENT_DATE OR date_fin < CURRENT_DATE;`,
+      //           `-- C
+      // SELECT * FROM conge
+      // WHERE date_debut <= CURRENT_DATE AND date_fin > CURRENT_DATE;`,
+      //           `-- D
+      // SELECT * FROM conge
+      // WHERE date_debut <= CURRENT_DATE OR date_fin > CURRENT_DATE;`,
+      //         ],
+      //         question:
+      //           "Laquelle de ces requêtes permet de récupérer les identifiant des praticiens en congé aujourd'hui et n'ayant pris qu'un seul jour de congé? (ils ne sont donc en congé ni hier ni demain)",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Toutes les propositions.", valeur: false },
+      //           { texte: "Aucune des propositions.", valeur: true },
+      //           { texte: "La requête A", valeur: false },
+      //           { texte: "La requête B", valeur: false },
+      //           { texte: "La requête C", valeur: false },
+      //           { texte: "La requête D", valeur: false },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "49",
+      //         difficulte: 1,
+      //         codeSnippets: [
+      //           `CREATE TABLE maison_medicale(
+      //   nom varchar(64) PRIMARY KEY,
+      //   adresse varchar(256),
+      //   telephone varchar(32),
+      //   mail varchar(256),
+      //   site_web varchar(256)
+      // );`,
+      //         ],
+      //         question:
+      //           "Je souhaite créer la table 'maison_medicale' et j'utilise cette requête. Cochez la bonne réponse",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Aucune des propositions.", valeur: false },
+      //           { texte: "La table est créée", valeur: true },
+      //           {
+      //             texte: "Erreur pour la déclaration de la clé primaire",
+      //             valeur: false,
+      //           },
+      //           { texte: "Erreur pour la déclaration des types", valeur: false },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "50",
+      //         difficulte: 3,
+      //         codeSnippets: [
+      //           `-- A
+      // SELECT pr.identifiant_praticien FROM praticien AS pr
+      // JOIN praticien_maison_medicale AS p_mm
+      // ON p_mm.identifiant_praticien = pr.identifiant_praticien
+      // WHERE p_mm.nom_maison_medicale = 'Arlon';`,
+      //           `-- B
+      // SELECT p_mm.identifiant_praticien FROM maison_medicale AS mm
+      // JOIN praticien_maison_medicale AS p_mm
+      // ON p_mm.nom_maison_medicale = mm.nom
+      // WHERE mm.nom = 'Arlon';`,
+      //           `-- C
+      // SELECT identifiant_praticien FROM praticien_maison_medicale
+      // WHERE nom_maison_medicale = 'Arlon'`,
+      //         ],
+      //         question:
+      //           "Je souhaite récupérer l'identifiant des praticiens de la maison médicale d'arlon. Considérant ces trois requêtes, sélectionnez la bonne réponse",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Aucune des propositions.", valeur: false },
+      //           {
+      //             texte: "La requête A, B et C retournent les valeurs voulues",
+      //             valeur: true,
+      //           },
+      //           {
+      //             texte: "La requête A et B retournent les valeurs voulues",
+      //             valeur: false,
+      //           },
+      //           {
+      //             texte: "La requête A et C retournent les valeurs voulues",
+      //             valeur: false,
+      //           },
+      //           {
+      //             texte: "La requête B et C retournent les valeurs voulues",
+      //             valeur: false,
+      //           },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "51",
+      //         difficulte: 1,
+      //         codeSnippets: [
+      //           `UPDATE conge SET statut = 'Accepté'
+      // WHERE date_debut > CURRENT_DATE;`,
+      //         ],
+      //         question:
+      //           "Je souhaite accepter tout les congés posés à venir. Est-ce que cette requête répond à mon besoin?",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Aucune des propositions.", valeur: false },
+      //           {
+      //             texte: "Oui, tout les congés futurs sont maintenant acceptés",
+      //             valeur: true,
+      //           },
+      //           {
+      //             texte:
+      //               "Erreur, statut ne peut pas prendre la valeur 'Accepté'. Uniquement true ou false",
+      //             valeur: true,
+      //           },
+      //           {
+      //             texte: "Erreur, impossible de combiner les clauses UPDATE et WHERE",
+      //             valeur: true,
+      //           },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      //       {
+      //         id: "52",
+      //         difficulte: 1,
+      //         codeSnippets: [`DELETE FROM conge WHERE statut = 'Refusé'`],
+      //         question:
+      //           "Je souhaite supprimer les congés refusés. Pour cela, j'utilise cette requête. Cochez la bonne réponse",
+      //         propositions: [],
+      //         reponses: [
+      //           { texte: "Aucune des propositions.", valeur: false },
+      //           {
+      //             texte: "Les congés dont le statut est 'Refusé' sont supprimés",
+      //             valeur: true,
+      //           },
+      //           {
+      //             texte: "Erreur, impossible de combiner les clauses DELETE et WHERE",
+      //             valeur: false,
+      //           },
+      //         ],
+      //         nbrReponseCorrecte: () => {
+      //           return this.reponses.filter((p) => p.valeur === true).length;
+      //         },
+      //       },
+      // {
+      //   id: "53",
+      //   difficulte: 1,
+      //   codeSnippets: [],
+      //   question: "",
+      //   propositions: [
+      //     "1) ",
+      //     "2) ",
+      //     "3) ",
+      //     "4) ",
+      //     "5) ",
+      //   ],
+      //   reponses: [
+      //     { texte: "Toutes les propositions.", valeur: false },
+      //     { texte: "Aucune des propositions.", valeur: false },
+      //     { texte: "", valeur: false },
+      //   ],
+      //   nbrReponseCorrecte: () => {
+      //     return this.reponses.filter(p => p.valeur === true).length;
+      //   }
+      // },
+      // {
+      //   id: "54",
+      //   difficulte: 1,
+      //   codeSnippets: [],
+      //   question: "",
+      //   propositions: [
+      //     "1) ",
+      //     "2) ",
+      //     "3) ",
+      //     "4) ",
+      //     "5) ",
+      //   ],
+      //   reponses: [
+      //     { texte: "Toutes les propositions.", valeur: false },
+      //     { texte: "Aucune des propositions.", valeur: false },
+      //     { texte: "", valeur: false },
+      //   ],
+      //   nbrReponseCorrecte: () => {
+      //     return this.reponses.filter(p => p.valeur === true).length;
+      //   }
+      // },
+      // {
+      //   id: "55",
+      //   difficulte: 1,
+      //   codeSnippets: [],
+      //   question: "",
+      //   propositions: [
+      //     "1) ",
+      //     "2) ",
+      //     "3) ",
+      //     "4) ",
+      //     "5) ",
+      //   ],
+      //   reponses: [
+      //     { texte: "Toutes les propositions.", valeur: false },
+      //     { texte: "Aucune des propositions.", valeur: false },
+      //     { texte: "", valeur: false },
+      //   ],
+      //   nbrReponseCorrecte: () => {
+      //     return this.reponses.filter(p => p.valeur === true).length;
+      //   }
+      // },
+      // {
+      //   id: "56",
+      //   difficulte: 1,
+      //   codeSnippets: [],
+      //   question: "",
+      //   propositions: [
+      //     "1) ",
+      //     "2) ",
+      //     "3) ",
+      //     "4) ",
+      //     "5) ",
+      //   ],
+      //   reponses: [
+      //     { texte: "Toutes les propositions.", valeur: false },
+      //     { texte: "Aucune des propositions.", valeur: false },
+      //     { texte: "", valeur: false },
+      //   ],
+      //   nbrReponseCorrecte: () => {
+      //     return this.reponses.filter(p => p.valeur === true).length;
+      //   }
+      // },
+      // {
+      //   id: "57",
+      //   difficulte: 1,
+      //   codeSnippets: [],
+      //   question: "",
+      //   propositions: [
+      //     "1) ",
+      //     "2) ",
+      //     "3) ",
+      //     "4) ",
+      //     "5) ",
+      //   ],
+      //   reponses: [
+      //     { texte: "Toutes les propositions.", valeur: false },
+      //     { texte: "Aucune des propositions.", valeur: false },
+      //     { texte: "", valeur: false },
+      //   ],
+      //   nbrReponseCorrecte: () => {
+      //     return this.reponses.filter(p => p.valeur === true).length;
+      //   }
+      // },
+      // {
+      //   id: "58",
+      //   difficulte: 1,
+      //   codeSnippets: [],
+      //   question: "",
+      //   propositions: [
+      //     "1) ",
+      //     "2) ",
+      //     "3) ",
+      //     "4) ",
+      //     "5) ",
+      //   ],
+      //   reponses: [
+      //     { texte: "Toutes les propositions.", valeur: false },
+      //     { texte: "Aucune des propositions.", valeur: false },
+      //     { texte: "", valeur: false },
+      //   ],
+      //   nbrReponseCorrecte: () => {
+      //     return this.reponses.filter(p => p.valeur === true).length;
+      //   }
+      // },
+      // {
+      //   id: "59",
+      //   difficulte: 1,
+      //   codeSnippets: [],
+      //   question: "",
+      //   propositions: [
+      //     "1) ",
+      //     "2) ",
+      //     "3) ",
+      //     "4) ",
+      //     "5) ",
+      //   ],
+      //   reponses: [
+      //     { texte: "Toutes les propositions.", valeur: false },
+      //     { texte: "Aucune des propositions.", valeur: false },
+      //     { texte: "", valeur: false },
+      //   ],
+      //   nbrReponseCorrecte: () => {
+      //     return this.reponses.filter(p => p.valeur === true).length;
+      //   }
+      // },
+      // {
+      //   id: "60",
+      //   difficulte: 1,
+      //   codeSnippets: [],
+      //   question: "",
+      //   propositions: [
+      //     "1) ",
+      //     "2) ",
+      //     "3) ",
+      //     "4) ",
+      //     "5) ",
+      //   ],
+      //   reponses: [
+      //     { texte: "Toutes les propositions.", valeur: false },
+      //     { texte: "Aucune des propositions.", valeur: false },
+      //     { texte: "", valeur: false },
+      //   ],
+      //   nbrReponseCorrecte: () => {
+      //     return this.reponses.filter(p => p.valeur === true).length;
+      //   }
+      // },
+      // {
+      //   id: "61",
+      //   difficulte: 1,
+      //   codeSnippets: [],
+      //   question: "",
+      //   propositions: [
+      //     "1) ",
+      //     "2) ",
+      //     "3) ",
+      //     "4) ",
+      //     "5) ",
+      //   ],
+      //   reponses: [
+      //     { texte: "Toutes les propositions.", valeur: false },
+      //     { texte: "Aucune des propositions.", valeur: false },
+      //     { texte: "", valeur: false },
+      //   ],
+      //   nbrReponseCorrecte: () => {
+      //     return this.reponses.filter(p => p.valeur === true).length;
+      //   }
+      // },
+      // {
+      //   id: "62",
+      //   difficulte: 1,
+      //   codeSnippets: [],
+      //   question: "",
+      //   propositions: [
+      //     "1) ",
+      //     "2) ",
+      //     "3) ",
+      //     "4) ",
+      //     "5) ",
+      //   ],
+      //   reponses: [
+      //     { texte: "Toutes les propositions.", valeur: false },
+      //     { texte: "Aucune des propositions.", valeur: false },
+      //     { texte: "", valeur: false },
+      //   ],
+      //   nbrReponseCorrecte: () => {
+      //     return this.reponses.filter(p => p.valeur === true).length;
+      //   }
+      // },
+      // {
+      //   id: "63",
+      //   difficulte: 1,
+      //   codeSnippets: [],
+      //   question: "",
+      //   propositions: [
+      //     "1) ",
+      //     "2) ",
+      //     "3) ",
+      //     "4) ",
+      //     "5) ",
+      //   ],
+      //   reponses: [
+      //     { texte: "Toutes les propositions.", valeur: false },
+      //     { texte: "Aucune des propositions.", valeur: false },
+      //     { texte: "", valeur: false },
+      //   ],
+      //   nbrReponseCorrecte: () => {
+      //     return this.reponses.filter(p => p.valeur === true).length;
+      //   }
+      // },
+      // {
+      //   id: "64",
+      //   difficulte: 1,
+      //   codeSnippets: [],
+      //   question: "",
+      //   propositions: [
+      //     "1) ",
+      //     "2) ",
+      //     "3) ",
+      //     "4) ",
+      //     "5) ",
+      //   ],
+      //   reponses: [
+      //     { texte: "Toutes les propositions.", valeur: false },
+      //     { texte: "Aucune des propositions.", valeur: false },
+      //     { texte: "", valeur: false },
+      //   ],
+      //   nbrReponseCorrecte: () => {
+      //     return this.reponses.filter(p => p.valeur === true).length;
+      //   }
+      // },
+      // {
+      //   id: "65",
+      //   difficulte: 1,
+      //   codeSnippets: [],
+      //   question: "",
+      //   propositions: [
+      //     "1) ",
+      //     "2) ",
+      //     "3) ",
+      //     "4) ",
+      //     "5) ",
+      //   ],
+      //   reponses: [
+      //     { texte: "Toutes les propositions.", valeur: false },
+      //     { texte: "Aucune des propositions.", valeur: false },
+      //     { texte: "", valeur: false },
+      //   ],
+      //   nbrReponseCorrecte: () => {
+      //     return this.reponses.filter(p => p.valeur === true).length;
+      //   }
+      // },
+    ];
 
-  const QCMElementSet = new Set(QCMElement.map((e) => e.id));
-  if (QCMElementSet.size != QCMElement.length)
-    console.error("duplicata dans les id du qcm");
+    const QCMElementSet = new Set(QCMElement.map((e) => e.id));
+    if (QCMElementSet.size != QCMElement.length)
+      console.error("duplicata dans les id du qcm");
 
-  function populateBody() {
-    const main = document.getElementById("qcm");
-    QCMElement.sort((a, b) => (+a > +b ? 1 : -1)).forEach((e) => {
-      const hr = document.createElement("hr");
-      hr.style.width = "75%";
-      hr.style.marginTop = "16px";
-      hr.style.marginBottom = "24px";
-      main.after(hr);
-      const element = document.createElement("p");
-      element.id = `question-${e.id}`;
-      element.textContent = `${e.id}) ${e.question}`;
-      main.after(element);
+    function populateBody() {
+      const main = document.getElementById("qcm");
+      QCMElement.sort((a, b) => (+a > +b ? 1 : -1)).forEach((e) => {
+        const hr = document.createElement("hr");
+        hr.style.width = "75%";
+        hr.style.marginTop = "16px";
+        hr.style.marginBottom = "24px";
+        main.after(hr);
+        const element = document.createElement("p");
+        element.id = `question-${e.id}`;
+        element.textContent = `${e.id}) ${e.question}`;
+        main.after(element);
 
-      const ul = document.createElement("ul");
-      ul.id = `proposition-${e.id}`;
+        const ul = document.createElement("ul");
+        ul.id = `proposition-${e.id}`;
 
-      const propositions = e.propositions.forEach((p) => {
-        let prop = document.createElement("li");
-        prop.textContent = p;
-        ul.appendChild(prop);
+        const propositions = e.propositions.forEach((p) => {
+          let prop = document.createElement("li");
+          prop.textContent = p;
+          ul.appendChild(prop);
+        });
+        element.after(ul);
+
+        const codeWrapper = document.createElement("div");
+        codeWrapper.id = `code-snippets-${e.id}`;
+        codeWrapper.classList.add("container");
+
+        e.codeSnippets.forEach((c) => {
+          let pre = document.createElement("pre");
+          pre.textContent = c;
+          pre.classList.add("code-snippet");
+          pre.classList.add("block");
+          codeWrapper.appendChild(pre);
+        });
+        element.after(codeWrapper);
+
+        const fieldset = document.createElement("fieldset");
+        fieldset.id = `fieldset-${e.id}`;
+        const legend = document.createElement("legend");
+        if (e.nbrReponseCorrecte === 1)
+          legend.textContent = "Choisir une unique réponse";
+        else legend.textContent = "Choisir une ou plusieurs réponse(s)";
+
+        let i = 1;
+        e.reponses.forEach((r) => {
+          const div = document.createElement("div");
+          const reponse = document.createElement("input");
+          reponse.type = "checkbox";
+          reponse.id = `answer-${i}-${e.id}`;
+          reponse.name = e.id;
+          const label = document.createElement("label");
+          label.textContent = `${i}) ${r.texte}`;
+          label.htmlFor = reponse.id;
+          div.appendChild(reponse);
+          div.appendChild(label);
+          fieldset.appendChild(div);
+          i++;
+        });
+        ul.after(fieldset);
       });
-      element.after(ul);
-
-      const codeWrapper = document.createElement("div");
-      codeWrapper.id = `code-snippets-${e.id}`;
-      codeWrapper.classList.add("container");
-
-      e.codeSnippets.forEach((c) => {
-        let pre = document.createElement("pre");
-        pre.textContent = c;
-        pre.classList.add("code-snippet");
-        pre.classList.add("block");
-        codeWrapper.appendChild(pre);
-      });
-      element.after(codeWrapper);
-
-      const fieldset = document.createElement("fieldset");
-      fieldset.id = `fieldset-${e.id}`;
-      const legend = document.createElement("legend");
-      if (e.nbrReponseCorrecte === 1)
-        legend.textContent = "Choisir une unique réponse";
-      else legend.textContent = "Choisir une ou plusieurs réponse(s)";
-
-      let i = 1;
-      e.reponses.forEach((r) => {
-        const div = document.createElement("div");
-        const reponse = document.createElement("input");
-        reponse.type = "checkbox";
-        reponse.id = `answer-${i}-${e.id}`;
-        reponse.name = e.id;
-        const label = document.createElement("label");
-        label.textContent = `${i}) ${r.texte}`;
-        label.htmlFor = reponse.id;
-        div.appendChild(reponse);
-        div.appendChild(label);
-        fieldset.appendChild(div);
-        i++;
-      });
-      ul.after(fieldset);
-    });
-  }
-  populateBody();
-</script>
-
+    }
+    populateBody();
+  </script>
 </html>

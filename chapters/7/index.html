@@ -1,143 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script type="module" src="../../scripts/sidebar/addSidebar.js"></script>
+    <script type="module" src="../../scripts/syntaxHighlighting.js"></script>
+    <link rel="stylesheet" href="../../ressources/style.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Document</title>
-  <script type="module" src="../../scripts/addNavbar.js"></script>
-  <script type="module" src="../../scripts/syntaxHighlighting.js"></script>
-  <link rel="stylesheet" href="../../ressources/style.css" />
-</head>
-
-<body>
-  <main>
-    <h1>Propriétaires</h1>
-    <ol>
-      <li>Introduction</li>
-      <li>Contacts</li>
-      <li>One to One</li>
-      <li>Déjà-vu</li>
-      <li>Intégrité des références</li>
-      <li>Conclusion</li>
-    </ol>
-    <hr>
-    <h2 id="introduction">Introduction</h2>
-    <p>
-      Dans ce chapitre, nous allons ajouter des propriétaires et des contacts à nos chats. <br>
-      Ceci va nous poser plusieurs problèmes et questions auxquelles nous allons répondre en approfondissant nos
-      connaissances des clés étrangères <br>
-      Nous aurons aussi la possibilité d'explorer un cas pratique de cardinalité encore non exploitée dans notre cours.
-    </p>
-    <h2 id="contacts">Contacts</h2>
-    <p>Grâce aux modifications faites lors du dernier chapitre, nous pouvons maintenant savoir si un chat est en retard
-      sur un vaccin ou connaitre la date de son prochain vaccin prévu.</p>
-    <p>
-      Nous pourrions profiter de ceci pour ajouter une fonctionnalité de messagerie à un programme qui utiliserait notre
-      base de données, de telle sorte que, si un chat doit se faire vacciner, un
-      message soit envoyé au propriétaire du chat.
-    </p>
-    <p>Ajoutons les informations des propriétaires.</p>
-    <p>D'abord, définissons le type de relation entre un chat et un propriétaire.</p>
-    <p>
-      Un chat peut avoir au plus un propriétaire. <br />
-      Un chat n'ayant pas de propriétaire pourra avoir une valeur <i>null</i> dans la colonne <i>owner</i>. <br />
-      Nous pourrions envisager d'ajuster la base de données pour qu'un chat puisse avoir plusieurs propriétaires. <br />
-      Ce ne serait pas du tout illogique, mais ce n'est pas réellement nécessaire pour notre cas d'utilisation (envoyer
-      un message à l'utilisateur). <br />
-      Il revient donc au développeur de faire le choix qui l'intéresse le plus.
-    </p>
-    <p>
-      Par contre, un propriétaire pourra avoir plusieurs chats. <br />
-      Je vais donc me retrouver dans un type de relation <i>One to Many</i>
-    </p>
-    <p>Ensuite, définissons les informations nécessaires dans cette table de propriétaires.</p>
-    <p>
-      Pour pouvoir facilement les rentrouver, un nom et un prénom seront utilisés <br />
-      Pour être certain de les différenciers en base de données, un pseudo sera attribué. <br />
-      À la différence d'un nom/prénom, le pseudo sera strictement unique et pourra faire office de <i>PK</i><br />
-      Un id numérique auto incrémenté pourrait être utilisé, mais un pseudo sera plus parlant <br />
-      Pour les contacter, il nous faudrait : <br />
-      un numéro de téléphone portable pour envoyer des sms <br />
-      ou une adresse mail <br />
-      ou encore une adresse postale pour envoyer l'information par courrier <br />
-      Plutôt que de faire un choix parmis les trois options, nous allons récolter toutes ces informations.
-    </p>
-    <p>
-      Par contre, autant le poids d'un chat n'est pas une données très sensible, autant il pourrait être intéressant de
-      limiter l'accès aux informations de contacte des différents propriétaires...
-      <br />
-      Nous allons donc utiliser un nouveau type de relation qui pourrait nous être utile
-    </p>
-    <h2 id="one-to-one">One to One</h2>
-    <p>
-      La relation one to one est un peu particulière en ce sens qu'elle ne semble, au premier abord, ne pas apporter
-      beaucoup plus de possibilités qu'un ajout de champs dans une table unique. <br />
-      Effectivement, pourquoi ajouter une table pour le numéro de téléphone et une adresse mail quand je pourrais
-      simplement ajouter deux colonnes dans ma table et ne pas me compliquer la vie avec
-      des jointures? <br />
-      Cinq réponses classiques se présentent généralement : <br />
-    </p>
-    <ol>
-      <li>La sécurité</li>
-      <li>La spécificité</li>
-      <li>La performance</li>
-      <li>La concurrence</li>
-      <li>La lisibilité</li>
-    </ol>
-    <p>
-      <strong>La sécurité</strong> : il est possible de séparer les droits d'accès aux différentes tables SQL.
-      Néanmoins, ce point ne
-      sera pas détaillé dans cette partie du cours. Il faudra attendre votre cours de
-      base de données de deuxième année. <br />
-      Par exemple, ne laisser les droits d'accès à cette table de contactes qu'à notre application de rappel de vaccin.
-    </p>
-    <p>
-      <strong>La spécificité</strong> : d'un cas générique peut découler plusieurs cas spécifiques. On pourra alors
-      séparer la donnée en
-      groupant les éléments génériques et en spécifiant un lien vers un table
-      spécifique les cas échéants. <br />
-      Par exemple, une table <i>Personne</i> qui pourra être lié à une table <i>Etudiant</i> ou <i>Professeur</i>.
-    </p>
-    <p>
-      <strong>La performance</strong> : dans le cas de <i>Full table scan</i>, on souhaitera avoir moins de colonnes.
-      (Le gain de
-      performance réel est néanmoins à relativiser par rapport au fait d'écrire une requête
-      correcte)
-    </p>
-    <p>
-      <strong>La concurrence</strong> : une table / un record peut être verrouillé lors d'opérations en écriture. Ceci
-      posant problème
-      quand plusieurs personnes tentent de modifier une information dans le même
-      enregistrement. <br />
-      Si la donnée est séparé en plusieurs tables, le problème sera moins présent. <br />
-      (À noter toutefois que la plupart des SGDB modernes disposent déjà de solides gestions de concurrence)
-    </p>
-    <p>
-      <strong>La lisibilité</strong> : séparer les informations dans des tables avec des noms explicites aide les
-      développeurs à
-      comprendre ce qu'ils font <br />
-      Si il n'est pas absurder d'imaginer pouvoir trouver les informations de contact dans une table propriétaire, il
-      est en tout cas clair qu'une table
-      <i>information_contact</i> sera destinée à ce type d'information
-    </p>
-    <p>
-      Dans notre cas, la sécurité sera l'élément le plus intéressant. <br>
-      Particulièrement dans le cas de données directement en rapport avec l'utilisateur pouvant être soumises aux lois
-      sur la protection des données personnelles. <br>
-      Dans le cadre de ces lois, une entreprise doit pouvoir justifier des moyens mis en oeuvre pour limiter l'accès,
-      supprimer ou anonymiser les données des utilisateurs (plus de détails dans votre cours de 3e année) <br>
-      Séparer les informations sensibles dans une table permet de facilement restreindre l'accès à celles-ci ainsi que
-      de les supprimer facilement <br>
-    </p>
-    <p class="nota-bene info">
-      Dans la même optique, disposer d'une <i>PK</i> qui ne correspond pas au nom et prénom
-      permettra de facilement anonymiser les informations en supprimant ces champs.
-    </p>
-    <p>
-      Analysez ce code avant de l'exécuter :
-    </p>
-    <pre class="code-snippet block sql">
+  <body>
+    <main>
+      <h1>Propriétaires</h1>
+      <ol>
+        <li>Introduction</li>
+        <li>Contacts</li>
+        <li>One to One</li>
+        <li>Déjà-vu</li>
+        <li>Intégrité des références</li>
+        <li>Conclusion</li>
+      </ol>
+      <hr />
+      <h2 id="introduction">Introduction</h2>
+      <p>
+        Dans ce chapitre, nous allons ajouter des propriétaires et des contacts
+        à nos chats. <br />
+        Ceci va nous poser plusieurs problèmes et questions auxquelles nous
+        allons répondre en approfondissant nos connaissances des clés étrangères
+        <br />
+        Nous aurons aussi la possibilité d'explorer un cas pratique de
+        cardinalité encore non exploitée dans notre cours.
+      </p>
+      <h2 id="contacts">Contacts</h2>
+      <p>
+        Grâce aux modifications faites lors du dernier chapitre, nous pouvons
+        maintenant savoir si un chat est en retard sur un vaccin ou connaitre la
+        date de son prochain vaccin prévu.
+      </p>
+      <p>
+        Nous pourrions profiter de ceci pour ajouter une fonctionnalité de
+        messagerie à un programme qui utiliserait notre base de données, de
+        telle sorte que, si un chat doit se faire vacciner, un message soit
+        envoyé au propriétaire du chat.
+      </p>
+      <p>Ajoutons les informations des propriétaires.</p>
+      <p>
+        D'abord, définissons le type de relation entre un chat et un
+        propriétaire.
+      </p>
+      <p>
+        Un chat peut avoir au plus un propriétaire. <br />
+        Un chat n'ayant pas de propriétaire pourra avoir une valeur
+        <i>null</i> dans la colonne <i>owner</i>. <br />
+        Nous pourrions envisager d'ajuster la base de données pour qu'un chat
+        puisse avoir plusieurs propriétaires. <br />
+        Ce ne serait pas du tout illogique, mais ce n'est pas réellement
+        nécessaire pour notre cas d'utilisation (envoyer un message à
+        l'utilisateur). <br />
+        Il revient donc au développeur de faire le choix qui l'intéresse le
+        plus.
+      </p>
+      <p>
+        Par contre, un propriétaire pourra avoir plusieurs chats. <br />
+        Je vais donc me retrouver dans un type de relation <i>One to Many</i>
+      </p>
+      <p>
+        Ensuite, définissons les informations nécessaires dans cette table de
+        propriétaires.
+      </p>
+      <p>
+        Pour pouvoir facilement les rentrouver, un nom et un prénom seront
+        utilisés <br />
+        Pour être certain de les différenciers en base de données, un pseudo
+        sera attribué. <br />
+        À la différence d'un nom/prénom, le pseudo sera strictement unique et
+        pourra faire office de <i>PK</i><br />
+        Un id numérique auto incrémenté pourrait être utilisé, mais un pseudo
+        sera plus parlant <br />
+        Pour les contacter, il nous faudrait : <br />
+        un numéro de téléphone portable pour envoyer des sms <br />
+        ou une adresse mail <br />
+        ou encore une adresse postale pour envoyer l'information par courrier
+        <br />
+        Plutôt que de faire un choix parmis les trois options, nous allons
+        récolter toutes ces informations.
+      </p>
+      <p>
+        Par contre, autant le poids d'un chat n'est pas une données très
+        sensible, autant il pourrait être intéressant de limiter l'accès aux
+        informations de contacte des différents propriétaires...
+        <br />
+        Nous allons donc utiliser un nouveau type de relation qui pourrait nous
+        être utile
+      </p>
+      <h2 id="one-to-one">One to One</h2>
+      <p>
+        La relation one to one est un peu particulière en ce sens qu'elle ne
+        semble, au premier abord, ne pas apporter beaucoup plus de possibilités
+        qu'un ajout de champs dans une table unique. <br />
+        Effectivement, pourquoi ajouter une table pour le numéro de téléphone et
+        une adresse mail quand je pourrais simplement ajouter deux colonnes dans
+        ma table et ne pas me compliquer la vie avec des jointures? <br />
+        Cinq réponses classiques se présentent généralement : <br />
+      </p>
+      <ol>
+        <li>La sécurité</li>
+        <li>La spécificité</li>
+        <li>La performance</li>
+        <li>La concurrence</li>
+        <li>La lisibilité</li>
+      </ol>
+      <p>
+        <strong>La sécurité</strong> : il est possible de séparer les droits
+        d'accès aux différentes tables SQL. Néanmoins, ce point ne sera pas
+        détaillé dans cette partie du cours. Il faudra attendre votre cours de
+        base de données de deuxième année. <br />
+        Par exemple, ne laisser les droits d'accès à cette table de contactes
+        qu'à notre application de rappel de vaccin.
+      </p>
+      <p>
+        <strong>La spécificité</strong> : d'un cas générique peut découler
+        plusieurs cas spécifiques. On pourra alors séparer la donnée en groupant
+        les éléments génériques et en spécifiant un lien vers un table
+        spécifique les cas échéants. <br />
+        Par exemple, une table <i>Personne</i> qui pourra être lié à une table
+        <i>Etudiant</i> ou <i>Professeur</i>.
+      </p>
+      <p>
+        <strong>La performance</strong> : dans le cas de <i>Full table scan</i>,
+        on souhaitera avoir moins de colonnes. (Le gain de performance réel est
+        néanmoins à relativiser par rapport au fait d'écrire une requête
+        correcte)
+      </p>
+      <p>
+        <strong>La concurrence</strong> : une table / un record peut être
+        verrouillé lors d'opérations en écriture. Ceci posant problème quand
+        plusieurs personnes tentent de modifier une information dans le même
+        enregistrement. <br />
+        Si la donnée est séparé en plusieurs tables, le problème sera moins
+        présent. <br />
+        (À noter toutefois que la plupart des SGDB modernes disposent déjà de
+        solides gestions de concurrence)
+      </p>
+      <p>
+        <strong>La lisibilité</strong> : séparer les informations dans des
+        tables avec des noms explicites aide les développeurs à comprendre ce
+        qu'ils font <br />
+        Si il n'est pas absurder d'imaginer pouvoir trouver les informations de
+        contact dans une table propriétaire, il est en tout cas clair qu'une
+        table
+        <i>information_contact</i> sera destinée à ce type d'information
+      </p>
+      <p>
+        Dans notre cas, la sécurité sera l'élément le plus intéressant. <br />
+        Particulièrement dans le cas de données directement en rapport avec
+        l'utilisateur pouvant être soumises aux lois sur la protection des
+        données personnelles. <br />
+        Dans le cadre de ces lois, une entreprise doit pouvoir justifier des
+        moyens mis en oeuvre pour limiter l'accès, supprimer ou anonymiser les
+        données des utilisateurs (plus de détails dans votre cours de 3e année)
+        <br />
+        Séparer les informations sensibles dans une table permet de facilement
+        restreindre l'accès à celles-ci ainsi que de les supprimer facilement
+        <br />
+      </p>
+      <p class="nota-bene info">
+        Dans la même optique, disposer d'une <i>PK</i> qui ne correspond pas au
+        nom et prénom permettra de facilement anonymiser les informations en
+        supprimant ces champs.
+      </p>
+      <p>Analysez ce code avant de l'exécuter :</p>
+      <pre class="code-snippet block sql">
 CREATE TABLE owner(
   alias varchar(32) PRIMARY KEY,
   first_name varchar(32),
@@ -163,135 +196,186 @@ ADD COLUMN owner_alias varchar(32);
 
 ALTER TABLE cat
 ADD CONSTRAINT cat_owner_fk
-FOREIGN KEY (owner_alias) REFERENCES owner (alias);</pre>
-    <p>
-      Les différents mots-clé ne devraient pas vous poser de problèmes. <br>
-      Notez juste que nous avons déclaré la <i>FK</i> comme partant de la table <i>contact</i> vers la table
-      <i>owner</i> <br>
-      Déclaré de cette façon et dans ce sens, nous pourrons créer un propriétaire sans lui ajouter d'informations de
-      contact, mais nous ne pourrons pas créer de contacts sans utilisateur concerné <br>
-      Ceci-dit, quelque chose devrait tout de même vous étonner dans cette requête...
-    </p>
-    <h2 id="deja-vu">Déjà-vu</h2>
-    <p>
-      Le dernier bout de code utilisé pose un problème au moment de mettre une clé étrangère entre les chats et leurs
-      propriétaires <br>
-      Nous avons déjà eu ce genre de problème lors de l'ajout de la table chat, rappelez-vous : nous n'avons pas encore
-      de données pour les propriétaires. <br>
-    </p>
-    <p class="nota-bene ">
-      Vous avez déjà résolu un problème similaire avant. <br>
-      Pensez aux solutions apportées alors avant de passer à la suite
-    </p>
-    <p>
-      Si ce problème est du déjà-vu et que nous savons gérer le problème de données manquantes, la question
-      inverse peut se poser... <br>
-      Que faire quand une donnée cruciale est supprimée ? <br>
-      Devrions-nous supprimer les informations liées? <br>
-      Dans notre cas à la suppression d'un utilisateur, nous pourrions effectivement vouloir supprimer les coordonnées
-      de contact <br>
-      Mais que faire des données des chats? Vais-je garder les informations liées au chat d'un utilisateur inexistant?
-      <br>
-      Et si je supprimer les chats sans utilisateur, que faire des données de pesées? <br>
-      Mais l'ordre des opérations est ici à prendre en considération. <br>
-      Effectivement, nous venons de rappeler qu'on ne peut avoir de <i>FK</i> référençant une donnée inexistante. <br>
-      Nous devrions donc, pour supprimer un propriétaire : <br>
-      <span style="padding-left: 16px;">D'abord, supprimer les pesées des chats liés à ce propriétaire </span><br>
-      <span style="padding-left: 16px;">Ensuite, supprimer les chats correspondant </span><br>
-      <span style="padding-left: 16px;">Puis, supprimer les coordonnées si elles existent </span><br>
-      <span style="padding-left: 16px;">Et enfin, supprimer le record du propriétaire... </span><br>
-      Pour pouvoir gérer toutes ces manipulations simplement, nous allons appronfondir nos connaissances des
-      <strong>FK</strong> en l'aggrémentant d'options pour <i>automatiser</i> certains comportements
-    </p>
-    <p class="nota-bene">
-      Vous pourriez faire toutes ces opérations à la main et, si cela vous semble un entrainement pertinent,
-      n'hésitez-pas à créer ces requêtes avant de passer à la suite
-    </p>
-    <h2 id="integrite-des-references">Intégrité des références</h2>
-    <p>
-      Quand nous avions vu les <strong>PK</strong>, nous avions très clairement défini celles-ci comme <i>représentant
-        l'identité d'un enregistrement</i>. <br>
-      En ce qui concerne les <strong>FK</strong>, nous n'avions pas été aussi clairement dans la définition de leur
-      rôle. <br>
-      C'est ce que nous allons faire ici. <br>
-      Un <strong>Foreign Key</strong> permet de préserver l'intégriter des références entre les enregistrements. <br>
-      Rappelons-nous qu'effectivement, nous avions intégrés des <strong>FK</strong> dans notre base de données dans le
-      but de ne pas insérer des données qui n'auraient pas de sens dans la colonne <i>cat_name</i> de la table
-      <i>weighting</i> <br>
-      Pour ça, une simple déclaration de <strong>FK</strong> entre <i>weighting.cat_name</i> et <i>cat.name</i> avait
-      suffit. <br>
-      Mais les <strong>FK</strong> disposent d'options permettant de remplir leur rôle avec plus de finesses. <br>
-      Voyons ça ensemble.
-    </p>
-    <p>
-      Lors de la suppression, l'intégrité des références peut être impactée. C'est le problème dont nous parlions plus
-      haut <br>
-      Si je supprimer un propriétaire, la valeur référencée dans les contacts ou dans les chats ne fera plus référence à
-      une valeur existante. <br>
-      L'intégrité de la référence sera alors compromise. <br>
-      Nous ne pourrions plus lier ces données a un utilisateur ou, pire, nous pourrions les lier à un nouvel utilisateur
-      qui n'aurait en réalité rien à voir avec ces données !<br>
-      Nous allons donc configurer la suppression de ces valeurs avec l'option <strong>ON DELETE</strong> <br>
-    </p>
-    <p>
-      <strong>ON DELETE</strong> permet d'ajouter une option aux <strong>FK</strong> pour ajouter une option lors de la
-      suppression d'une donnée. <br>
-      Pour se faire, il faudra aussi définir quelle action exécuter en ajoutant un mot clé parmis les suivants : <br>
-      <strong>NO ACTION</strong> est la valeur par défaut (il s'agit donc de la valeur utilisée jusqu'ici dans notre
-      cours) et empêche la suppression des valeurs liées. <br>
-      Si ma table <i>cat</i> défini une <strong>FK</strong> vers <i>owner</i> en spécifiant <strong>ON DELETE NO
-        ACTION</strong>, je ne pourrais tout simplement pas supprimer un utilisateur tant qu'un chat lui fait référence.
-      Cela résulterait en une erreur. <br>
-      <strong>RESTRICT</strong> empêche la suppression des valeurs liées. <br>
-      Si ça vous semble fort à l'option <strong>NO ACTION</strong>, c'est normal ! La différence est relativement fine
-      et va modifier quand est lancé l'erreur. <br>
-      Lors de l'exécution d'une transaction, <strong>RESTRICT</strong> va directement lancer une erreur alors que
-      <strong>NO ACTION</strong> va attendre la suite de la transaction <br>
-      <strong>CASCADE</strong>, de son côté, va supprimer les données <i>enfants</i> lors de la suppression d'un
-      <i>parent</i>. <br>
-      Supprimer un <i>owner</i> ne posera donc pas de problème. Mais les chats correspondants seront aussi supprimés.
-      <br>
-      <strong>SET NULL</strong> est une alternative à la <strong>CASCADE</strong> qui n'est pas destructive. <br>
-      Le lien est coupé, la valeur est mise à nulle. Mon chat n'a plus de propriétaire. Mais il n'est pas supprimé. <br>
-      <strong>SET DEFAULT</strong> est sensiblement similaire si ce n'est que la valeur par défaut sera attribuée plutôt
-      que <i>null</i>
-    </p>
-    <p class="nota-bene info">
-      <strong>SET NULL</strong> ainsi que <strong>SET DEFAULT</strong> peuvent prendre une liste de colonne permettant
-      de ne pas mettre à null toutes les colonnes de la <strong>FK</strong> <br>
-      Nous n'aurons pas de cas d'utilisations pour cette option dans cette partie du cours. Mais sachez qu'elle existe.
-      <br>
-      Plus d'informations dans la <a href="https://www.postgresql.org/docs/16/ddl-constraints.html#DDL-CONSTRAINTS-FK">
-        documentation officielle </a>
-    </p>
-    <p class="nota-bene danger">
-      Attention à ne pas faire rentrer en conflit les options de votre <strong>FK</strong> avec les autres contraintes
-      de votre table. <br>
-      <strong>SET NULL</strong> ne pourra pas outrepasser une contrainte <strong>NOT NULL</strong>, par exemple.
-    </p>
-    <p>
-      <strong>ON UPDATE</strong> permet d'ajouter, de façon similaire au <strong>ON DELETE</strong> des options lors de
-      la modification des données <br>
-      Les actions possibles sont... Identiques à celles du <strong>ON DELETE</strong>! <br>
-      Avec cette différences que les données sont mises à jour plutôt que supprimées et que les options <strong>SET
-        NULL</strong> et <strong>SET DEFAULT</strong> ne peuvent pas prendre de colonnes en arguments
-    </p>
-    <p>
-      Prenons le temps de penser aux options voulues dans notre cas et modifions la requête avant de l'exécuter. <br>
-      À la suppression d'un <i>owner</i>, est-ce que je désire supprimer le <i>contact</i> correspondant ? Oui, nous
-      allons donc utiliser <i>ON DELETE CASCADE</i> <br>
-      À la modification d'un <i>owner</i>, est-ce que je désire mettre à jour la référence dans le <i>contact</i>
-      correspondant ? Oui, nous allons donc utiliser <i>ON UPDATE CASCADE</i> <br>
-      Même question pour les chats lors de la suppression du propriétaire <br>
-      Dans ce cas, il pourrait être pertinent de garder les données des chats dans l'optique d'un jour exploiter des
-      données statistiques récoltées au fil des années. <br>
-      Nous allons donc utiliser un <i>ON DELETE SET NULL</i>. <br>
-      Pour ce qui est de la modificaiton de l'<i>owner</i>, mettre à jour la donnée dans les chats correspondants semble
-      pertinent. <br>
-      Un <i>ON UPDATE CASCADE</i> sera utilisé. <br>
-      Ci-dessous, le code modifié avec les <i>ON DELETE</i> et <i>ON UPDATE</i>
-    </p>
-    <pre class="code-snippet block sql">
+FOREIGN KEY (owner_alias) REFERENCES owner (alias);</pre
+      >
+      <p>
+        Les différents mots-clé ne devraient pas vous poser de problèmes. <br />
+        Notez juste que nous avons déclaré la <i>FK</i> comme partant de la
+        table <i>contact</i> vers la table <i>owner</i> <br />
+        Déclaré de cette façon et dans ce sens, nous pourrons créer un
+        propriétaire sans lui ajouter d'informations de contact, mais nous ne
+        pourrons pas créer de contacts sans utilisateur concerné <br />
+        Ceci-dit, quelque chose devrait tout de même vous étonner dans cette
+        requête...
+      </p>
+      <h2 id="deja-vu">Déjà-vu</h2>
+      <p>
+        Le dernier bout de code utilisé pose un problème au moment de mettre une
+        clé étrangère entre les chats et leurs propriétaires <br />
+        Nous avons déjà eu ce genre de problème lors de l'ajout de la table
+        chat, rappelez-vous : nous n'avons pas encore de données pour les
+        propriétaires. <br />
+      </p>
+      <p class="nota-bene">
+        Vous avez déjà résolu un problème similaire avant. <br />
+        Pensez aux solutions apportées alors avant de passer à la suite
+      </p>
+      <p>
+        Si ce problème est du déjà-vu et que nous savons gérer le problème de
+        données manquantes, la question inverse peut se poser... <br />
+        Que faire quand une donnée cruciale est supprimée ? <br />
+        Devrions-nous supprimer les informations liées? <br />
+        Dans notre cas à la suppression d'un utilisateur, nous pourrions
+        effectivement vouloir supprimer les coordonnées de contact <br />
+        Mais que faire des données des chats? Vais-je garder les informations
+        liées au chat d'un utilisateur inexistant?
+        <br />
+        Et si je supprimer les chats sans utilisateur, que faire des données de
+        pesées? <br />
+        Mais l'ordre des opérations est ici à prendre en considération. <br />
+        Effectivement, nous venons de rappeler qu'on ne peut avoir de
+        <i>FK</i> référençant une donnée inexistante. <br />
+        Nous devrions donc, pour supprimer un propriétaire : <br />
+        <span style="padding-left: 16px"
+          >D'abord, supprimer les pesées des chats liés à ce propriétaire </span
+        ><br />
+        <span style="padding-left: 16px"
+          >Ensuite, supprimer les chats correspondant </span
+        ><br />
+        <span style="padding-left: 16px"
+          >Puis, supprimer les coordonnées si elles existent </span
+        ><br />
+        <span style="padding-left: 16px"
+          >Et enfin, supprimer le record du propriétaire... </span
+        ><br />
+        Pour pouvoir gérer toutes ces manipulations simplement, nous allons
+        appronfondir nos connaissances des
+        <strong>FK</strong> en l'aggrémentant d'options pour
+        <i>automatiser</i> certains comportements
+      </p>
+      <p class="nota-bene">
+        Vous pourriez faire toutes ces opérations à la main et, si cela vous
+        semble un entrainement pertinent, n'hésitez-pas à créer ces requêtes
+        avant de passer à la suite
+      </p>
+      <h2 id="integrite-des-references">Intégrité des références</h2>
+      <p>
+        Quand nous avions vu les <strong>PK</strong>, nous avions très
+        clairement défini celles-ci comme
+        <i>représentant l'identité d'un enregistrement</i>. <br />
+        En ce qui concerne les <strong>FK</strong>, nous n'avions pas été aussi
+        clairement dans la définition de leur rôle. <br />
+        C'est ce que nous allons faire ici. <br />
+        Un <strong>Foreign Key</strong> permet de préserver l'intégriter des
+        références entre les enregistrements. <br />
+        Rappelons-nous qu'effectivement, nous avions intégrés des
+        <strong>FK</strong> dans notre base de données dans le but de ne pas
+        insérer des données qui n'auraient pas de sens dans la colonne
+        <i>cat_name</i> de la table <i>weighting</i> <br />
+        Pour ça, une simple déclaration de <strong>FK</strong> entre
+        <i>weighting.cat_name</i> et <i>cat.name</i> avait suffit. <br />
+        Mais les <strong>FK</strong> disposent d'options permettant de remplir
+        leur rôle avec plus de finesses. <br />
+        Voyons ça ensemble.
+      </p>
+      <p>
+        Lors de la suppression, l'intégrité des références peut être impactée.
+        C'est le problème dont nous parlions plus haut <br />
+        Si je supprimer un propriétaire, la valeur référencée dans les contacts
+        ou dans les chats ne fera plus référence à une valeur existante. <br />
+        L'intégrité de la référence sera alors compromise. <br />
+        Nous ne pourrions plus lier ces données a un utilisateur ou, pire, nous
+        pourrions les lier à un nouvel utilisateur qui n'aurait en réalité rien
+        à voir avec ces données !<br />
+        Nous allons donc configurer la suppression de ces valeurs avec l'option
+        <strong>ON DELETE</strong> <br />
+      </p>
+      <p>
+        <strong>ON DELETE</strong> permet d'ajouter une option aux
+        <strong>FK</strong> pour ajouter une option lors de la suppression d'une
+        donnée. <br />
+        Pour se faire, il faudra aussi définir quelle action exécuter en
+        ajoutant un mot clé parmis les suivants : <br />
+        <strong>NO ACTION</strong> est la valeur par défaut (il s'agit donc de
+        la valeur utilisée jusqu'ici dans notre cours) et empêche la suppression
+        des valeurs liées. <br />
+        Si ma table <i>cat</i> défini une <strong>FK</strong> vers
+        <i>owner</i> en spécifiant <strong>ON DELETE NO ACTION</strong>, je ne
+        pourrais tout simplement pas supprimer un utilisateur tant qu'un chat
+        lui fait référence. Cela résulterait en une erreur. <br />
+        <strong>RESTRICT</strong> empêche la suppression des valeurs liées.
+        <br />
+        Si ça vous semble fort à l'option <strong>NO ACTION</strong>, c'est
+        normal ! La différence est relativement fine et va modifier quand est
+        lancé l'erreur. <br />
+        Lors de l'exécution d'une transaction, <strong>RESTRICT</strong> va
+        directement lancer une erreur alors que <strong>NO ACTION</strong> va
+        attendre la suite de la transaction <br />
+        <strong>CASCADE</strong>, de son côté, va supprimer les données
+        <i>enfants</i> lors de la suppression d'un <i>parent</i>. <br />
+        Supprimer un <i>owner</i> ne posera donc pas de problème. Mais les chats
+        correspondants seront aussi supprimés.
+        <br />
+        <strong>SET NULL</strong> est une alternative à la
+        <strong>CASCADE</strong> qui n'est pas destructive. <br />
+        Le lien est coupé, la valeur est mise à nulle. Mon chat n'a plus de
+        propriétaire. Mais il n'est pas supprimé. <br />
+        <strong>SET DEFAULT</strong> est sensiblement similaire si ce n'est que
+        la valeur par défaut sera attribuée plutôt que <i>null</i>
+      </p>
+      <p class="nota-bene info">
+        <strong>SET NULL</strong> ainsi que <strong>SET DEFAULT</strong> peuvent
+        prendre une liste de colonne permettant de ne pas mettre à null toutes
+        les colonnes de la <strong>FK</strong> <br />
+        Nous n'aurons pas de cas d'utilisations pour cette option dans cette
+        partie du cours. Mais sachez qu'elle existe.
+        <br />
+        Plus d'informations dans la
+        <a
+          href="https://www.postgresql.org/docs/16/ddl-constraints.html#DDL-CONSTRAINTS-FK"
+        >
+          documentation officielle
+        </a>
+      </p>
+      <p class="nota-bene danger">
+        Attention à ne pas faire rentrer en conflit les options de votre
+        <strong>FK</strong> avec les autres contraintes de votre table. <br />
+        <strong>SET NULL</strong> ne pourra pas outrepasser une contrainte
+        <strong>NOT NULL</strong>, par exemple.
+      </p>
+      <p>
+        <strong>ON UPDATE</strong> permet d'ajouter, de façon similaire au
+        <strong>ON DELETE</strong> des options lors de la modification des
+        données <br />
+        Les actions possibles sont... Identiques à celles du
+        <strong>ON DELETE</strong>! <br />
+        Avec cette différences que les données sont mises à jour plutôt que
+        supprimées et que les options <strong>SET NULL</strong> et
+        <strong>SET DEFAULT</strong> ne peuvent pas prendre de colonnes en
+        arguments
+      </p>
+      <p>
+        Prenons le temps de penser aux options voulues dans notre cas et
+        modifions la requête avant de l'exécuter. <br />
+        À la suppression d'un <i>owner</i>, est-ce que je désire supprimer le
+        <i>contact</i> correspondant ? Oui, nous allons donc utiliser
+        <i>ON DELETE CASCADE</i> <br />
+        À la modification d'un <i>owner</i>, est-ce que je désire mettre à jour
+        la référence dans le <i>contact</i> correspondant ? Oui, nous allons
+        donc utiliser <i>ON UPDATE CASCADE</i> <br />
+        Même question pour les chats lors de la suppression du propriétaire
+        <br />
+        Dans ce cas, il pourrait être pertinent de garder les données des chats
+        dans l'optique d'un jour exploiter des données statistiques récoltées au
+        fil des années. <br />
+        Nous allons donc utiliser un <i>ON DELETE SET NULL</i>. <br />
+        Pour ce qui est de la modificaiton de l'<i>owner</i>, mettre à jour la
+        donnée dans les chats correspondants semble pertinent. <br />
+        Un <i>ON UPDATE CASCADE</i> sera utilisé. <br />
+        Ci-dessous, le code modifié avec les <i>ON DELETE</i> et
+        <i>ON UPDATE</i>
+      </p>
+      <pre class="code-snippet block sql">
       CREATE TABLE owner(
         alias varchar(32) PRIMARY KEY,
         first_name varchar(32),
@@ -321,11 +405,13 @@ FOREIGN KEY (owner_alias) REFERENCES owner (alias);</pre>
       ADD CONSTRAINT cat_owner_fk
       FOREIGN KEY (owner_alias) REFERENCES owner (alias)
         ON DELETE SET NULL
-        ON UPDATE CASCADE;</pre>
-    <p>
-      Ajoutons maintenant quelques données dans ces deux nouvelles tables et lions quelques chats à des propriétaires
-    </p>
-    <pre class="code-snippet block sql">
+        ON UPDATE CASCADE;</pre
+      >
+      <p>
+        Ajoutons maintenant quelques données dans ces deux nouvelles tables et
+        lions quelques chats à des propriétaires
+      </p>
+      <pre class="code-snippet block sql">
 INSERT INTO owner (alias, first_name, last_name)
 VALUES 
   ('MHS', 'Marc-H', 'Sana'),
@@ -351,13 +437,16 @@ WHERE name = 'Rubi';
 
 SELECT o.alias, cat.name, cont.phone_number FROM owner as o 
 LEFT JOIN cat on cat.owner_alias = o.alias
-LEFT JOIN contact as cont on cont.owner_alias = o.alias</pre>
-    <p>
-      Nos chats Monza, Java et Rubi disposent maintenant d'un propriétaire. <br>
-      Faisons deux choses : supprimons L'utilisateur JD et modifions l'utilisateur BD. <br>
-      Ensuite, voyons le résultat.
-    </p>
-    <pre class="code-snippet block sql">
+LEFT JOIN contact as cont on cont.owner_alias = o.alias</pre
+      >
+      <p>
+        Nos chats Monza, Java et Rubi disposent maintenant d'un propriétaire.
+        <br />
+        Faisons deux choses : supprimons L'utilisateur JD et modifions
+        l'utilisateur BD. <br />
+        Ensuite, voyons le résultat.
+      </p>
+      <pre class="code-snippet block sql">
 DELETE FROM owner WHERE alias = 'JD';
 
 UPDATE owner SET alias = 'Bob D.' 
@@ -365,18 +454,22 @@ WHERE alias = 'BD';
 
 SELECT * FROM cat ORDER BY owner;
 
-SELECT * FROM contact;</pre>
-    <p>
-      Java n'a plus de propriétaires tandis que Rubi dispose bien d'une valeur à jour pour son owner <br>
-      Les contacts de JD ont bien été supprimés.
-    </p>
-    <h2 id="conclusion">Conclusion</h2>
-    <p>
-      Dans cette section, nous avons ajoutés des propriétaires et contacts dans notre base de données. <br>
-      Ceci nous a permis d'explorer une nouvelle cardinalité, la <i>One to One</i> ainsi que d'approfondir nos
-      connaissances sur les <strong>FK</strong> en ajoutant des options pour automatiser certaines actions
-    </p>
-  </main>
-</body>
-
+SELECT * FROM contact;</pre
+      >
+      <p>
+        Java n'a plus de propriétaires tandis que Rubi dispose bien d'une valeur
+        à jour pour son owner <br />
+        Les contacts de JD ont bien été supprimés.
+      </p>
+      <h2 id="conclusion">Conclusion</h2>
+      <p>
+        Dans cette section, nous avons ajoutés des propriétaires et contacts
+        dans notre base de données. <br />
+        Ceci nous a permis d'explorer une nouvelle cardinalité, la
+        <i>One to One</i> ainsi que d'approfondir nos connaissances sur les
+        <strong>FK</strong> en ajoutant des options pour automatiser certaines
+        actions
+      </p>
+    </main>
+  </body>
 </html>

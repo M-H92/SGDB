@@ -1,131 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SGDB</title>
+    <script type="module" src="./scripts/navbar/addNavbar.js"></script>
+    <link rel="stylesheet" href="./ressources/style.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Document</title>
-  <script type="module" src="./scripts/addNavbar.js"></script>
-  <link rel="stylesheet" href="./ressources/style.css" />
-</head>
-
-<body>
-  <main id="news-update">
-    <h1>News update</h1>
-    <hr style="width: 95%;">
-    <h2 id="250111">News 250111</h2>
-    <div>
-      <h3>Chapitre 12 - ajout de contenu</h3>
-      <p>
-        Des questions de révision sont ajoutées au QCM
-      </p>
-    </div>
-    <hr style="width: 50%; margin-top: 32px; margin-bottom: 32px;">
-    <h2 id="250108">News 250108</h2>
-    <div>
-      <h3>Chapitre 12 - ajout de contenu</h3>
-      <p>
-        Des questions de révision sont ajoutées au QCM <br>
-        Des corrections mineures ont été apportées suite au cours du 7/1
-      </p>
-    </div>
-    <hr style="width: 50%; margin-top: 32px; margin-bottom: 32px;">
-    <h2 id="250107">News 250107</h2>
-    <div>
-      <h3>Chapitre 12 - ajout de contenu</h3>
-      <p>
-        Des questions de révision sont ajoutées au QCM <br>
-        Une question ouverte de design de base de données a été ajoutée
-      </p>
-    </div>
-    <hr style="width: 50%; margin-top: 32px; margin-bottom: 32px;">
-    <h2 id="250105">News 250105</h2>
-    <div>
-      <h3>Chapitre 12 - ajout de contenu</h3>
-      <p>
-        Une dizaine de questions de révision sont ajoutées
-      </p>
-    </div>
-    <hr style="width: 50%; margin-top: 32px; margin-bottom: 32px;">
-    <h2 id="250104">News 250104</h2>
-    <div>
-      <h3>Chapitre 12 - ajout de contenu</h3>
-      <p>
-        Une dizaine de questions de révision sont ajoutées
-      </p>
-    </div>
-    <hr style="width: 50%; margin-top: 32px; margin-bottom: 32px;">
-    <h2 id="250101">News 250101</h2>
-    <div>
-      <h3>Chapitre 12 - mise en ligne partielle</h3>
-      <p>
-        Le chapitre 12 est partiellement en ligne. <br>
-        Il contient une dizaine de questions de révision sous la forme d'un QCM. <br>
-        Plus de questions sont à venir
-      </p>
-    </div>
-    <hr style="width: 50%; margin-top: 32px; margin-bottom: 32px;">
-    <h2 id="241210">News 241210</h2>
-    <div>
-      <h3>Chapitre 10 - mise en ligne</h3>
-      <p>
-        Le chapitre 10 est maintenant en ligne. <br>
-        Il contient des exercices sur la base de données Northwind
-      </p>
-      <h3>Navigation</h3>
-      <p>
-        Ajout des numéros de chapitre dans la barre de navigation
-      </p>
-    </div>
-    <hr style="width: 50%; margin-top: 32px; margin-bottom: 32px;">
-    <h2 id="241203">News 241203</h2>
-    <div>
-      <h3>Chapitre 9 - mise en ligne</h3>
-      <p>
-        Le chapitre 9 est maintenant en ligne. <br>
-        Trois exercices fait en classe ont été ajoutés en bas de page.
-      </p>
-      <h3>Navigation</h3>
-      <p>
-        Il est maintenant possible de scroller dans la barre de navigation latérale quand elle dispose de trop de
-        contenu par rapport à la hauteur de l'écran <br>
-        Un bouton permet maintenant de revenir à la page home
-      </p>
-    </div>
-    <hr style="width: 50%; margin-top: 32px; margin-bottom: 32px;">
-    <h2 id="241126">News 241126</h2>
-    <div>
-      <h3>Chapitre 8 - mise en ligne</h3>
-      <p>
-        Le chapitre 8 est maintenant en ligne.
-      </p>
-      <h3>Chapitre 7 - corrections</h3>
-      <p>
-        Certaines erreurs se sont glissées dans les requêtes du chapitre 7. <br>
-        Elles sont maintenant corrigées
-      </p>
-    </div>
-    <hr style="width: 50%; margin-top: 32px; margin-bottom: 32px;">
-    <h2 id="241119">News 241119</h2>
-    <div>
-      <h3>Chapitre 7 - suite et fin</h3>
-      <p>
-        Mise à jour du chapitre 7 (propriétaires) <br>
-        Vous y trouverez des informations sur la cardinalité One to One et les FK <br>
-        Le prochain chapitre devrait approfondir les notions de jointures
-      </p>
-    </div>
-    <hr style="width: 50%; margin-top: 32px; margin-bottom: 32px;">
-    <h2 id="241107">News 241107</h2>
-    <div>
-      <h3>Début de la mise en ligne des ressources</h3>
-      <p>
-        Les ressources commencent à être mise en ligne sur ce site web. (l'ancien site ne sera plus maintenu) <br>
-        Les chapitres 0 à 3 sont migrés <br>
-        La mise à jour des prochains chapitre est à venir ainsi que le CSS
-      </p>
-    </div>
-  </main>
-</body>
-
+  <body>
+    <section id="home-container">
+      <div>
+        <h1>Intro SQL</h1>
+        <p>Une introduction au SQL par l'exemple.</p>
+        <p>Contenu en rénovation</p>
+      </div>
+      <div>
+        <h1>SQL Avancé</h1>
+        <p>
+          Une approche des concepts tels que normalisation, procédures stockées.
+        </p>
+        <p>Contenu en cours de création</p>
+      </div>
+      <div>
+        <h1>News</h1>
+        <p>Un aperçu des mises à jour passées et à venir pour ce site</p>
+        <p>Mis à jour régulières</p>
+      </div>
+    </section>
+    <main id="news-update">
+      <h1>News update</h1>
+      <hr style="width: 95%" />
+      <h2 id="250325">News 250325</h2>
+      <div>
+        <h3>Général - nettoyage général</h3>
+        <p>
+          De manière à préparer l'ajout du cours de sql avancé, déplacement des
+          éléments du site et ajout d'une barre de navigation
+        </p>
+      </div>
+      <hr style="width: 50%; margin-top: 32px; margin-bottom: 32px" />
+      <h2 id="250111">News 250111</h2>
+      <div>
+        <h3>Chapitre 12 - ajout de contenu</h3>
+        <p>Des questions de révision sont ajoutées au QCM</p>
+      </div>
+      <hr style="width: 50%; margin-top: 32px; margin-bottom: 32px" />
+      <h2 id="250108">News 250108</h2>
+      <div>
+        <h3>Chapitre 12 - ajout de contenu</h3>
+        <p>
+          Des questions de révision sont ajoutées au QCM <br />
+          Des corrections mineures ont été apportées suite au cours du 7/1
+        </p>
+      </div>
+      <hr style="width: 50%; margin-top: 32px; margin-bottom: 32px" />
+    </main>
+  </body>
 </html>

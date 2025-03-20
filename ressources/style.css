@@ -1,15 +1,25 @@
+body {
+  margin: unset;
+}
 .container {
   display: flex;
   justify-content: space-around;
   flex-wrap: wrap;
 }
-.col-12 {
-  min-width: 100%;
-  max-width: 100%;
+.flex-center {
+  justify-content: center;
 }
 .col-4 {
   min-width: 33%;
   max-width: 33%;
+}
+.col-9 {
+  min-width: 75%;
+  max-width: 75%;
+}
+.col-12 {
+  min-width: 100%;
+  max-width: 100%;
 }
 
 .code-snippet {
@@ -32,7 +42,7 @@ kbd {
   border: solid 1px rgb(200, 200, 200);
 }
 
-.lateral-navbar {
+.lateral-sidebar {
   position: fixed;
   top: 0;
   left: -180px;
@@ -50,11 +60,11 @@ kbd {
   box-shadow: 9px 2px 9px -4px rgba(0, 0, 0, 0.5);
   overflow-y: auto;
 }
-.lateral-navbar:hover {
+.lateral-sidebar:hover {
   left: 0px;
   transition: 0.5s ease-in-out;
 }
-.lateral-navbar > a {
+.lateral-sidebar > a {
   all: unset;
   border: none;
   background-color: unset;
@@ -62,7 +72,7 @@ kbd {
   font-size: 24px;
   padding: 8px;
 }
-.lateral-navbar > a:hover {
+.lateral-sidebar > a:hover {
   background-color: rgba(0, 0, 0, 0.1);
 }
 main {
@@ -108,8 +118,8 @@ hr {
   }
 }
 
-#news-update{
-  div{
+#news-update {
+  div {
     margin-left: 16px;
     padding-left: 16px;
     border-left: 2px solid black;
@@ -120,23 +130,65 @@ hr {
   font-weight: bold;
 }
 
-.sql{
-  .key-word{
+.sql {
+  .key-word {
     font-weight: bold;
     color: purple;
   }
-  .string{
+  .string {
     color: darkred;
   }
 }
 
 @media not print {
-  .blured-answer{
+  .blured-answer {
     filter: blur(5px);
     cursor: pointer;
   }
 }
 
-.hidden{
+.hidden {
   display: none;
+}
+
+nav#the-nav-bar {
+  border-bottom: 1px solid lightgray;
+  padding: 16px 0;
+  position: sticky;
+  top: 0;
+  background-color: white;
+  a {
+    padding: 16px 32px;
+    font-size: 32px;
+    text-decoration: unset;
+    font-weight: bold;
+    color: black;
+    position: relative;
+  }
+  a:after {
+    content: "";
+    display: block;
+    position: absolute;
+    bottom: 0px;
+    height: 0px;
+    left: 0px;
+    width: 0;
+    transition: all 0.5s;
+  }
+  a:hover:after {
+    transition: all 0.5s;
+    content: "";
+    display: block;
+    width: 100%;
+    border: 1px solid black;
+  }
+}
+
+#home-container {
+  display: flex;
+  flex-direction: column;
+  & > div {
+    border-bottom: 1px solid lightgray;
+    padding: 32px 32px 32px 0;
+  }
 }
