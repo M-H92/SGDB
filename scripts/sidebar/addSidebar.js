@@ -1,5 +1,5 @@
 import { getSidebar } from "./sidebar.js";
-import { getConfig } from "../../../config/config.js";
+import { getConfig } from "../../config/config.js";
 
 const { ROOT_PATH } = getConfig();
 
