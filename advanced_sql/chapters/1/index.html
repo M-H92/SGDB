@@ -1,31 +1,534 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <script type="module" src="../../../scripts/syntaxHighlighting.js"></script>
-    <script type="module" src="../../../scripts/navbar/addNavbar.js"></script>
-    <link rel="stylesheet" href="../../../ressources/style.css" />
-  </head>
 
-  <body>
-    <main>
-      <p class="nota-bene info">
-        Section en cours de création. Ci-dessous, des notes. Ne pas les prendre
-        en considération
-      </p>
-      <h1>Fonctions</h1>
-      <ol>
-        <li>Introduction</li>
-        <li>Conclusion</li>
-      </ol>
-      <hr />
-      <h2 id="introduction">Introduction</h2>
-      <p></p>
-      <h2>Écrire une fonction</h2>
-      <p></p>
-      <pre class="code-snippet block sql">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <script type="module" src="../../../scripts/syntaxHighlighting.js"></script>
+  <script type="module" src="../../../scripts/navbar/addNavbar.js"></script>
+  <link rel="stylesheet" href="../../../../ressources/style.css" />
+</head>
+
+<body>
+  <main>
+    <h1>Fonctions</h1>
+    <ol>
+      <li>Introduction</li>
+      <li>Structure d'une fonction</li>
+      <li>Declaration de variables</li>
+      <li>Assigner une variable depuis une query</li>
+      <li>IN, OUT</li>
+      <li>Retourner un dataset</li>
+      <li>Structures de controlles : if</li>
+      <li>Structures de controlles : case</li>
+      <li>Structures de controlles : loop</li>
+      <li>Erreurs et exceptions</li>
+      <li>Exercices</li>
+      <li>Conclusion</li>
+    </ol>
+    <hr />
+    <h2 id="introduction">Introduction</h2>
+    <p>
+      Tout comme dans vos autres cours de programmation, une fonction vous
+      permet de réutiliser des bouts de codes en faisant un appel de fonction
+      <br />
+      Ceci évite de perdre du temps à réécrire du code déjà écrit, permet
+      d'éviter les erreurs qu'une réécriture pourrait engendrer, rend le code
+      plus compréhensible avec des noms clairs résumant / cachant des lignes
+      de code parfois complexe et allège le travail de maintenance qui ne doit
+      être fait qu'à un endroit. <br />
+      Dans votre base de données, les fonctions disposent, sous une forme ou
+      une autre, des mêmes structures et outils que dans les langages de
+      programmations que vous avez déjà manipulés : variables, conditions,
+      boucles... <br />
+      Une différence étant que vous pourrez aussi directement intéragir avec
+      la base de données via des requêtes SQL : SELECT, UPDATE, CREATE,
+      INSERT...
+    </p>
+
+    <p class="nota-bene info">
+      Dans notre cours, nous utiliserons principalement le langage PLPGSQL
+      (Procedural language PostGreSQL). <br />
+      Bien que d'autres languages existent avec des variations dans les
+      nomenclatures utilisées, les concepts fondamentaux seront les mêmes.
+      <br />
+      Il est donc important de focaliser son étude sur la compréhension de ces
+      concepts plutôt que sur l'apprentissage "par coeur" des mots-clefs.
+    </p>
+    <h2>Structure d'une fonction</h2>
+    <p>Décryptons ensemble ce code d'exemple</p>
+    <pre class="code-snippet block sql">
+CREATE OR REPLACE FUNCTION my_sum(int, int) 
+RETURNS int 
+AS
+'
+BEGIN
+	RETURN $1 + $2;
+END
+' 
+LANGUAGE PLPGSQL
+      </pre>
+    <p>
+      CREATE OR REPLACE FUNCTION permet de créer une fonction. Si elle existe
+      déjà, on tente de la remplacer. <br />
+      Attention, ceci n'est possible que si la fonction qu'on tente de
+      remplacer dispose des mêmes types d'argument et de retour. <br />
+      my_sum est le nom de la fonction et est suivi par des parenthèses
+      reprenant au moins les types des arguments (int, int). <br />
+      Nous avons ensuite le mot-clef "RETURNS" suivi du type de retour attendu
+      de la fonction. <br />
+      Ensuite, nous avons le mot-clef AS suivi d'une apostrophe et du mot-clef
+      BEGIN marquant le début du corps de la fonction. <br />
+      Le corps de la fonction se termine avec le mot-clef END suivi d'une
+      seconde apostrophe et du langage utilisé. <br />
+      Dans le corps de notre fonction, nous avons un simple RETURN retournant
+      une valeur en réponse à l'appel de la fonction qui, dans notre cas, fait
+      la somme des deux arguments discriminés par leur numéro d'ordre dans la
+      signature de la fonction (signature de fonction => nom + arguments +
+      type de retour. Cf votre cours de C) <br />
+      Un ; vient ponctuer chaque ligne de code dans cette fonction.
+    </p>
+    <p class="nota-bene info">
+      Notez les deux mots-clefs différents : RETURNS pour déclarer le type de
+      retour et RETURN pour retourner une valeur!
+    </p>
+    <p>Exécutez ce code et appelez notre nouvelle fonction</p>
+    <pre class="code-snippet block sql">
+SELECT my_sum(4, 3) AS somme; 
+      </pre>
+    <p>
+      Plusieurs choses doivent vous sembler étrange dans cette définition de
+      fonction. <br />
+      D'abord, le corps entier de la fonction est défini comme une chaine de
+      caractère. <br />
+      Ensuite, les arguments ne sont pas nommés. <br />
+      Enfin, on utilise des index pour utiliser l'un ou l'autre argument.
+      <br />
+      Effectivement, ça ne semble ni pratique ni intuitif. <br />
+      Modifions celà :
+    </p>
+    <pre class="code-snippet block sql">
+CREATE OR REPLACE FUNCTION my_sum(int, int) 
+RETURNS int 
+AS
+$$
+BEGIN
+  RETURN $1 + $2;
+END
+$$ 
+LANGUAGE PLPGSQL </pre>
+    <p>
+      Notre fonction a besoin de délimiteurs. Nous ne pouvons pas y échaper.
+      <br />
+      Néanmoins, nous pouvons définir nos propres délimiteurs de telle manière
+      à ne pas utiliser l'apostrophe. <br />
+      Pour se faire, nous utilisons un double signe $. <br />
+      Notez que si le besoin s'en fait sentir, nous pouvons ajouter du texte
+      entre ces deux $. <br />
+      Il faudra penser à le faire au début comme à la fin de la fonction
+    </p>
+    <p>Ensuite, modifions les paramètres</p>
+    <pre class="code-snippet block sql">
+CREATE OR REPLACE FUNCTION my_sum(nombreA int, nombreB int) 
+RETURNS int 
+AS
+$$
+BEGIN
+RETURN nombreA + nombreB;
+END
+$$ 
+LANGUAGE PLPGSQL  
+</pre>
+    <p>On voit qu'il suffit, comme dans vos autres cours de programmation, de nommer les arguments dans la signature
+      pour les utiliser avec ces noms dans le corps de la fonction. <br>
+      On préférera cette forme pour notre cours et je vous suggère de l'utiliser pour vos développement car elle permet
+      d'éviter les éventuelles confusions
+    </p>
+    <h2>Declaration et assignation de variables</h2>
+    <p>
+      Essayons d'écrire une fonction qui permet de récupérer la différence entre le maximum et
+      le minimum d'une colonne pour une table factice.
+    </p>
+    <p>D'abord, créons cette colonne et ajoutons quelques données</p>
+    <pre class="code-snippet block sql">
+CREATE TABLE foo(
+	valeur INTEGER
+);
+INSERT INTO foo
+VALUES (5), (6), (10);
+</pre>
+    <p>Ajoutons ensuite notre fonction</p>
+    <pre class="code-snippet block sql">
+CREATE OR REPLACE FUNCTION get_difference_max_min()
+RETURNS int 
+AS
+$$
+DECLARE
+  mx int :=0;
+  mn int :=0;
+BEGIN
+  mx := (SELECT MAX(valeur) FROM foo);
+  mn := (SELECT MIN(valeur) FROM foo);
+  RETURN mx-mn;
+END
+$$
+LANGUAGE PLPGSQL 
+</pre>
+    <p>Remarquez 3 choses : <br>
+      Un bloc <b>DECLARE</b> dédié surmonte le corps de la fonction.
+      Il faudra déclarer (et idéalement, initialiser) les varibles dans ce bloc. <br>
+      L'opérateur d'assignation utilisé "<b>:=</b>"" qui est différent de ce que vous avez eu dans vos cours de C, C++
+      ou C# <br>
+      La récupération d'une valeur depuis une query (entourée de parenthèses)
+    </p>
+    <p class="nota-bene info">
+      Cette fonction n'a qu'une utilité pédagogique. <br>
+      Une réponse plus efficace à la demande aurait pu être apportée.
+    </p>
+    <p>Avant de passer à la suite, testons cette même fonction sans initialiser les variables dans le bloc
+      <b>DECLARE</b>... <br> Tout semble fonctionner correctement. <br>
+      Essayons ensuite avec l'ajout d'un <b>NOT NULL</b> après le type int :
+    </p>
+    <pre class="code-snippet block sql">
+CREATE OR REPLACE FUNCTION bar()
+RETURNS int 
+AS
+$$
+DECLARE
+  mx int;
+  mn int NOT NULL;
+BEGIN
+  mx := (SELECT MAX(valeur) FROM foo);
+  mn := (SELECT MIN(valeur) FROM foo);
+  RETURN mx-mn;
+END
+$$
+LANGUAGE PLPGSQL 
+    </pre>
+    <p>
+      On remarque une erreur levée par le SGBD. <br>
+      Ce qu'il faut retenir, c'est que déclarer vos variables sans assigner de valeur utilise une version
+      <b>nullable</b> du type spécifié. <br>
+      Il faudra faire attention à prendre ceci en considération dans la création de vos fonctions qui pourrait, parfois,
+      ne pas vouloir qu'une variable dispose d'une valeur nulle
+    </p>
+    <p class="nota-bene info">
+      D'autres nomenclatures permettent d'assigner des valeurs dans une variable. <br>
+      Vous trouverez assez souvent cette nomenclatures <br>
+      SELECT MIN(valeur) FROM foo INTO mn;
+    </p>
+    <h2>Retourner un dataset</h2>
+    <p>
+      Nous avons pour l'instant vu la possibilité de retourner une valeur scalaire (une valeur unique comme un int, un
+      varchar,...) <br>
+      Mais les fonctions permettent aussi de retourner des sets de données. <br>
+      Voyons cela.
+    </p>
+    <pre class="code-snippet block sql">
+CREATE OR REPLACE FUNCTION get_foo_bar()
+RETURNS TABLE(fizz int,buzz int)
+AS
+$$
+BEGIN
+	RETURN QUERY SELECT * FROM foo_bar;
+END
+$$
+LANGUAGE PLPGSQL;
+
+SELECT get_foo_bar();
+    </pre>
+    <p>
+      Plusieurs choses à noter : <br>
+      Le mot-clef <b>RETURN</b> est utilisé conjointement avec le mot-clef <b>QUERY</b> <br>
+      Lors de notre SELECT, la donnée était représentée dans une unique colonne sous la forme d'un CSV ("comma separated
+      value". En français, "valeurs séparées par une virgule")
+      Le type de retour est défini comme une table pour laquelle nous renseignons les noms de colonne ainsi que les
+      types <br>
+    </p>
+    <p>
+      Ces deux derniers points peuvent ne pas être intuitif. <br>
+      Récupérer les valeurs de retour d'une fonction sous la forme de colonnes plutôt que d'un CSV est relativement
+      simple. <br>
+      Essayez ceci :
+    </p>
+    <pre class="code-snippet block sql">
+SELECT fizz, buzz FROM get_foo_bar();
+    </pre>
+    <p>Effectivement, le retour de la fonction s'apparentant à une table, vous pouvez sélectionner les difféntes
+      colonnes de celle-ci. <br>
+      Vous devriez aussi pouvoir ne récupérer que l'une des deux colonnes en spécifiant son nom ou encore utiliser le
+      joker <b>*</b> voir toute autre opérations réalisable dans un SELECT
+    </p>
+    <p>
+      Pour notre deuxième point, il est facilement envisageable que, pour de plus grands dataset, il serait intéressant
+      de ne pas avoir à redéclarer le type à la volée. <br>
+      Il existe heureusement une variante permettant de réutiliser un type existant :
+    </p>
+    <pre class="code-snippet block sql">
+CREATE OR REPLACE FUNCTION get_foo_bar()
+RETURNS SETOF foo_bar
+AS
+$$
+BEGIN
+  RETURN QUERY SELECT * FROM foo_bar;
+END
+$$
+LANGUAGE PLPGSQL;
+
+SELECT get_foo_bar();
+</pre>
+    <p>Ici, nous utilisons le type de la table <b>foo_bar</b> de notre base de données</p>
+    <p class="nota-bene info">
+      Si vous avez suivi et exécuté les différentes requêtes au fur et à mesure de votre lecture, vous devriez remarquer
+      que la dernière lance une exception. <br>
+      La raison est qu'une fonction ne peut pas être "remplacée" si sa signature est modifée. <br>
+      Dans notre cas, nous changeons le type de retour et donc, sa signature. <br>
+      Il faudra donc faire un <b>DROP</b> de cette fonction avant de pouvoir la re-créer.
+    </p>
+    <p>
+      Dans le cas d'utilisation avec d'autres colonnes, il est aussi possible de récupérer les colonnes supplémentaires
+      avec cette nomenclature
+    </p>
+    <pre class="code-snippet block sql"> SELECT (get_foo_bar()).* , 42 as autre_col; </pre>
+    <p>Avant de passer à la suite, essayez ces deux requêtes : </p>
+    <pre class="code-snippet block sql">
+CREATE OR REPLACE FUNCTION get_foo_bar()
+RETURNS SETOF foo_bar
+AS
+$$
+BEGIN
+  RETURN QUERY SELECT valeur_foo FROM foo_bar;
+END
+$$
+LANGUAGE PLPGSQL;
+
+SELECT get_foo_bar();
+</pre>
+    <p>
+      Un message d'erreur nous indique <i>ERROR: structure of query does not match function result type</i> <br>
+      Effectivement, nous ne retournons que la colonne valeur_foo de notre fonction et cela ne correspond pas au type de
+      retour déclaré. <br>
+      Si l'erreur n'est pas surprenante, il est à noter qu'elle n'a été lancée qu'à l'exécution et non à l'écriture de
+      notre fonction. <br>
+      Pensez à bien tester votre code
+    </p>
+    <h2> Ne rien retourner </h2>
+    <p>À noter qu'il est aussi possible de ne rien retourner d'une fonction que nous pourrons déclarer avec le type de
+      retour <b>VOID</b></p>
+    <pre class="code-snippet block sql">
+CREATE OR REPLACE FUNCTION hello_world()
+RETURNS VOID
+AS 
+$$
+BEGIN 
+  RAISE NOTICE 'hello world';
+END
+$$
+LANGUAGE PLPGSQL; </pre>
+    <p>Par contre, l'appel de cette fonction se fera aussi dans un <b>SELECT</b></p>
+    <pre class="code-snippet block sql"> SELECT  hello_world(); </pre>
+    <p>Il est bien possible de l'appeler sans <b>SELECT</b> en utilisant plutôt le mot-clef <b>PERFORM</b>. <br>
+      Mais celui-ci n'est pas disponible en <i>SQL</i> et devra donc être exécuté dans du PLPGSQL ou autre (dans un
+      code, pas dans une query) <br>
+      Nous nous retrouvons alors avec cette nomenclature qui peut être relativement disgracieuse :
+    </p>
+    <pre class="code-snippet block sql"> DO $$ BEGIN PERFORM hello_world(); END $$ </pre>
+    <p class="note-bene info">Nous utiliserons plus tard des procédures stockées qui sont appellées avec un mot-clef
+      <b>CALL</b> et qui correspondra plus à l'intention d'exécuter du code sans attendre de valeur de retour
+    </p>
+    <!-- <h2>IN, OUT, INOUT</h2> -->
+    <h2>Structures de contrôles : if - case - loop</h2>
+    <p>
+      Toujours de manière similaire à vos autre cours de programmation, des structures de contrôle sont disponibles.
+      <br>
+      Il s'agit de toutes vos conditions, boucles, ... <br>
+      Passons en revue celles-ci grâce à quelques exemple :
+    </p>
+    <h3>IF - ELSIF - ELSE</h3>
+    <pre class="code-snippet block sql">
+DO 
+$$
+DECLARE
+  foo int := 0;
+BEGIN
+	IF foo = 1
+	THEN
+	RAISE NOTICE 'hello';
+	ELSIF foo = 2
+	THEN 
+	RAISE NOTICE 'world';
+	ELSE
+	RAISE NOTICE 'hello world';
+	END IF;
+END
+$$ </pre>
+    <p>Remarquons : <br>
+      5 mots-clefs <br>
+      IF dénote une vérification de condition <br>
+      THEN précède le code à exécuter si la condition est remplie <br>
+      ELSIF représentne une condition qui n'est active que si la précédente n'est pas remplie <br>
+      ELSE si les autres conditions ont toutes échouées. Il n'a pas besoin du mot-clef THEN <br>
+      END IF; pour cloturer le bloc conditionnel <br>
+      Une autre chose ne vous aura pas échappé : l'utilisation d'un unique signe d'égalité comme dans les requêtes SQL
+    </p>
+    <h3>CASE</h3>
+    <p>
+      Vous avez déjà vu le mot-clef <b>CASE</b> dans vos cours de C, C++ et C#. <br>
+      Il était alors utilisé en combinaison avec le mot-clef <b>SWITCH</b>. <br>
+      Ici, CASE prend la place du switch et un mot-clef WHEN remplacera le case.
+    </p>
+    <pre class="code-snippet block sql">
+DO 
+$$
+DECLARE
+  foo int := 0;
+BEGIN
+	CASE foo
+		WHEN 0,1 THEN
+			RAISE NOTICE '0 ou 1';
+		WHEN 2 THEN
+			RAISE NOTICE '2';
+		ELSE
+			RAISE NOTICE 'autre';
+	END CASE;
+END
+$$
+    </pre>
+    <p>
+      Faites bien attention à deux choses : <br>
+      Le cas par défaut représenté par le mot-clef <b>ELSE</b> <br>
+      Le mot-clef <b>END CASE</b> permettant de mettre fin au bloc
+    </p>
+    <h3>LOOP</h3>
+    <p class="nota-bene danger">
+      Attention : <br>
+      Une boucle peut s'écrire sans condition de sortie et ne s'en plaindra pas. <br>
+      Par contre, elle tournera sans fin. <br>
+    </p>
+    <p>
+      Voici un exemple simple de boucle :
+    </p>
+    <pre class="code-snippet block sql"> DO
+  $$
+  DECLARE
+    i int := 0;
+  BEGIN
+    LOOP
+    i := i +1;
+    RAISE NOTICE 'hello %', i;
+    EXIT WHEN i > 5;
+    END LOOP;
+  END
+  $$ </pre>
+    <p>Notez qu'il ne s'agit pas d'un while, un do while ou un for. <br>
+      D'autres mots-clefs existent et viennent s'ajouter à la boucle de base LOOP (par exemple, FOREACH). <br>
+      Mais la base des boucles en PGSQL est le mot-clef LOOP qui exécute en boucle le code jusqu'au <b>END LOOP;</b>
+      plus bas. <br>
+      Attention que sortir de la boucle se fait avec un EXIT qui peut soit être suivi d'une condition, soit être utilisé
+      seul (par exemple, dans un IF) </p>
+
+    <h2>Exercices</h2>
+    <p>
+      Voici une série de fonction à créer pour vous exercer :
+    </p>
+    <p>
+      Hello world : <br>
+      Écrit 'hello world' dans la console.
+    </p>
+    <p>
+      Factorielles : <br>
+      Créer une fonction qui prend un nombre en paramètre et retourne la factorielle de ce nombre
+    </p>
+    <p>
+      Fizz Buzz : <br>
+      Créer une fonction qui prend un nombre en paramètre. <br>
+      La fonction retourne les entiers entre 1 et ce nombre sous la forme de string <br>
+      Néanmoins, si l'entier est multiple de 5, on retournera à la place la valeur 'Fizz' <br>
+      Si l'entier est un multiple de 7, on retournera 'Buzz' <br>
+      Dans le cas d'un multiple de 5 et 7, on retournera 'FizzBuzz'
+    </p>
+    <p>
+      L33T :
+      Créer une fonction qui prend du texte en paramètre. <br>
+      Elle transforme ce texte en sa version "1337 C0D3" <br>
+      Ci-dessous, une référence à utiliser pour la traduction des caractères
+    </p>
+    <pre class="code-snippet block sql">
+      -- Référence pour la traduction en leet
+      -- a A 4
+      -- b B 8
+      -- e E 3 
+      -- g G 6 
+      -- h H # 
+      -- i I 1 
+      -- l L 1
+      -- o O 0
+      -- p P 9
+      -- r R 2
+      -- s S 5
+      -- t T 7 </pre>
+    <p>
+      Auto-increment : <br>
+      Créer une fonction qui prend en paramètre du texte. <br>
+      Ce texte représente une clé pour laquelle le système devra garder en mémoire un nombre entier <br>
+      À chaque fois que la fonctione est appelée, le nombre est "consommé" : sa valeur actuelle est retournée et sa
+      valeur en mémoire est incrémentée de 1
+    </p>
+
+    <p>
+      Identifiant : <br>
+      Créer une nouvelle fonction permettant de créer un "identifiant_interne"
+      représenté par la première lettre du nom suivi des 3 premières lettres
+      du prénom <br />
+      Utilisez cette fonction pour l'insertion d'une "personne" en base de
+      données <br />
+      Essayez de rendre votre fonction moins susceptible de créer des
+      duplicatas en vous aidant de la fonction créée précédement
+    </p>
+    <p>
+      Conversion de temps : <br>
+      Créer une fonction qui prend des secondes sous la forme d'un entier en param et retourne 3 valeurs entières : les
+      heures, les minutes et les secondes
+    </p>
+    <p>
+      Calcul de performance : <br>
+      Créer une fonction qui permet de calculer le temps d'exécution d'une autre fonction
+    </p>
+    <p>
+      Conversion d'âge : <br>
+      Créer une fonction qui prend une date en param et retourne l'age sous la forme d'un entier représentant les années
+      écoulées depuis cette date à aujourd'hui
+    </p>
+    <p>
+      Conversion d'âge 2 : <br>
+      Ajouter un param à la fonction précédente qui permet de spécifier si l'on souhaite la durée en année ou en mois
+      <br>
+      Mettez une valeur par défaut à ce param pour retourner l'âge en année quand rien n'est spécifié.
+    </p>
+    <p>
+      Pagination : <br>
+      Créer une fonction qui retourne un nombre limité de records depuis une table <br>
+      Les records retournés seront modulés par deux paramètres : le nombre d'éléments à retourner et la page courante.
+      <!-- fonction de pagination (returns set avec des variables pour LIMIT, SKIP,...)<br> -->
+    </p>
+    <!-- <pre>
+  starting_time := NOW();
+  -- corps fonction
+  end_time := NOW();
+  
+  RETURN -- calcul
+      </pre> -->
+
+    <p class="nota-bene danger">
+      Section en cours de création. Ci-dessous, des notes. Ne pas les prendre
+      en considération
+    </p>
+    <!-- <h2>Erreurs et exceptions</h2>
+    <p></p>
+    <h2>Écrire une fonction</h2>
+    <p></p>
+    <pre class="code-snippet block sql">
 -- CREATE OR REPLACE FUNCTION foo_sum(int, int) RETURNS int AS
 -- '
 --   SELECT $1 + $2;
@@ -40,90 +543,87 @@ SELECT foo_sum(12,12);
 --   SELECT $1 - $2;
 -- $foo$ LANGUAGE SQL
 SELECT foo_sb(12,2);
-        </pre
-      >
-      <p>
-        CREATE FUNCTION nom_fonction(type) RETURNS type_retour AS <br />
-        avec le corps de la fonction entre '' <br />
-        On peut aussi utiliser un double $ pour délimiter le corps <br />
-        On peut créer son propre mot clé à insérer entre les doubles $ <br />
-        => Dépend du langage utilisé. Si j'ai besoin de ' dans mon code, alors,
-        j'utilise des $. <br />
-        Si j'ai besoin de doubles $ (par examples en pearl), alors, je mets un
-        mot clé entre
-      </p>
-      <p>Accessible dans la db dans laquelle je déclare ma fonction</p>
-      <p>utilisable dans un SELECT</p>
-      <p>
-        Pas possible de faire un 'CALL ma_fonction()' comme avec un 'CALL
-        ma_stored_proc'
-      </p>
-      <p>Attention à bien spécifier le language utilisé pour la fonction</p>
-      <p>Peut exécuter n'importe quel type de query SQL</p>
-      <p>
-        Même si pas de valeur de retour (returns void), besoin de mettre dans un
-        SELECT. On aura alors une colonne avec une valeur "null"
-      </p>
-      <p>On peut choisir de retourner une (ou plusieurs ?) valeurs</p>
-      <p>
-        !!! Le type de retour déclaré est comparé au type de retour réel at run
-        time => Attention à la gestion des erreurs et à tester correctement
-      </p>
-      <p>
-        On peut tout à fait faire référence à des tables de la db. Vraiment des
-        queries comme on veut
-      </p>
-      <p>
-        Possible de donner des noms aux params de fonction et on peut utiliser
-        les noms des params plutôt que les numéros de params
-      </p>
-      <pre class="code-snippet block sql">
+        </pre> -->
+    <!-- <p>
+      CREATE FUNCTION nom_fonction(type) RETURNS type_retour AS <br />
+      avec le corps de la fonction entre '' <br />
+      On peut aussi utiliser un double $ pour délimiter le corps <br />
+      On peut créer son propre mot clé à insérer entre les doubles $ <br />
+      => Dépend du langage utilisé. Si j'ai besoin de ' dans mon code, alors,
+      j'utilise des $. <br />
+      Si j'ai besoin de doubles $ (par examples en pearl), alors, je mets un
+      mot clé entre
+    </p> -->
+    <!-- <p>Accessible dans la db dans laquelle je déclare ma fonction</p>
+    <p>utilisable dans un SELECT</p>
+    <p>
+      Pas possible de faire un 'CALL ma_fonction()' comme avec un 'CALL
+      ma_stored_proc' => En fait, si. Mais autre mot clef (perform?)
+    </p> -->
+    <!-- <p>Attention à bien spécifier le language utilisé pour la fonction</p>
+    <p>Peut exécuter n'importe quel type de query SQL</p>
+    <p>
+      Même si pas de valeur de retour (returns void), besoin de mettre dans un
+      SELECT. On aura alors une colonne avec une valeur "null"
+    </p>
+    <p>On peut choisir de retourner une (ou plusieurs ?) valeurs</p>
+    <p>
+      !!! Le type de retour déclaré est comparé au type de retour réel at run
+      time => Attention à la gestion des erreurs et à tester correctement
+    </p> -->
+    <p>
+      On peut tout à fait faire référence à des tables de la db. Vraiment des
+      queries comme on veut
+    </p>
+    <!-- <p>
+      Possible de donner des noms aux params de fonction et on peut utiliser
+      les noms des params plutôt que les numéros de params
+    </p>
+    <pre class="code-snippet block sql">
 CREATE OR REPLACE FUNCTION foo_sum(valeur1 int, valeur2 int) RETURNS int AS
 '
   SELECT valeur1 + valeur2;
 ' LANGUAGE SQL
-            </pre
-      >
-      <p>
-        Attention aux ambiguités avec les noms de colonnes et de params si les
-        noms sont les même
-      </p>
-      <p>
-        Attention. Si on souhaite modifier une fonction, DROP FUNCTION (si on
-        souhaite changer les params. Pas le contenu ? Tester)
-      </p>
-      <p>On peut retourner un type simple => int, varchar, bigint, ...</p>
-      <p>
-        On peut aussi retourner des "composites" (des rows)
-        <br />
-        On aura donc un retour équivalent a (une unique row ? non? dans
-        l'exemple, il utilisait un LIMIT 1. Tester sans ), mais sous la forme
-        d'un csv
-      </p>
-      <p>
-        Exemple : on considère une table foo avec les colonnes fizz et buzz et
-        on déclare une function tel que
-      </p>
-      <pre class="code-snippet block sql">
+            </pre>
+    <p>
+      Attention aux ambiguités avec les noms de colonnes et de params si les
+      noms sont les même
+    </p>
+    <p>
+      Attention. Si on souhaite modifier une fonction, DROP FUNCTION (si on
+      souhaite changer les params. Pas le contenu ? Tester)
+    </p>
+    <p>On peut retourner un type simple => int, varchar, bigint, ...</p>
+    <p>
+      On peut aussi retourner des "composites" (des rows)
+      <br />
+      On aura donc un retour équivalent a (une unique row ? non? dans
+      l'exemple, il utilisait un LIMIT 1. Tester sans ), mais sous la forme
+      d'un csv
+    </p>
+    <p>
+      Exemple : on considère une table foo avec les colonnes fizz et buzz et
+      on déclare une function tel que
+    </p>
+    <pre class="code-snippet block sql">
             CREATE OR REPLACE FUNCTION get_foo() RETURNS foo AS -- Notez le type de retour qui porte le nom de la table
             $$
                 SELECT * FROM foo
                 LIMIT 1
             $$ 
             LANGUAGE SQL
-        </pre
-      >
-      <p>
-        Cette fonction get_foo() retourne une colonne nommée "get_foo" qui
-        contiendra les valeurs de fizz et buzz sous la forme d'un CSV entouré de
-        () <br />
-        ('fiiz', 'buzz')
-      </p>
-      <p>
-        On peut séparer le format pour récupérer sous la forme d'une table avec
-        un appel de ce genre
-      </p>
-      <pre class="code-snippet block sql">
+        </pre>
+    <p>
+      Cette fonction get_foo() retourne une colonne nommée "get_foo" qui
+      contiendra les valeurs de fizz et buzz sous la forme d'un CSV entouré de
+      () <br />
+      ('fiiz', 'buzz')
+    </p>
+    <p>
+      On peut séparer le format pour récupérer sous la forme d'une table avec
+      un appel de ce genre
+    </p> -->
+    <!-- <pre class="code-snippet block sql">
             -- retourne deux colonnes sous la forme d'une table 
             SELECT (get_foo()).*; 
             -- résultat
@@ -145,23 +645,21 @@ CREATE OR REPLACE FUNCTION foo_sum(valeur1 int, valeur2 int) RETURNS int AS
             -- fizz   | buzz
             -- 'fizz' | 'buzz'
             -- Ce qui permet de considérer le résultat comme une table
-        </pre
-      >
-      <p>
-        Plutôt que de retourner des rows, on peut retourner des "tables" avec le
-        mot clé "SETOF" (non? Le mot clé SETOF semble implicite quand on
-        renseigne une table comme type de retour sans l'utiliser)<br />
-        En fait, non. SETOF permet de retourner un type existant déjà défini qui
-        peut être, entre autre, une table
-        <br />
-        Le mot clé "TABLE" peut aussi être utilisé et on aura alors un type de
-        retour défini "à la volée" uniquement pour cette fonction
-      </p>
-      <pre class="code-snippet block sql">
+        </pre> -->
+    <!-- <p>
+      Plutôt que de retourner des rows, on peut retourner des "tables" avec le
+      mot clé "SETOF" (non? Le mot clé SETOF semble implicite quand on
+      renseigne une table comme type de retour sans l'utiliser)<br />
+      En fait, non. SETOF permet de retourner un type existant déjà défini qui
+      peut être, entre autre, une table
+      <br />
+      Le mot clé "TABLE" peut aussi être utilisé et on aura alors un type de
+      retour défini "à la volée" uniquement pour cette fonction
+    </p>
+    <pre class="code-snippet block sql">
             CREATE OR REPLACE FUNCTION get_foo() RETURNS SETOF foo AS -- ...
-        </pre
-      >
-      <pre class="code-snippet block sql">
+        </pre> -->
+    <pre class="code-snippet block sql">
 CREATE OR REPLACE FUNCTION get_praticien_table(id varchar) 
 --Ici, returns table avec une définition de table équivalent à la définition lors d'une création de table
 RETURNS TABLE (
@@ -180,14 +678,13 @@ $$
 LANGUAGE SQL;
 
 SELECT * FROM get_praticien_table('JDOE');
-        </pre
-      >
-      <p>
-        Attention que dans ce cas, l'ordre des colonnes dans la déclaration de
-        la table de retour et dans le select a de l'importance. La requête
-        suivante n'aurait pas été correcte
-      </p>
-      <pre class="code-snippet block sql">
+</pre>
+    <p>
+      Attention que dans ce cas, l'ordre des colonnes dans la déclaration de
+      la table de retour et dans le select a de l'importance. La requête
+      suivante n'aurait pas été correcte
+    </p>
+    <pre class="code-snippet block sql">
             CREATE OR REPLACE FUNCTION get_praticien_table_faux(id varchar) 
             --Ici, returns table avec une définition de table équivalent à la définition lors d'une création de table
             RETURNS TABLE (
@@ -211,22 +708,21 @@ SELECT * FROM get_praticien_table('JDOE');
 -- SQL state: 42P13
 -- Detail: L'instruction finale renvoie character varying au lieu de date pour la colonne 2.
 -- Context: Fonction SQL « get_praticien_table_faux »
-                    </pre
-      >
-      <p>
-        Ici, l'erreur est claire. Le type n'est pas bon (date vs varchar). Mais
-        attention si les types sont identiques avec des valeurs différentes
-        <br />
-        par exemple, début contrat et fin contrat sont tout les deux des dates
-        et inverser les deux donneraient des résultats erronés "semblant"
-        correctes !
-      </p>
-      <p>
-        On peut ajouter des valeurs par défaut aux params. Mais comme en C#, les
-        params avec valeur par défaut doivent être en fin de déclaration des
-        params de la fonction
-      </p>
-      <pre>
+                    </pre>
+    <p>
+      Ici, l'erreur est claire. Le type n'est pas bon (date vs varchar). Mais
+      attention si les types sont identiques avec des valeurs différentes
+      <br />
+      par exemple, début contrat et fin contrat sont tout les deux des dates
+      et inverser les deux donneraient des résultats erronés "semblant"
+      correctes !
+    </p>
+    <p>
+      On peut ajouter des valeurs par défaut aux params. Mais comme en C#, les
+      params avec valeur par défaut doivent être en fin de déclaration des
+      params de la fonction
+    </p>
+    <pre>
             -- Remarquez que le param par défaut est le dernier param
             -- Si on souhaite plusieurs params par défaut, ils doivent tous être "à la fin"
                 CREATE OR REPLACE FUNCTION foo_avec_default(ma_variable int, ma_variable_defaut int DEFAULT 10)
@@ -236,24 +732,23 @@ SELECT * FROM get_praticien_table('JDOE');
                 SELECT foo_avec_default(10, 25);
                 -- ou
                 SELECT foo_avec_default(10);
-            </pre
-      >
-      <p>
-        Attention aux comportements très différents qui ne sont pas explicites
-        avec un default => à éviter <br />
-        Par exemple, une fonction qui retourne un nombre positif ou négatif
-        selon un param par défaut boolean "inversion" <br />
-        Très bien si on le connait. Mais si on ne connait pas et qu'il est actif
-        par défaut, perte de temps de debug en vue
-      </p>
-      <p>
-        Attention à la suppression des fonctions <br />
-        Que faire si la fonction est utilisée par des vues ou autres ? <br />
-        Que faire si plusieurs fonctions existent avec une liste d'arguments
-        différents? <br />
-        Que faire si la fonction existe plusieurs fois dans différents schema?
-      </p>
-      <pre class="code-snippet block sql">
+            </pre>
+    <p>
+      Attention aux comportements très différents qui ne sont pas explicites
+      avec un default => à éviter <br />
+      Par exemple, une fonction qui retourne un nombre positif ou négatif
+      selon un param par défaut boolean "inversion" <br />
+      Très bien si on le connait. Mais si on ne connait pas et qu'il est actif
+      par défaut, perte de temps de debug en vue
+    </p>
+    <p>
+      Attention à la suppression des fonctions <br />
+      Que faire si la fonction est utilisée par des vues ou autres ? <br />
+      Que faire si plusieurs fonctions existent avec une liste d'arguments
+      différents? <br />
+      Que faire si la fonction existe plusieurs fois dans différents schema?
+    </p>
+    <pre class="code-snippet block sql">
             DROP FUNCTION IF EXISTS foo(arguments) CASCADE
             -- DROP FUNCTION pour supprimer une fonction
             -- IF EXISTS. Pas requis. Permet de ne pas lever une exception si la fonction n'existe pas (on aura juste un warning)
@@ -263,26 +758,26 @@ SELECT * FROM get_praticien_table('JDOE');
             -- CASCADE permet aussi de supprimer toutes les views, fonctions, stored proc etc etc qui utilisent la fonction en train d'être supprimé
             -- Dangereux
             -- La variante "RESTRICT" existe et empêchera la suppression de la fonction
-        </pre
-      >
+        </pre>
 
-      <h2>Différences entre functions, vues et procédures stockées</h2>
-      <p>function retournant une table vs vue</p>
-      <p>
-        On peut limiter les champs dans les deux cas, mais dans le cas de la
-        fonction, on peut aussi limiter la marge de manoeuvre de l'utilisateur
-        en fournissant une liste prédéfinie de paramètres qu'il peut modifier
-        <br />
-        Par exemple, une fonction get_articles(id) qui retourne uniquement
-        l'article si on en connait l'id plutôt qu'une vue view_article qui
-        retournerait tout les articles et sur laquelle l'utilisateur pourrait
-        faire un where <br />
-        => Dans la fonction, on pourra "forcer" le where sur un argument <br />
-        Pareil pour retourner une valeur d'aggrégat (vente_totale(article_id))
-        <br />
-      </p>
-      <h2 id="conclusion">Conclusion</h2>
-      <p></p>
-    </main>
-  </body>
+    <h2>Différences entre functions, vues et procédures stockées</h2>
+    <p>function retournant une table vs vue</p>
+    <p>
+      On peut limiter les champs dans les deux cas, mais dans le cas de la
+      fonction, on peut aussi limiter la marge de manoeuvre de l'utilisateur
+      en fournissant une liste prédéfinie de paramètres qu'il peut modifier
+      <br />
+      Par exemple, une fonction get_articles(id) qui retourne uniquement
+      l'article si on en connait l'id plutôt qu'une vue view_article qui
+      retournerait tout les articles et sur laquelle l'utilisateur pourrait
+      faire un where <br />
+      => Dans la fonction, on pourra "forcer" le where sur un argument <br />
+      Pareil pour retourner une valeur d'aggrégat (vente_totale(article_id))
+      <br />
+    </p>
+    <h2 id="conclusion">Conclusion</h2>
+    <p></p>
+  </main>
+</body>
+
 </html>
