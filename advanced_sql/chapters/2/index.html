@@ -7,6 +7,7 @@
     <title>Document</title>
     <script type="module" src="../../../scripts/syntaxHighlighting.js"></script>
     <script type="module" src="../../../scripts/navbar/addNavbar.js"></script>
+    <script type="module" src="../../../scripts/sidebar/sidebarSQLAvance.js"></script>
     <link rel="stylesheet" href="../../../../ressources/style.css" />
 </head>
 
@@ -16,7 +17,11 @@
         <ol>
             <li>Introduction</li>
             <li>Nomenclature</li>
-            <li>Conclusion</li>
+            <li>Avantages d'une procédure stockée</li>
+            <li>Procédure stockée avec transaction</li>
+            <li>Procédure stockée avec table temporaire</li>
+            <li>Gestion des exceptions</li>
+            <li>Exercices</li>
         </ol>
         <hr />
         <h2 id="introduction">Introduction</h2>
@@ -27,6 +32,11 @@
             Ceci aura pour conséquence de les favoriser pour des tâches différentes que celles remplies par les
             fonctions. <br>
             Voyons ça ensemble dans ce chapitre.
+        </p>
+        <p class="nota-bene danger">
+            Dans d'autres SGBD, les procédures stockées peuvent être utilisées pour retourner des dataset (par exemple,
+            SQLServer) <br>
+            Avec PGSQL, il faudra bien utiliser des fonctions et non des procédures stockées
         </p>
         <h2 id="Nomenclature">Nomenclature</h2>
         <p>
@@ -88,22 +98,402 @@ SELECT * FROM nageur;
 SELECT * FROM log_nageur</pre>
         <p>
             Ici, nous déclarons une procédure qui permet d'enregistrer un nageur dans la table du même nom. <br>
-            En plus de faire un insert, elle enregistrera un log informatif dans une table dédiée. <br>
-            En utilisant cette procédure stockée, nous nous assurons de bien utiliser la fonction get_next_value, de
-            bien encoder un log, de bien reprendre l'utilisateur courant pour ce log et la date courante, que les tables
-            nécessaires existent avec une erreur claire cas échéants,... <br>
-            On comprend qu'une procédure stockée pourrait réduire la charge de l'utilisateur (un unique appel de
-            procédure avec
-            2 arguments plutôt que de faire toutes les vérifications et encodage), mais aussi de gérer la "sécurité" de
-            notre DB. <br>
-            L'utilisateur pouvant avoir accès à une série de procédures stockées au fonctionnement clairement défini
-            plutôt qu'un accès direct à des tables
+            En plus de faire un insert, elle enregistrera un log informatif dans une table dédiée.
         </p>
         <p>
             Pour ce qui est de la nomenclature, on voit que très peu de choses sont différentes par rapport à une
             fonction. <br>
             L'utilisation du mot-clef "PROCEDURE", la non déclaration d'un type de retour, l'appel à la procédure avec
-            le mot-clef "CALL" plutôt que dans un SELECT
+            le mot-clef "CALL" plutôt que dans un SELECT.
+        </p>
+        <p>
+            Ce dernier point est particulièrement important et démontre la principale différence avec une fonction. <br>
+            La procédure stockée n'a pas pour but d'être utilisée dans une requête comme l'est une fonction. <br>
+            Une procédure sera plutôt destiné à exécuter des actions plutôt que de récupérer des résultats consommés par
+            une requête.
+        </p>
+        <h2 id="avantage-d-une-procedure-stockee">Avantage d'une procédure stockée</h2>
+        <p>
+            Comme nous l'avons vu, les fonctions et les procédures stockées sont très similaires. <br>
+            Mais elles ne sont pas identiques, auquel cas elles n'auraient que peu d'intérêt. <br>
+            Nous venons de voir qu'une procédure stockée n'as pas le <i>même but</i> qu'un fonction. <br>
+            Mais nous n'avons pas pour autant parlé de l'intérêt qu'elles pourraient avoir. <br>
+            Voyons ça en se basant sur l'exemple précédent.
+        </p>
+        <p>
+            Utiliser la procédure stockée précédente nous apporte plusieurs avantages :
+        </p>
+        <p>
+            D'abord, <b>la consistance dans les opérations réalisées.</b> <br>
+            Si une équipe de développeur doit régulièrement réaliser certaines opérations, il est fort à parier que
+            plusieurs versions de ces opérations seront utilisées (voyez les différentes solutions que vous apportez,
+            vous et vos camarades de classe, aux différents exercices proposés) <br>
+            Si une procédure stockée est créée et utilisée par l'équipe, nous sommes en mesure de définir clairement
+            quelle est la route prise pour arriver à destination. <br>
+            Nous aurons donc de manière systématique l'utilisation de la fonction get_next_value avec les mêmes
+            arguments, le même encodage de log avec des messages formatés de manière similaire, les mêmes erreurs
+            retournées en cas de problème...
+        </p>
+        <p>
+            De même, la <b>maintenabilité</b> du code est améliorée. <br>
+            Plutôt que de changer tout les endroits des différents projets qui réaliseraient ces opérations <i> à la
+                main</i>, nous pouvons nous contenter de modifier uniquement la procédure stockée à un unique endroit.
+        </p>
+        <p>
+            De la même manière, ceci permet la <b>simplification des opérations</b> <br>
+            Du simple fait de gommer les détails des différentes opérations derrière une procédure stockée, l'intention
+            devient plus claire. <br>
+            Je sais que l'appel de cette procédure stockée sert à <i>enregistrer un nageur</i> et, si cet exemple n'est
+            pas le plus parlant (enregistre nageur n'étant peut-être pas plus clair qu'un <i>INSERT</i>), on peut aussi
+            imagines des procédures comme <i>recalcul_tva_document</i> ou encore
+            <i>calcul_balance_comptable</i>.
+        </p>
+        <p>
+            De plus, l'utilisation d'une procédure stockée permet d'augmenter <b>la sécurité</b> de notre base de
+            données. <br>
+            Non seulement, permettant de gérer les droits de notre base de données de façon plus granulaire en laissant
+            la possibilité à certains utilisateurs d'accéder à des procédures stockées plutôt qu'à des tables. <br>
+            Mais aussi en forçant des paramètres plutôt que de laisser des requêtes être directement appliquées sur
+            notre DB.
+        </p>
+        <p>
+            Enfin, on notera la possibilité d'utiliser des <b>transactions</b>. <br>
+            Ceci est l'une des majeures différences avec les fonctions et permet d'assurer <b>l'intégrité</b> des
+            données. <br>
+        </p>
+        <p class="nota-bene info">
+            On peut aussi noter un gain de performance à l'utilisation d'une procédure stockée. <br>
+            Ces dernières sont <i>compilées</i> et demandent moins d'effort <i>at run time</i> pour être exécutées. <br>
+            Est-ce que ce gain est notable? Je vous laisse faire vos essais.
+        </p>
+        <h2 id="procedure-stockee-avec-transaction">Procédure stockée avec transaction</h2>
+        <p>
+            Prenons la situation problèmesuivante illustrer les transactions :
+        </p>
+        <p>
+            Alice souhaite transférer X€ sur le compte en banque de Bob. <br>
+            Son transfert se fait en plusieurs temps. <br>
+            D'abord, une requête est faite pour vérifier que le compte d'Alice contient assez d'argent pour faire cette
+            opération. <br>
+            Ensuite, une mise à jour des informations d'Alice est faite et son compte est débité de X€ <br>
+            Enfin, le compte de Bob est crédité de X€.
+        </p>
+        <p>
+            Rien de bien complexe dans ces opérations que vous seriez capable d'écrire avec quelques requêtes. <br>
+            Les voici :
+
+        </p>
+        <pre class="code-snippet block sql">
+CREATE TABLE bank_account(
+	owner varchar(64) PRIMARY KEY,
+	balance decimal
+);
+
+INSERT INTO bank_account
+(owner, balance)
+VALUES 
+('alice',250),
+('bob',0);
+
+-- pour transfert de 100€
+SELECT * FROM bank_account;
+
+SELECT COUNT(*) > 0 
+FROM bank_account
+WHERE owner = 'alice'
+AND balance >= 100;
+
+UPDATE bank_account
+SET balance = balance - 100
+WHERE owner = 'alice';
+
+UPDATE bank_account
+SET balance = balance + 100
+WHERE owner = 'bob';
+
+SELECT * FROM bank_account;
+        </pre>
+        <p>
+            Néanmoins, si l'écriture du code ne pose aucun problème, son exécution, elle, pourrait être problématique.
+            <br>
+            Dans le cas d'un problème, potentiellement extérieur (dysfonctionnement du serveur), nous pourrions arrêter
+            l'exécution des opérations après avoir débité le compte d'Alice, mais avant d'avoir crédité le compte de
+            Bob. <br>
+            La somme X devant être transférée perdue pour les deux intervenants. <br>
+        </p>
+        <p>
+            Pour répondre à cette problématique nous pouvons utiliser des <b>transactions</b>.
+        </p>
+        <p>
+            Une transaction permet de n'exécuter les requêtes que si toute la transaction peut porter ses fruits. <br>
+            Ainsi, soit le compte d'Alice et débité <b>et</b> le compte de Bob est crédité, soit aucun des deux comptes
+            n'est affecté.
+        </p>
+        <p class="nota-bene info">
+            Il y a plus à dire sur les transactions. Ceci sera détaillé plus tard.
+        </p>
+        <p>
+            Dans une fonction, il n'est pas possible d'utiliser une transaction. Il faudra alors passer par une
+            procédure stockée (ceci appuyant une fois de plus le rôle de la fonction dans la récupération de données
+            contre le rôle des procédures stockées dans les actions à effets de bord) <br>
+            Voyons comment les utiliser via un exemple :
+        </p>
+        <pre class="code-snippet block sql">
+CREATE OR REPLACE PROCEDURE
+money_transfer(depuis varchar(64), vers varchar(64), somme decimal)
+AS
+$$
+DECLARE
+  peut_transferer bool := false;
+BEGIN
+  peut_transferer := (SELECT COUNT(*) > 0 
+    FROM bank_account
+    WHERE owner = depuis
+    AND balance >= somme);
+  IF NOT peut_transferer
+  THEN
+  	RAISE EXCEPTION 'Balance too low for transfert';
+  END IF;
+
+  UPDATE bank_account
+  SET balance = balance - somme
+  WHERE owner = depuis;
+
+-- RAISE EXCEPTION 'activer ou desactiver cette ligne pour tester la transaction';
+  
+  UPDATE bank_account
+  SET balance = balance + somme
+  WHERE owner = vers;
+COMMIT;
+END
+$$LANGUAGE PLPGSQL;
+
+CALL money_transfer('alice', 'bob', 100);
+SELECT * FROM bank_account;
+        </pre>
+        <p>
+            Vous voyez cette transaction? <br>
+            Non? <br>
+            Ici, un unique nouveau mot-clef est utilisé : <b>COMMIT</b>... <br>
+            Et il n'est même pas nécessaire dans notre exemple. <br>
+            Une transaction commence par le mot-clef <b>BEGIN</b> et, dans le cas d'une procédure stockée, le début
+            d'une transaction est aussi réalisé au mot-clef <b>BEGIN</b>. <br>
+            L'utilisation des transactions est donc <i>implicite</i> dans les procédures stockées. <br>
+            Il vous est à loisir de les manipuler avec une série d'opérations liées. <br>
+            Ici, <i>COMMIT</i> permet de valider la transaction et d'effectuer les requêtes. <br>
+            Je vous invite à essayer cette procédure stockée avec et sans la ligne RAISE EXCEPTION 'activer ou
+            desactiver cette ligne pour tester la transaction'; <br>
+            Si vous regarder les résultats sur la table <i>bank_account</i>, vous devriez voir qu'une fois, les deux
+            comptes sont affectés, l'autre fois, aucun.
+        </p>
+        <h2 id="procedure-stockee-avec-table-temporaire">Procédure stockée avec table temporaire</h2>
+        <p>
+            Les tables temporaires sont, comme leur nom indique, des tables dont la durée de vie est limitées. <br>
+            Sans aucune précision, une table temporaire est supprimée à la fin de la session en cours. <br>
+            Mais utilisée avec des transactions, on peut réduire son cycle de vie ou celui des données qu'elle contient
+            à la transaction en cours. <br>
+            Ceci permet de cumuler des données à utiliser lors de la transaction en cours. <br>
+            Pour se faire, utilisez simplement la nomenclature de création de table en ajoutant le mot-clef <i>temp</i>
+            ou <i>temporary</i> avant <i>table</i> <br>
+            Si vous voulez restreindre votre table temporaire vis-à-vis de la transaction en cours, ajouter un <i>ON
+                COMMIT</i> suivi de l'une de ces trois options : <br>
+            <b>PRESERVE ROWS</b> : option par défaut. Ne fais rien <br>
+            <b>DELETE ROWS</b> : supprime le contenu de la table temporaire <br>
+            <b>DROP</b> : supprime la table et son contenu
+        </p>
+        <pre>
+CREATE TEMP TABLE foo ( 
+	bar int,
+	buzz int
+) ON COMMIT DELETE ROWS;
+        </pre>
+        <h2>Gestion des exceptions</h2>
+        <p>
+            Tout au long de ce chapitre, nous avons vu cette ligne de code revenir régulièrement :
+        </p>
+        <pre class="code-snippet block sql">
+            RAISE EXCEPTION 'foo';
+        </pre>
+        <p>
+            Ceci nous permet de <i>lever une exception</i> et d'interrompre l'exécution en cours si l'exception n'est
+            pas capturée. <br>
+            Portons notre attention sur l'effet de la levée d'exception lors d'une exécution de code :
+        </p>
+        <pre class="code-snippet block sql">
+-- D'abord, création d'une procédure qui lève une exception
+CREATE OR REPLACE PROCEDURE throw()
+AS
+$$
+BEGIN
+RAISE EXCEPTION 'error';
+END
+$$LANGUAGE PLPGSQL
+
+CALL throw();
+
+-- Ensuite, exécution d'un code qui appel cette procédure
+DO
+$$
+BEGIN
+RAISE NOTICE 'Hello';
+CALL throw();
+RAISE NOTICE 'World';
+END
+$$
+  
+        </pre>
+        <p>
+            On peut voir que seul le message 'hello' est affiché. <br>
+            L'exécution du code est interrompue avant d'arriver à la ligne RAISE NOTICE 'world'; <br>
+            Que faire dans le cas d'une exception? <br>
+            Il est possible, dans certains cas, de capturer les exceptions. <br>
+            On peut alors agir en conséquence :
+        </p>
+        <pre class="code-snippet block sql">
+DO
+$$
+BEGIN
+RAISE NOTICE 'Hello';
+CALL throw();
+	EXCEPTION
+		WHEN OTHERS THEN
+		RAISE NOTICE 'Exception capturée';
+RAISE NOTICE 'World';
+END
+$$
+        </pre>
+        <p>
+            On remarque que non seulement, Hello world est affiché, mais entre les deux, "Exception capturée" est
+            affiché. <br>
+            Une fois capturée, l'exception n'interrompt plus l'exécution du code.
+        </p>
+        <p class="nota-bene info">
+            Nous n'avons pas réellement fait quelque chose d'intéressant à la capture de cette exception. <br>
+            Dans le cas ou aucune opération ne doit être faite, <b>NULL;</b> peut être utilisé. <br>
+            Les cas où il serait intéressant d'utiliser cet opérateur devraient néanmoins être rare, d'autant plus dans
+            le cas d'une capture d'exception
+        </p>
+        <p>
+            Faisons quand même attention au mots-clefs utilisés : WHEN OTHERS capture toutes les exceptions sans
+            distinction. <br>
+            Capturer une exception permet d'agir en cas de problème avec une réponse adaptée. Il semblerait logique
+            d'affiner notre capture d'exception pour agir avec des moyens adaptés à l'erreur présentée. <br>
+            Pour ce faire, nous allons remplacer le mot-clef <i>OTHERS</i>. Il s'agit en réalité d'un joker permettant
+            de capturer toutes exceptions lancées par l'appel précédent. <br>
+            Voyons d'abord la liste des exceptions disponibles dans <a
+                href="https://www.postgresql.org/docs/17/errcodes-appendix.html"> la documentation officielle </a>
+        </p>
+        <p>
+            Nous pouvons lire dans la documentation que les erreurs sont composées d'un code en deux parties. <br>
+            Les deux premiers caractères représentent la classe de l'exception alors que les derniers représentent
+            l'exception spécifique. <br>
+            Ainsi, nous pouvons avoir plusieurs classes : 21 - cardinality_violation, 22 - data_exception <br>
+            Avec parfois, plusieurs erreurs possibles : 22012 - division_by_zero, 22004 null_value_not_allowed <br>
+            À noter qu'une classe aura toujours une erreur par défaut, l'erreur 000 qui correspond à la classe (21000,
+            22000,...) <br>
+            Modifions notre code pour mettre en place un comportement spécifique. <br>
+            Si l'exception est une data_exception, nous affichons un message spécifique.
+        </p>
+        <pre class="code-snippet block sql">
+DO
+$$
+BEGIN
+RAISE NOTICE 'Hello';
+CALL throw();
+    EXCEPTION
+        WHEN OTHERS THEN
+        RAISE NOTICE 'Exception capturée';
+        WHEN SQLSTATE '22000' THEN
+        RAISE NOTICE 'Data exception capturée';
+        
+RAISE NOTICE 'World';
+END
+$$
+        </pre>
+        <p>
+            Parfait. Le comportement est bien celui voulu. <br>
+            Modifions maintenant la procédure stockée pour retourner une exception 22000 :
+        </p>
+        <pre class="code-snippet block sql">
+CREATE OR REPLACE PROCEDURE throw()
+AS
+$$
+BEGIN
+RAISE EXCEPTION SQLSTATE '22000';
+END
+$$LANGUAGE PLPGSQL
+        </pre>
+        <p>
+            Étrangement, le même texte qu'avant est affiché. <br>
+            Notez ici une information importante : l'ordre de déclaration des captures d'exception a de l'importance.
+            <br>
+            Le premier cas qui correspond capture l'exception et nous ne passons pas dans les suivants. <br>
+            OTHERS étant un joker, si nous le laissons en première capture d'exception, aucune autre capture ne
+            fonctionnera. <br>
+            Le même principe est applicable pour les classes : si l'on capture une exception 22000 avant une 22001, nous
+            n'irons jamais dans le bloc de code pour l'exception 22001. <br>
+            Il faudra donc écrire ses captures d'exception de la plus précise à la plus générale.
+        </p>
+
+        <pre class="code-snippet block sql">
+DO
+$$
+BEGIN
+RAISE NOTICE 'Hello';
+CALL throw();
+    EXCEPTION
+        WHEN SQLSTATE '22000' THEN
+        RAISE NOTICE 'Data exception capturée';
+        WHEN OTHERS THEN
+        RAISE NOTICE 'Exception capturée';
+RAISE NOTICE 'World';
+END
+$$
+</pre>
+        <p>
+            Vous remarquerez, si vous appelez directement la procédure stockée, que nous n'affichons plus de message
+            personnalisé. <br>
+            Ceci est toujours faisable pour peu qu'on modifie un peu notre utilisation du RAISE EXCEPTION. <br>
+            Une série d'options sont disponibles et peuvent être ajoutées comme ceci :
+        </p>
+        <pre class="code-snippet block sql">
+CREATE OR REPLACE PROCEDURE throw()
+AS
+$$
+BEGIN
+RAISE EXCEPTION SQLSTATE '22000'
+	USING MESSAGE = 'mon erreur',
+	HINT = 'Essayez de trouver une solution';
+END
+$$LANGUAGE PLPGSQL
+        </pre>
+        <p> Pour la liste des options disponibles, c'est <a
+                href="https://www.postgresql.org/docs/current/plpgsql-errors-and-messages.html#RAISE-USING-OPTION-MESSAGE">
+                ici </a>
+        </p>
+        <h2 id="exercices">Exercices</h2>
+        <p>
+            Créer une table customer ainsi qu'une table de log correspondante. <br>
+            Un customer devra avoir un nom, prenom, numero de client (un entier positif de valeur max 999999), une
+            adresse composée d'une rue, numéro de rue, ville, code postal et complément d'adresse (exemple : boite 2)
+            <br>
+            On souhaite pouvoir récupérer un numéro de téléphone et une adresse mail pour contacter ce client. <br>
+            Créer une procédure stockée pour les opérations CREATE UPDATE et DELETE sur la table customer. <br>
+            Créer une fonction permettant de récupérer le client complet ainsi qu'une autre fonction permettant de
+            récupérer l'adresse concaténée d'un client sur base de son numéro.
+        </p>
+        <p>
+            Créer 3 tables : facture, ligne_facture et article. <br>
+            Créer les procédures stockées nécessaire pour l'encodage d'un article, l'encodage d'une facture et l'ajout
+            de ligne de détails à la facture. <br>
+            Une ligne de détail devra comprendre au moins une référence à l'article, une quatité d'achat pour l'article
+            et être liée à une facture. <br>
+            Un article contiendra un prix unitaire HTVA, un taux de TVA et un nom <br>
+            La facture contiendra un identifiant, une référence à un client, une date d'encodage ainsi que des totaux
+            HTVA et TTC. <br>
+            Attention, la TVA doit être calculée sur le total HTVA de toutes les lignes qui partagent le même taux de
+            TVA. <br>
+            Après encodage d'une ligne de détail pour une facutre, la facture doit avoir des totaux à jour.
         </p>
     </main>
 

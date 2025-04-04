@@ -21,54 +21,69 @@ function applyColor(word) {
   switch (testword) {
     case "ADD":
     case "ALTER":
+    case "AND":
+    case "AS":
+    case "AS":
+    case "ASC":
+    case "BEGIN":
+    case "BEGIN":
+    case "BY":
     case "CASCADE":
+    case "CAST":
     case "COLUMN":
     case "CONSTRAINT":
     case "CREATE":
+    case "CREATE":
+    case "CREATE":
     case "CROSS":
+    case "DATABASE":
+    case "DECLARE":
+    case "DECLARE":
     case "DELETE":
+    case "DESC":
     case "DISTINCT":
     case "DROP":
+    case "END":
+    case "END":
     case "FOREIGN":
+    case "FROM":
     case "FULL":
+    case "FUNCTION":
+    case "GROUP":
+    case "IF":
+    case "IN":
     case "INNER":
+    case "INSERT":
     case "INTO":
     case "JOIN":
     case "KEY":
+    case "LANGUAGE":
     case "LEFT":
+    case "LIMIT":
     case "LIMIT":
     case "NOT":
     case "NULL":
-    case "ON":
-    case "OUTER":
-    case "ORDER":
-    case "PRIMARY":
-    case "REFERENCES":
-    case "RIGHT":
-    case "SET":
-    case "TABLE":
-    case "USE":
-    case "UNION":
-    case "DATABASE":
-    case "INSERT":
-    case "UPDATE":
-    case "VALUES":
-    case "VIEW":
-    case "AND":
-    case "AS":
-    case "ASC":
-    case "BY":
-    case "CAST":
-    case "CREATE":
-    case "DESC":
-    case "FROM":
-    case "GROUP":
-    case "IN":
-    case "LIMIT":
     case "NUMERIC":
+    case "ON":
     case "OR":
     case "ORDER":
+    case "ORDER":
+    case "OUTER":
+    case "PLPGSQL":
+    case "PRIMARY":
+    case "PROCEDURE":
+    case "REFERENCES":
+    case "REPLACE":
+    case "RIGHT":
     case "SELECT":
+    case "SELECT":
+    case "SET":
+    case "TABLE":
+    case "UNION":
+    case "UPDATE":
+    case "USE":
+    case "VALUES":
+    case "VIEW":
     case "WHERE":
       return '<span class="key-word">' + word + "</span>";
     default:
