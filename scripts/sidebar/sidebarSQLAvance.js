@@ -9,6 +9,8 @@ const _linkDefinitions = [
   { name: "1) Fonctions", url: `${ROOT_PATH}${path}1` },
   { name: "1') Exercices", url: `${ROOT_PATH}${path}1/exercices` },
   { name: "2) Procédures", url: `${ROOT_PATH}${path}2` },
+  { name: "2') Exercices", url: `${ROOT_PATH}${path}2/exercices` },
+  { name: "3) Déclencheurs", url: `${ROOT_PATH}${path}3` },
 ];
 
 function configure() {

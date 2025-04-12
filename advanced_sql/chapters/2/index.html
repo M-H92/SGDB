@@ -311,9 +311,7 @@ CREATE TEMP TABLE foo (
         <p>
             Tout au long de ce chapitre, nous avons vu cette ligne de code revenir régulièrement :
         </p>
-        <pre class="code-snippet block sql">
-            RAISE EXCEPTION 'foo';
-        </pre>
+        <pre class="code-snippet block sql">RAISE EXCEPTION 'foo';</pre>
         <p>
             Ceci nous permet de <i>lever une exception</i> et d'interrompre l'exécution en cours si l'exception n'est
             pas capturée. <br>
@@ -465,8 +463,7 @@ RAISE EXCEPTION SQLSTATE '22000'
 	USING MESSAGE = 'mon erreur',
 	HINT = 'Essayez de trouver une solution';
 END
-$$LANGUAGE PLPGSQL
-        </pre>
+$$LANGUAGE PLPGSQL</pre>
         <p> Pour la liste des options disponibles, c'est <a
                 href="https://www.postgresql.org/docs/current/plpgsql-errors-and-messages.html#RAISE-USING-OPTION-MESSAGE">
                 ici </a>

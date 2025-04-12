@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script type="module" src="../../../../scripts/syntaxHighlighting.js"></script>
+    <script type="module" src="../../../../scripts/navbar/addNavbar.js"></script>
+    <script type="module" src="../../../../scripts/sidebar/sidebarSQLAvance.js"></script>
+    <link rel="stylesheet" href="../../../../ressources/style.css" />
+</head>
+
+<body>
+    <main>
+        <h1>Fonctions - Exercices</h1>
+        <ol>
+            <li>Introduction</li>
+            <li>Gestion client</li>
+            <li>Gestion facture</li>
+        </ol>
+        <hr />
+        <h2 id="introduction">Introduction</h2>
+        <h2>Exercices</h2>
+        <p>
+            Ci-dessous, les exercices et solutions pour le chapitre 2 sur les procédures stockées
+        </p>
+        <h2>Gestion client</h2>
+        <p>
+            Créer une table customer ainsi qu'une table de log correspondante. <br>
+            Un customer devra avoir un nom, prenom, numero de client (un entier positif de valeur comprise entre 400 000
+            et 409 999 compris. Il s'agit des comptes comptable clients qui pourront directement être réutilisés lors de
+            l'intégration comptable des données), une
+            adresse composée d'une rue, numéro de rue, ville, code postal et complément d'adresse (exemple : boite 2)
+            <br>
+            On souhaite pouvoir récupérer un numéro de téléphone et une adresse mail pour contacter ce client. <br>
+            Créer trois procédures stockées, une pour chacune des opérations CREATE UPDATE et DELETE sur la table
+            customer. <br>
+            Créer une fonction permettant de récupérer le client complet ainsi qu'une autre fonction permettant de
+            récupérer l'adresse concaténée d'un client sur base de son numéro de compte client.
+        </p>
+        <h3>Variante 1</h3>
+        <pre class="code-snippet block sql">
+CREATE TABLE Customer (
+    NClient INT PRIMARY KEY CHECK (NClient > 0 AND NClient <= 999999),
+    Nom VARCHAR(255) NOT NULL,
+    Prenom VARCHAR(255) NOT NULL,
+    Rue VARCHAR(255) NOT NULL,
+    Numero VARCHAR(20) NOT NULL,
+    Ville VARCHAR(100) NOT NULL,
+    CP VARCHAR(10) NOT NULL,
+    Adresse2 VARCHAR(255),
+    Telephone VARCHAR(20),
+    Email VARCHAR(255)
+);
+    
+CREATE TABLE Customer_Log (
+    LogID SERIAL PRIMARY KEY,
+    NClient INT REFERENCES Customer(NClient),
+    Action VARCHAR(50),
+    DateAction TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Details TEXT
+);
+--CREATE
+CREATE OR REPLACE PROCEDURE Create_Customer(
+    p_nclient INT,
+    p_nom VARCHAR,
+    p_prenom VARCHAR,
+    p_rue VARCHAR,
+    p_numero_rue VARCHAR,
+    p_ville VARCHAR,
+    p_code_postal VARCHAR,
+    p_complement_adresse VARCHAR,
+    p_telephone VARCHAR,
+    p_email VARCHAR
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    
+-- IF EXISTS (SELECT 1 FROM CUSTOMER WHERE
+    INSERT INTO Customer (
+        NClient, Nom, Prenom, Rue, Numero, Ville, CP,
+        Adresse2, Telephone, Email
+    )
+    VALUES (
+        p_nclient, p_nom, p_prenom, p_rue, p_numero_rue, p_ville, p_code_postal,
+        p_complement_adresse, p_telephone, p_email
+    );
+    
+    INSERT INTO Customer_Log(NClient, Action, Details)
+    VALUES (
+        p_nclient,
+        'INSERT',
+        CONCAT('Ajout du client ', p_nom, ' ', p_prenom)
+    );
+END;
+$$;
+CALL Create_Customer(
+    -10,
+    'Smith' ,
+    'John' ,
+    '',
+    '',
+    '',
+    '',
+    NULL,
+    NULL,
+    NULL
+);
+
+SELECT * FROM Customer_Log;
+             </pre>
+        <h3>variante 2</h3>
+        <pre class="code-snippet block sql">
+CREATE SEQUENCE customer_num_client_seq
+INCREMENT 1
+MINVALUE 1
+MAXVALUE 999999
+START 400000 -- here you can mention startup nummber as you need
+CACHE 1;
+
+create table customer (
+    num_client int PRIMARY KEY DEFAULT nextval('customer_num_client_seq'),
+    nom varchar(255) not null,
+    prenom varchar(255) not null,
+    rue varchar(255),
+    num_rue int,
+    ville varchar(255),
+    code_postal varchar(255) ,
+    comp_addr varchar(255),
+    num_tel int,
+    mail varchar(255)
+);
+
+CREATE OR REPLACE PROCEDURE create_client(t_prenom varchar(255),t_nom varchar(255))
+AS
+$$
+BEGIN
+    INSERT INTO customer (nom,prenom) VALUES (t_nom,t_prenom);
+END
+$$
+LANGUAGE PLPGSQL;
+
+CREATE OR REPLACE PROCEDURE update_client_phone_mail(t_numcli int,t_num int,t_mail varchar(255))
+AS
+$$
+BEGIN
+    UPDATE customer SET
+        num_tel = t_num,
+        mail = t_mail
+    WHERE num_client = t_numcli;
+END
+$$
+LANGUAGE PLPGSQL;
+
+CREATE OR REPLACE PROCEDURE 
+update_client_addresse(t_numcli int,t_rue varchar(255),
+    t_num_rue int,t_ville varchar(255),
+    t_cp varchar(255),
+    t_comp_addr varchar(255) = null)
+AS
+$$
+BEGIN
+    UPDATE customer SET 
+        rue = t_rue,
+        num_rue = t_num_rue,
+        ville = t_ville,
+        code_postal = t_cp,
+        comp_addr = t_comp_addr
+    WHERE num_client = t_numcli;
+END
+$$
+LANGUAGE PLPGSQL;
+CREATE OR REPLACE PROCEDURE update_client_name(t_numcli int,t_pren varchar(255),t_nom varchar(255))
+AS
+$$
+BEGIN
+    UPDATE customer SET
+        prenom = t_pren,
+        nom = t_nom
+    WHERE num_client = t_numcli;
+END
+$$
+LANGUAGE PLPGSQL;
+             </pre>
+        <h3>Variante 3 </h3>
+        <pre class="code-snippet block sql">
+CREATE TABLE client(
+	compte int PRIMARY KEY,
+	nom varchar(64),
+	prenom varchar(64),
+	rue varchar(64),
+	numero_adresse varchar(64),
+	ville varchar(64),
+	code_postal varchar(64),
+	complement_adresse varchar(64)
+);
+
+CREATE TABLE log_table_client(
+    id SERIAL PRIMARY KEY,
+ 	utilisateur varchar(64),
+	type_action varchar(64),
+	description varchar(128),
+	date_action date
+);
+
+CREATE OR REPLACE PROCEDURE ajout_client(nom varchar(64), prenom varchar(64), 
+	rue varchar(64),
+	numero_adresse varchar(64),
+	ville varchar(64),
+	code_postal varchar(64),
+	complement_adresse varchar(64) = '')
+AS
+$$
+DECLARE
+	last_inserted int;
+BEGIN
+
+	last_inserted := (SELECT MAX(compte) FROM client);
+	IF last_inserted IS NULL
+	THEN 
+		last_inserted := 400001;
+	ELSIF last_inserted >= 409999
+	THEN
+		RAISE EXCEPTION SQLSTATE '22003'
+			USING MESSAGE = 'Le numéro de compte ne peut pas dépasser 40999',
+			HINT = 'Vérifier avec votre responsable CRM si le compte max est atteint';
+	ELSE
+		last_inserted := last_inserted+1;
+	END IF;
+
+	INSERT INTO client
+	(
+	compte,
+	nom,
+	prenom ,
+	rue ,
+	numero_adresse ,
+	ville ,
+	code_postal ,
+	complement_adresse ) 
+	VALUES 
+	(last_inserted,
+	nom , 
+	prenom , 
+	rue ,
+	numero_adresse ,
+	ville,
+	code_postal ,
+	complement_adresse
+	);
+
+	INSERT INTO log_table_client(
+
+ 	utilisateur,
+	type_action,
+	description,
+	date_action
+	)
+	VALUES (
+	(SELECT CURRENT_USER),
+	'INSERT',
+	'Création d''un nouveau compte client : ' || last_inserted,
+	 (SELECT CURRENT_DATE)
+	);
+
+
+END
+$$LANGUAGE PLPGSQL;
+
+
+CALL ajout_client('Doe', 'John', 
+	'Rue du lac',
+	'42',
+	'Arlon',
+	'6700',
+	'Boite 2/2');
+	
+CALL ajout_client('Doe', 'Jane', 
+	'Rue du lac',
+	'42',
+	'Arlon',
+	'6700');
+
+	SELECT * FROM client;
+	SELECT * FROM log_table_client;
+        </pre>
+        <h2>Gestion facture</h2>
+        <p>
+            Créer 3 tables : facture, ligne_facture et article. <br>
+            Créer les procédures stockées nécessaire pour l'encodage d'un article, l'encodage d'une facture et
+            l'ajout
+            de ligne de détails à la facture. <br>
+            Une ligne de détail devra comprendre au moins une référence à l'article, une quatité d'achat pour
+            l'article
+            et être liée à une facture. <br>
+            Un article contiendra un prix unitaire HTVA, un taux de TVA et un nom <br>
+            La facture contiendra un identifiant, une référence à un client, une date d'encodage ainsi que des
+            totaux
+            HTVA et TTC. <br>
+            Attention, la TVA doit être calculée sur le total HTVA de toutes les lignes qui partagent le même
+            taux de
+            TVA. <br>
+            Après encodage d'une ligne de détail pour une facutre, la facture doit avoir des totaux à jour.
+        </p>
+    </main>
+</body>
+
+</html>

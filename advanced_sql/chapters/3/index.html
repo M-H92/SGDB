@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script type="module" src="../../../scripts/syntaxHighlighting.js"></script>
+    <script type="module" src="../../../scripts/navbar/addNavbar.js"></script>
+    <script type="module" src="../../../scripts/sidebar/sidebarSQLAvance.js"></script>
+    <link rel="stylesheet" href="../../../ressources/style.css" />
+</head>
+
+<body>
+    <main>
+        <h1>Triggers</h1>
+        <ol>
+            <li>Introduction</li>
+            <li>Trigger functions</li>
+            <li>Variables</li>
+            <li>RETURN NULL</li>
+            <li>DROP</li>
+            <li>TRIGGER conditionnels</li>
+            <li>Arguments</li>
+            <li>Exercices</li>
+        </ol>
+        <hr />
+        <h2 id="introduction">Introduction</h2>
+        <p>
+            Les <i>triggers</i> (ou déclencheurs en français ) vous permettent d'exécuter des fonctions lors d'actions
+            sur les tables ou vues. <br>
+            Par exemple, lors d'un update sur une table, vous pourriez vouloir déclencher une écriture de log <br>
+            Ces triggers peuvent cibler les actions de create, update, ou delete pour une table (ou vue) entière, pour
+            des records de celle-ci ou même lorsque des colonnes spécifiques sont impactées. <br>
+            Dans certains cas, il sera aussi possible d'utiliser le mot-clef <i>INSTEAD</i> pour remplacer complètement
+            l'action de l'utilisateur.
+        </p>
+        <p class="nota-bene danger">
+            Des triggers peuvent agir de manière récursive. <br>
+            Il faudra faire attention à ces cas qui, si ils
+            arrivent par erreur, peuvent engendrer de longues heures de debug
+        </p>
+        <h2 id="trigger-functions">Trigger functions</h2>
+        <p>
+            Les triggers se basent sur des fonctions spécialement dédiées qui ont deux particularité d'écriture : <br>
+            - Pas d'arguments <br>
+            - Type de retour <i>trigger</i> ou encore <i>event_trigger</i> <br>
+            Voyons comment en créer une :
+        </p>
+        <pre class="code-snippet block sql">
+CREATE OR REPLACE FUNCTION t_log_nageur()
+RETURNS TRIGGER
+AS 
+$$
+BEGIN
+RAISE NOTICE 'hello world';
+END;
+$$
+LANGUAGE PLPGSQL;</pre>
+        <p>
+            Pas très différent d'une fonction classique. <br>
+            Au niveau de l'explorateur d'objets de pgadmin, vous pouvez néanmoins voir que votre trigger function n'est
+            pas rangée avec les autres fonctions, mais bien dans une subdivision spécifique. <br>
+            Essayons de l'appeler avec un SELECT et voyons le résultat :
+        </p>
+        <pre class="code-snippet block">
+ERREUR: les fonctions trigger peuvent seulement être appelées par des triggers 
+SQL state: 0A000 </pre>
+        <p>
+            Voici une autre spécificité des fonctions triggers : il est impossible de les appeler dans un SELECT comme
+            on pourrait le faire avec une fonction classique. <br>
+            Effectivement, le but d'une fonction trigger étant d'être <i>automatique</i>, il semble cohérent qu'elles ne
+            puissent pas être appelées manuellement. <br>
+            Elles peuvent par contre appeler elle-même d'autres fonctions au besoin. Pensez-y pour la découpe de votre
+            code. <br>
+            Pour pouvoir utiliser une trigger function, nous devons la lier à un <i>trigger</i>, un <i>déclencheur</i>.
+            <br>
+            Voici comment faire :
+        </p>
+        <pre class="code-snippet block sql">
+CREATE TRIGGER on_after_insert_nageur
+    AFTER INSERT 
+ON nageur
+    FOR EACH ROW
+        EXECUTE PROCEDURE t_log_nageur();</pre>
+        <p>
+            La première ligne sert à créer et nommer un trigger <br>
+            La seconde permet de définir quand sera déclenché le trigger. <br>
+            On spécifie un événement (INSERT, UPDATE, DELETE, TRUNCATE) ainsi qu'une indication pour savoir si le
+            trigger doit être réalisé avant ou après l'événement (BEFORE ou AFTER). <br>
+            On renseigne ensuite la table, la vue,... <br>
+            Et si le trigger doit être déclenché une fois par rangée affectée ou par requête. <br>
+            Dans notre cas, avoir spécifié <b>FOR EACH ROW</b> permet de déclencher le trigger de multiples fois en
+            insérant en une requête plusieurs enregistrements <br>
+            Enfin, on spécifie qu'au déclenchement du trigger, on souhaite exécuter la trigger function t_log_nageur().
+            <br>
+            Essayons :
+        </p>
+        <pre>
+INSERT INTO nageur
+    (id, nom, prenom)
+VALUES 
+    (10, 'Dupont', 'Michel'),
+    (11, 'Dupont', 'Laura');</pre>
+        <p>
+            Nous obtenons la réponse suivante :
+        </p>
+        <pre class="code-snippet block"> ERROR:  le contrôle a atteint la fin de la procédure trigger sans RETURN </pre>
+        <p>
+            Nous pouvons corriger cette erreur de la sorte :
+        </p>
+        <pre class="code-snippet block sql">
+CREATE OR REPLACE FUNCTION t_log_nageur()
+RETURNS TRIGGER
+AS 
+$$
+BEGIN
+RAISE NOTICE 'hello world';
+RETURN NEW;
+END;
+$$
+LANGUAGE PLPGSQL;</pre>
+        <p>
+            Mais que signifie ce <b>RETURN NEW</b> ? <br>
+        </p>
+        <h2 id="variables">Variables</h2>
+        <p>
+            En plus des particularités vue précédement, les fonctions triggers disposent par défaut d'une série de
+            variables permettant de manipuler certains informations en rapport avec le trigger. <br>
+            Par exemple, quel trigger a déclenché la fonction, quelles sont les nouvelles informations enregistrées,
+            quelles étaient les anciennes informations... <br>
+            Une liste complète de ces variables est disponible <a
+                href="https://www.postgresql.org/docs/current/plpgsql-trigger.html#PLPGSQL-DML-TRIGGER"> dans la
+                documentation </a>. <br>
+            Parmis celles-ci, on note par exemple : <br>
+            <b> NEW </b> - <i>record</i> : contenant le nouvel enregistrement dans le cas d'un insert ou update <br>
+            <b> OLD </b> - <i>record</i> : contenant l'ancien enregistrement dans le cas d'un delete ou update <br>
+            <b> TG_WHEN </b> - <i>text</i> : une valeur texte parmis les suivantes : "BEFORE" "AFTER" "INSTEAD OF"
+        </p>
+        <p>
+            On notera qu'une fonction trigger doit retourner une information de type TRIGGER. <br>
+            Ceci explique pourquoi notre première tentative était un échec et pourquoi notre nouvelle tentative est une
+            réussite. <br>
+            Profitons en pour modifier notre trigger et le rendre plus utile en créant un LOG dans une table
+            <i>log_nageur</i> à l'insertion d'un nouveau nageur.
+        </p>
+        <pre class="code-snippet block sql">
+CREATE OR REPLACE FUNCTION t_log_nageur()
+RETURNS TRIGGER
+AS 
+$$
+BEGIN
+	INSERT INTO log_nageur
+	(utilisateur, type_action, date_action, description)
+	VALUES 
+	((SELECT CURRENT_USER), 'INSERT', (SELECT CURRENT_DATE), 'Ajout nageur ' || NEW.id);
+
+	RETURN NEW;
+RETURN NEW;
+END;
+$$
+LANGUAGE PLPGSQL; 
+
+INSERT INTO nageur
+(id, nom, prenom)
+VALUES (12, 'Dupont', 'Michel'),
+(13, 'Dupont', 'Laura');
+
+SELECT * FROM log_nageur; </pre>
+        <p>
+            Ici, nous utilisons la variable <i>NEW</i> pour récupérer une donnée de la rangée insérée via l'action qui a
+            déclenché notre trigger. <br>
+            Essayons de faire la même chose pour la modification d'un nageur. <br>
+            Cette fois, en faisant aussi un log de l'ancienne valeur ainsi que de la nouvelle valeur la remplaçant.
+        </p>
+        <pre class="code-snippet block sql">
+CREATE OR REPLACE FUNCTION t_log_update_nageur()
+RETURNS TRIGGER
+AS 
+$$
+BEGIN
+	INSERT INTO log_nageur
+	(utilisateur, type_action, date_action, description)
+	VALUES 
+		((SELECT CURRENT_USER), 
+		'UPDATE', 
+		(SELECT CURRENT_DATE), 
+		'UPDATE nageur ' || OLD.id || ' SET nom FROM ' || OLD.nom || ' TO ' || NEW.nom);
+
+	RETURN NEW;
+
+END;
+$$
+LANGUAGE PLPGSQL;
+
+CREATE OR REPLACE TRIGGER on_after_update_nageur
+	BEFORE UPDATE 
+ON nageur
+	FOR EACH ROW
+		EXECUTE PROCEDURE t_log_update_nageur();
+
+UPDATE nageur
+SET nom = 'Dupond'
+WHERE nom = 'Dupont';
+		
+SELECT * FROM nageur;
+
+SELECT * FROM log_nageur;</pre>
+        <p>
+            À noter que ces variables disposent de valeurs qui peuvent tout à fait être éditées. <br>
+            Nous pourrions envisager, par exemple, de vérifier une donnée dans notre trigger avant de l'enregistrer et
+            de modifier la valeur de la variable <i>NEW</i> <br>
+            Par exemple, une insertion dans une table dédiée à la collecte de températures en kelvin pourrait, si une
+            valeur négative est insérée, considérer que la donnée est en celcius et la convertir avant insertion.
+        </p>
+        <h2 id="return-null">RETURN NULL</h2>
+        <p>
+            Nous avons jusqu'à présent retourné la variable <i>NEW</i> de nos fonctions triggers. <br>
+            Nous pourrions retourner aussi un <i>NULL</i> avec pour effet d'empêcher l'action <br>
+            Ainsi, on pourrait imaginer empêcher la suppression d'un enregistrement de cette maniètre :
+        </p>
+        <pre class="code-snippet block sql">
+CREATE OR REPLACE FUNCTION t_disallow_delete_nageur()
+RETURNS TRIGGER
+AS 
+$$
+BEGIN
+    INSERT INTO log_nageur
+    (utilisateur, type_action, date_action, description)
+    VALUES 
+        ((SELECT CURRENT_USER), 
+        'DELETE', 
+        (SELECT CURRENT_DATE), 
+        'Tentative de suppression du nageur ' || OLD.id);
+
+    RETURN NULL;
+
+END;
+$$
+LANGUAGE PLPGSQL;
+
+CREATE OR REPLACE TRIGGER on_before_delete_nageur
+    BEFORE DELETE 
+ON nageur
+    FOR EACH ROW
+        EXECUTE PROCEDURE t_disallow_delete_nageur();
+
+DELETE FROM nageur
+WHERE nom = 'Dupond';
+        
+SELECT * FROM nageur;
+
+SELECT * FROM log_nageur;</pre>
+        <h2 id="drop">DROP</h2>
+        <p>
+            Nous pourrions empêcher la suppression d'un enregistrement de plusieurs autres manières plus ou moins
+            efficace. <br>
+            Ici, le résultat est drastique : tant que le trigger est présent, il sera impossible de supprimer un
+            enregistrement dans la table <br>
+            Peut importe les droits de l'utilisateur, peut importe que la suppression soit fait dans une simple requête
+            ou dans une procédure stockée. <br>
+            Il faudra retirer le trigger pour pouvoir à nouveau supprimer un enregistrement dans cette table. <br>
+            Ceci ce fait avec un simple "DROP" suivi du trigger.
+        </p>
+        <p class="nota-bene info">
+            On parle bien d'un drop du trigger et pas de la trigger function.
+        </p>
+        <h2>TRIGGER conditionnels</h2>
+        <p>
+            Si nous souhaitons garder notre trigger, mais le rendre plus permissif, nous pourrions créer un trigger
+            conditionnel. <br>
+            Il est en réalité tout à fait possible de créer un trigger avec une condition <i>WHEN</i> de telle manière à
+            ce qu'il ne s'exécute que lorsque certains conditions sont remplies. <br>
+            Par exemple :
+        </p>
+        <pre class="code-snippet block sql">
+CREATE OR REPLACE TRIGGER on_before_delete_nageur
+BEFORE DELETE 
+ON nageur
+FOR EACH ROW
+WHEN(
+CURRENT_DATE < '2025-09-01' 
+)
+EXECUTE PROCEDURE t_disallow_delete_nageur();</pre>
+        <p>
+            Ainsi, nous pourrions empêcher la suppression d'un nageur tant que la saison n'est pas terminée ou encore,
+            ne l'autoriser que lors de l'entre saison.
+        </p>
+        <h2>Arguments</h2>
+        <p>
+            Plus tôt, nous avons évoqué qu'il n'était pas possible de déclarer une trigger function prenant des
+            arguments. <br>
+            Il est tout de même possible de récupérer des arguments grâce à la variable <b>TG_ARGV</b> représentant un
+            tableau d'arguments. <br>
+            Ceux-ci sont alors "passés" à la fonction lors de la création du trigger. Comme ceci :
+        </p>
+        <pre class="code-snippet block sql">
+CREATE TRIGGER foo
+BEFORE INSERT
+ON bar
+FOR EACH STATEMENT
+EXECUTE PROCEDURE buzz('mon argument'); </pre>
+        <p>
+            Il faudra par contre faire attention à bien vérifier l'existance de l'argument avant de tenter de l'utiliser
+            dans la fonction
+        </p>
+        <h2>Exercices</h2>
+        <h3>Logs</h3>
+        <p>
+            Créer une table de logs ainsi qu'une trigger function permettant de log les informations d'update, mais
+            aussi d'insert et de delete. <br>
+            On souhaite l'écrire de telle manière qu'elle puisse être appliquée sur n'importe quelle table. <br>
+            Pour se faire, on utilisera les variables disponibles dans les trigger functions pour log, au moins : <br>
+            La table affectée, l'opération qui a déclenché le trigger, les données avant l'opération, les données après
+            l'opération, la date et l'utilisateur concerné
+        </p>
+        <h3>Moyenne</h3>
+        <p>
+            Créez une table etudiant, une table examen et une table de liaison etudiant_examen. <br>
+            Dans la table etudiant_examen, ajoutez un resultat. <br>
+            Dans la table etudiant, ajoutez une moyenne. <br>
+            Ajouter un trigger recalculant la moyenne à chaque fois qu'un modification est faite dans la table
+            etudiant_examen
+        </p>
+        <h3>Commande</h3>
+        <p>
+            Créez une table commande ainsi qu'une table client. <br>
+            La table client contient les références de contact du client ainsi qu'une dette <br>
+            La table commande contient un article, un prix unitaire, une quantité, une date de
+            commande, une date de livraison et une date de paiement. <br>
+            La dette du client correspond au prix unitaire multiplié par la quantité de toutes ses commandes non payées.
+            <br>
+            Créez un trigger calculant la dette du client lors de la manipulation de la table commande. <br>
+        </p>
+        <h3>Commande bis</h3>
+        <p>
+            Sur base de l'exercice précédent, ajouter une table de rappel. <br>
+            Créez un trigger ajoutant un enregistrement dans la table rappel quand la dette d'un client dépasse le seuil
+            de 1000€ et si aucun rappel n'est <i>à faire</i> <br>
+            Créez un trigger ou adaptez le trigger précédent pour désactiver un rappel <i>à faire</i> si la dette du
+            client diminue sous le seuil de 1000€. <br>
+            Créer une fonction permettant de récupérer, pour tout rappel <i>à faire</i> un texte à incorporer dans un
+            email de rappel. <br>
+            Créer une procédure stockée prenant un ou des id de rappel et mettant à jour la date de rappel à la date
+            courante pour chaque rappel passé en argument. <br>
+            Un rappel est considéré <i>à faire</i> quand la date de rappel est <i>NULL</i> <br>
+            Un rappel est considéré comme <i>fait</i> quand la date de rappel contient une valeur <br>
+        </p>
+        <h3>Commande ter</h3>
+        <p>
+            Modifier la table client et ajouter un boolean <i>desactive</i> <br>
+            Créez un trigger sur la table rappel. <br>
+            Quand un rappel est fait, si le client dispose de 10 rappels ou plus, désactiver le client. <br>
+            Un client désactivé ne peut plus passer de commande. <br>
+            Créez un trigger sur la table commande empêchant de créer une commande pour un client désactivé.
+        </p>
+        <pre class="code-snippet block sql" style="display: none;">
+CREATE TABLE logs(
+	id SERIAL PRIMARY KEY,
+	log_date date,
+	log_user text,
+	log_table text,
+	log_action text,
+	old_value JSON,
+	new_value JSON
+);
+
+CREATE OR REPLACE FUNCTION create_log()
+RETURNS trigger
+AS
+$$
+DECLARE
+
+	old_val JSON = NULL;
+	new_val JSON = NULL;
+
+BEGIN
+
+	IF TG_OP IN ('UPDATE', 'DELETE')
+	THEN
+		old_val := row_to_json(OLD);
+	END IF;
+	
+	IF TG_OP IN ('INSERT', 'UPDATE')
+	THEN
+		new_val := row_to_json(NEW);
+	END IF;
+	
+INSERT INTO logs
+(
+	log_date ,
+	log_user ,
+	log_table ,
+	log_action ,
+	old_value ,
+	new_value 
+) VALUES 
+(
+	(SELECT CURRENT_DATE),
+	(SELECT CURRENT_USER),
+	TG_TABLE_NAME,
+	TG_OP,
+	old_val,
+	new_val
+);
+
+	RETURN NEW;
+END;
+$$
+LANGUAGE PLPGSQL
+
+CREATE OR REPLACE TRIGGER on_nageur
+	AFTER INSERT OR UPDATE OR DELETE
+ON nageur
+	FOR EACH ROW
+		EXECUTE PROCEDURE create_log();
+
+SELECT * FROM nageur;
+
+INSERT INTO nageur
+(id, nom, prenom)
+VALUES (14, 'Dupont', 'Marie');
+
+UPDATE nageur SET nom = 'Dupond' WHERE id = 14
+
+
+SELECT * FROM logs</pre>
+    </main>
+
+</body>
+
+</html>

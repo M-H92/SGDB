@@ -449,6 +449,20 @@ SELECT exercice4('San Goku');</pre>
             Les records retournés seront modulés par deux paramètres : le nombre d'éléments à retourner et la page
             courante.
             <!-- fonction de pagination (returns set avec des variables pour LIMIT, SKIP,...)<br> -->
+            <!-- DO
+            $$
+            BEGIN
+                IF (SELECT COUNT(*) > 0
+                      FROM information_schema.columns
+                     WHERE  table_name   = 'nageur' AND column_name = 'nom')
+                 THEN
+                     RAISE NOTICE 'exists';
+                 ELSE
+                     RAISE NOTICE 'not exists';
+                 END IF;
+            
+             END;
+             $$ LANGUAGE PLPGSQL -->
         </p>
 
     </main>
