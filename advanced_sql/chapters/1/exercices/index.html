@@ -25,7 +25,6 @@
         </ol>
         <hr />
         <h2 id="introduction">Introduction</h2>
-        <h2>Exercices</h2>
         <p>
             Ci-dessous, les exercices et solutions pour le chapitre 1 sur les fonctions
         </p>
@@ -464,7 +463,219 @@ SELECT exercice4('San Goku');</pre>
              END;
              $$ LANGUAGE PLPGSQL -->
         </p>
+        <pre>
+create or replace function pagination(pg int, nbobj int)
+returns table (
+    id bigint,
+    nom varchar(255),
+    prenom varchar (255)
+) AS
+$$
+begin
+    return query
+        select * from public.nageur
+            ORDER BY nageur.id
+            OFFSET (pg - 1) * nbobj
+            LIMIT nbobj;
+end
+$$ LANGUAGE PLPGSQL;
+            
+select * from pagination (2, 5);
+        </pre>
+        <h3>Variante 2</h3>
+        <p>
+            2 points d'attention pour cette version : <br>
+            Si pas d'éléments dans le range, retourne une page vide <br>
+            Si on souhaite étendre la pagination avec un tri sur une autre colonne que la colonne spécifiée dans le
+            range, il faut refaire toute la fonction
+        </p>
+        <pre class="code-snippet block sql">
+create or replace function pagination(pg int, nbobj int)
+returns table (
+	id bigint,
+	nom varchar(255),
+	prenom varchar (255)
+) AS
+$$
+declare
+	x int := 0;
+	y int := 0;
+begin
+	-- obj ini
+	x := (pg - 1) * nbobj;
+	-- obj fin
+	y := pg * nbobj;
+	return query 
+		select * from public.nageur 
+		order by nageur.id
+		where nageur.id >= x and nageur.id <= y;
+end
+$$ LANGUAGE PLPGSQL;
+ 
+select * from pagination (2, 5);
+        </pre>
+        <h3>Variante 3</h3>
+        <pre class="code-snippet block sql">
+CREATE OR REPLACE FUNCTION pagination_nageur(page int, nbr_records int)
+RETURNS SETOF nageur
+AS
+$$
+BEGIN
+    RETURN  QUERY SELECT  * FROM nageur
+    ORDER BY id ASC
+    OFFSET (page - 1) * nbr_records
+    LIMIT nbr_records;
+END
+$$
+LANGUAGE PLPGSQL;
 
+SELECT * FROM pagination_nageur(3, 10);            
+        </pre>
+        <h3>variante 1.1</h3>
+        <pre>
+CREATE OR REPLACE FUNCTION page(nbrecord int,page int,col text DEFAULT 'id',isdesc bool DEFAULT false)
+RETURNS SETOF nageur
+AS
+$$
+DECLARE
+BEGIN
+	IF(nbrecord * page) > COUNT(*)FROM nageur 
+		THEN RAISE EXCEPTION'Indice hors limite'; 
+	END IF;
+	IF NOT EXISTS (SELECT column_name 
+		FROM information_schema.columns 
+		WHERE table_name='nageur' and column_name=col) 
+		THEN 
+			RAISE EXCEPTION 'Colonne incorrecte'; 
+		END IF;
+	IF isdesc = false THEN
+		RETURN QUERY EXECUTE format(
+  				'SELECT * FROM nageur ORDER BY %I ASC LIMIT $1 OFFSET($1 * ($2-1))',col) USING nbrecord,page;
+	ELSE
+		RETURN QUERY EXECUTE format(
+			'SELECT * FROM nageur ORDER BY %I DESC LIMIT $1 OFFSET($1 * ($2-1))',col)USING nbrecord,page;
+	END IF;
+END
+$$
+LANGUAGE PLPGSQL;
+        </pre>
+        <h3>variante 1.2</h3>
+        <pre>
+            -- pagination + choix trie
+create or replace function pagination(pg int, nbobj int, sortBy text)
+returns table (
+    id bigint,
+    nom varchar(255),
+    prenom varchar (255)
+)
+as
+$$
+begin
+-- order by ne peux pas etre dynamic en dur 
+--=> faut declarer un format et reseigner les donnees par var literals "%" transitionnelles
+	-- %s = string      %I = identifiers
+    return query execute format(
+        'SELECT * FROM public.nageur
+         ORDER BY %Is
+         OFFSET %s
+         LIMIT %s',
+        sortBy,
+        (pg - 1) * nbobj,
+        nbobj
+    );
+end;
+$$ language plpgsql;
+ 
+        </pre>
+
+
+        <!-- heures minutes secondes depuis secondes 
+        <pre>
+            create or replace function convert_temps(t_sec int)
+returns table(
+	heure int,
+	mins int,
+	sec float
+	)
+as
+$$
+begin
+	return query 
+		select t_sec / 3600,
+				(t_sec % 3600) / 60,
+				(t_sec % 60)::float;			
+end
+$$
+language PLPGSQL;
+
+CREATE OR REPLACE FUNCTION  sec_to_hour(sec int)
+RETURNS TABLE(Heures int, Minutes int, Secondes int)
+AS
+$$
+DECLARE
+	minu int := 0;
+	heures int := 0;
+BEGIN
+	Drop TABLE IF EXISTS Time;
+
+	CREATE TEMP TABLE IF NOT EXISTS Time(
+		Heures int, 
+		Minutes int, 
+		Secondes int
+	);
+
+	LOOP
+	IF sec >= 3600 THEN
+		heures := heures + 1;
+		sec := sec - 3600;
+	ELSIF sec >=60 THEN
+		minu := minu + 1;
+		sec := sec - 60;
+	END IF;
+	
+	EXIT WHEN SEC < 60;
+	END LOOP;
+	
+	INSERT INTO Time (Heures,Minutes,Secondes) VALUES (heures,minu,sec);
+	RETURN QUERY SELECT * FROM Time;
+END
+$$
+LANGUAGE PLPGSQL;
+ 
+
+CREATE OR REPLACE FUNCTION get_heures_minutes_secondes(secondes int)
+RETURNS TABLE (heures int, minutes int, jours int)
+AS
+$$
+BEGIN
+	IF secondes = 0
+		THEN 
+	RETURN  QUERY SELECT 0 as heures, 0 as minutes, 0 as secondes;
+	ELSIF secondes < 0
+		THEN 
+		RAISE EXCEPTION 'Nombre de secondes doit être positif';
+	END IF;
+	RETURN QUERY SELECT secondes/3600 as heures, (secondes /60) % 60 as minutes, secondes % 60 as secondes;
+END;
+$$
+LANGUAGE PLPGSQL;
+
+
+
+CREATE OR REPLACE FUNCTION get_age(date_debut date)
+RETURNS int
+AS
+$$
+BEGIN
+	IF -- date_debut sup à  date du jour?
+		THEN 
+	RAISE EXCEPTION'Nombre de secondes doit être positif';
+	END IF;
+	RETURN QUERY SELECT date_part('year', age(date_action)) FROM public.log_nageur
+END;
+$$
+LANGUAGE PLPGSQL;
+        </pre> -->
     </main>
 </body>
 

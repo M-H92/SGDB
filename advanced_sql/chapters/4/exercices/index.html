@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Document</title>
+	<script type="module" src="../../../../scripts/syntaxHighlighting.js"></script>
+	<script type="module" src="../../../../scripts/navbar/addNavbar.js"></script>
+	<script type="module" src="../../../../scripts/sidebar/sidebarSQLAvance.js"></script>
+	<link rel="stylesheet" href="../../../../ressources/style.css" />
+</head>
+
+<body>
+	<main>
+		<h1>Sécurité</h1>
+		<ol>
+			<li>Introduction</li>
+			<li>Inscription de patients</li>
+			<li>Prise de rendez-vous</li>
+			<li>Suppression de patients</li>
+			<li>RGPD</li>
+		</ol>
+		<hr />
+		<h2 id="introduction">Introduction</h2>
+		<p>
+			Ci-dessous, les exercices et solutions pour le chapitre 4 sur la sécurité
+		</p>
+		<h2>Inscription de patients</h2>
+		<p>
+			Créer une base de données <i>maison_medicale</i> <br>
+			Créer trois tables: <i>patient</i>, <i>info_personnelle</i> et <i>audits</i> <br>
+			Créer une procédure stockée : <i>ajout_patient</i> <br>
+			La table patient contient au moins le nom, prénom ainsi qu'un id numérique <br>
+			La table info_personnelle contiendra date de naissance, poids, taille, ... <br>
+			La table audits contiendra des logs pour les écritures, modifications et suppression réalisées sur l'une des
+			deux tables précédentes <br>
+			La procédure stockée permettra d'insérer un patient ainsi que les informations personelles de celui-ci <br>
+			Si nécessaire, créer un trigger pour la table d'audit <br>
+			Créer ensuite un ou plusieurs roles permettant à un utilisateur "reception" de se connecter et ayant
+			uniquement la possibilité de sélectionner un patient dans la table patient ou d'encoder un patient via la
+			procédure stockée
+		</p>
+		<h2>Prise de rendez-vous</h2>
+		<p>
+			Ajouter une table <i>praticien</i> et une table <i>rendez_vous</i> <br>
+			Un praticien peut prendre rendez-vous avec un patient pour peu qu'il n'ai pas de rendez-vous à ce moment.
+			<br>
+			Un rendez-vous dure strictement 30 minutes <br>
+			Un rendez-vous commence soit à l'heure exacte soit à l'heure et demie <br>
+			Un rendez-vous concerne 1 patient et 1 praticien à la fois. <br>
+			Un praticien peut prendre n'importe quel patient en rendez-vous <br>
+			Créer une vue permettant de reprendre uniquement les disponibilités d'un praticien sans spécifier les
+			rendez-vous déjà prévus (on donne les disponibilités, pas les rendez-vous) <br>
+			Créer une procédure stockée permettant de créer un rendez-vous entre un praticien et un patient <br>
+			Créer une fonction permettant de récupérer les prochains rendez-vous pour un utilisateur <br>
+			Ajuster vos droits pour que l'utilisatuer "reception" n'ai puisse pas consulter directement la table de
+			rendez-vous ou de praticiens, mais uniquement utiliser les la vue, procédure stockée ou fonction cité plus
+			haut. <br>
+			Attention, un rendez-vous ne peut pas être créé dans le passé.
+		</p>
+		<h2>Suppression de patients</h2>
+		<p>
+			On souhaite ajouter la possibilité de supprimer des patients ainsi que leurs données personnelles <br>
+			Pour éviter un éventuel accident, on ajoutera un flag dans la table patient permettant de spécifier que ce
+			dernier est activé ou désactivé <br>
+			Créer une procédure stockée permettant de désactiver un patient ainsi que de décommander ses rendez-vous à
+			venir. <br>
+			Mettre à jour les rôles de telle manière que l'utilisatuer "reception" ne puisse pas supprimer directement
+			les patients mais puisse passer par cette procédure stockée
+		</p>
+		<h2>RGPD</h2>
+		<p>
+			Dans le cadre des lois visant à protéger les données personnelles des utilisateurs, il est demandé aux
+			entreprises de pouvoir justifier de la mise en place de mesures permettant de détruire les informations
+			personnelles d'un utilisateur <br>
+			Pour se faire, il sera nécessaire de supprimer les informations d'un utilisateur ou d'obfusquer toute
+			information permettant de relier les données à une personne réelle <br>
+			Créer une procédure stockée capable de réaliser cette opération. <br>
+			Créer un rôle "securite" capable d'effectuer cette opération pour un utilisateur <br>
+			N'ajouter que les droits strictement nécessaire à cet utilisateur pour effectuer cette opération grâce à un
+			identifiant qu'il aurait récupéré avec un SELECT sur la table des patients <br>
+			Accessoirement, créer une fonction permettant au rôle "reception" de récupérer uniquement les utilisateurs
+			qui ne soient ni supprimés ni obfusqués. <br>
+			Retirer les droits de consultation directe de la table "patient" au rôle "reception"
+		</p>
+	</main>
+</body>
+
+</html>

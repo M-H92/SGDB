@@ -279,7 +279,7 @@ BEFORE DELETE
 ON nageur
 FOR EACH ROW
 WHEN(
-CURRENT_DATE < '2025-09-01' 
+CURRENT_DATE > '2025-09-01' 
 )
 EXECUTE PROCEDURE t_disallow_delete_nageur();</pre>
         <p>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script type="module" src="../../../scripts/syntaxHighlighting.js"></script>
+    <script type="module" src="../../../scripts/navbar/addNavbar.js"></script>
+    <script type="module" src="../../../scripts/sidebar/sidebarSQLAvance.js"></script>
+    <link rel="stylesheet" href="../../../ressources/style.css" />
+</head>
+
+<body>
+    <main>
+        <h1>Sécurité</h1>
+        <ol>
+            <li>Introduction</li>
+            <li>Gestion des rôles</li>
+            <li>Privilèges</li>
+            <li>Groupes de rôles</li>
+            <li>Security definer</li>
+            <!-- <li>Row Level Security - RLS</li> -->
+            <li>Exercices</li>
+        </ol>
+        <hr />
+        <h2 id="introduction">Introduction</h2>
+        <p>
+            Ce chapitre traitera de la gestion des droits sous PGSQL <br>
+            Dans PGSQL, cette gestion se fait via les rôles qui peuvent à la fois représenter
+            un utilisateur ou un groupe d'utilisateur. <br>
+            Nous verrons qu'un rôle peut posséder des "objets" PGSQL représentant aussi bien des tables que des vues,
+            des fonctions, des procédures stockées, ... <br>
+            Et qu'un rôle peut attribuer des droits sur les objets qu'il possède pour permettre à d'autres droits
+            d'utiliser ces objets <br>
+            Dans le même ordre d'idée, on pourra aussi faire hériter un rôle d'un autre pour obtenir un droit enfant
+            disposant au minima des droits du parent.
+        </p>
+        <p class="nota-bene danger">
+            Notez que ce chapitre est certainement le plus spécifique au SGBD (PGSQL) utilisé. <br>
+            Pour tout ce qui est gestion des droits sur d'autres SGBD, référez-vous à la documentation du dit SGBD
+        </p>
+        <p class="nota-bene info">
+            Sur PGSQL, un <b>objet sql</b> correspond à tout <i>"Tout objet créé via la commande <b>CREATE</b>" </i>
+            <a href="https://www.postgresql.org/docs/17/glossary.html#GLOSSARY-SQL-OBJECT"> (doc) </a> <br>
+            Il y a plus de choses à dire sur les objets PGSQL, mais en ce qui nous concerne pour ce chapitre, cette
+            définition est suffisante.
+        </p>
+        <h2 id="gestion-des-roles">Gestion des rôles</h2>
+        <p>
+            Comme beaucoup des éléments de PGSQL, les rôles sont disponibles dans une table de rôles accessible avec
+            cette commande :
+        </p>
+        <pre class="sql code-snippet block"> SELECT * FROM pg_roles; </pre>
+        <p>
+            Cette table nous affiche la liste des rôles ainsi que plusieurs informations sur ceux-ci comme par exemple,
+            nom, héritage, privilèges... <br>
+        </p>
+        <p>Néanmoins, pour créer un rôle, nous éviterons de réaliser un INSERT dans cette table. Nous utiliserons plutôt
+            la commande CREATE </p>
+        <pre class="sql code-snippet block"> CREATE ROLE mon_role;</pre>
+        <p>
+            Après exécution de cette requête, nous pouvons voir "mon_role" ajouté dans la table de rôles. <br>
+            Pour nous en débarasser, comme les autres objets que nous avons appris à créer, nous pouvons utiliser la
+            commande DROP
+
+        </p>
+        <pre class="sql code-snippet block">DROP ROLE mon_role;</pre>
+        <p class="nota-bene danger">
+            Si cela n'était pas évident, il est déconseillé de supprimer les rôles présents par défaut dans votre base
+            de données sans être certain de ce que vous faites...
+        </p>
+        <p>
+            Si vous avez pris le temps de query votre nouveau rôle avant de le DROP, vous avez certainement remarqué
+            qu'il ne dispose d'aucun privilège (rolcreaterole, rolcreatedb, rolcanlogin... à
+            false). <br>
+            Vous pouvez lui ajouter ces privilèges en ajoutant des attributes à la commande CREATE ROLE comme suit :
+        </p>
+        <pre class="code-snippet sql block">
+CREATE ROLE mon_role LOGIN;
+SELECT * FROM pg_roles 
+    WHERE rolname = 'mon_role';
+</pre>
+        <p>
+            Votre rôle peut maintenant être utilisé pour se connecter (canlogin set à true) <br>
+            Vous pouvez ajouter une série de ces attributs à la suite pour ajouter autant de privilèges que vous le
+            souhaiter en notant parfois quelques restrictions comme, par exemple, le privilège super user ne pouvant
+            être attribué que si vous êtes vous-même super user <br>
+            Ci-dessous, une liste des différents attributs avec une courte description de ce qu'ils permettent. <br>
+            Pour plus de détail, se référer à <a href="https://www.postgresql.org/docs/current/role-attributes.html">
+                la doc </a> .
+        </p>
+        <ul>
+            <li>LOGIN : dispose d'un shortcut avec la commande "CREATE USER". Permet de se connecter à la db</li>
+            <li>SUPERUSER : ne peut être créé que par un super user. Court-circuite les autres règles</li>
+            <li>CREATEDB : l'utilisateur peut créer une base de données. Il en est alors le propriétaire</li>
+            <li>CREATEROLE : peut créer, modifier et supprimer les rôles non super user.</li>
+            <li>PASSWORD : Ajouter un mot de passe passé en string après l'attribut - CREATE ROLE foo PASSWORD 'mdp'
+            </li>
+            <li>NOINHERIT : Le rôle n'hérite pas des privilèges des autres rôles dont il fait partie (ce qui est le
+                comportement par défaut) </li>
+            <li>BYPASSRLS : Des règles peuvent être appliquées sur les records. Ceci permet d'outrepasser ces règles
+                (RLS => Row-Level Security)</li>
+            <li>CONNECTION LIMIT : Le nombre de connection concurrentes que ce rôle permet de faire. -1 permet de ne pas
+                limiter le rôle</li>
+        </ul>
+        <p>
+            Vous aurez remarqué que l'attribut CREATEROLE permet de modifier un rôle. <br>
+            Ceci est faisable en remplaçant CREATE par le mot-clé ALTER
+        </p>
+        <h2 id="privileges">Privilèges</h2>
+        <p>
+            Comme cité plus haut, un utilisateur peut créer des objets. <br>
+            À la création, un objet n'est manipulable que par son créateur et les super users. <br>
+            Pour modifier ce comportement, nous pouvons attribuer des privilèges. <br>
+            Ci-dessous, la liste des différents privilèges. Notez que les privilèges applicables dépendent du type
+            d'objet (vue, table, procédure stockée...)
+        </p>
+        <ul>
+            <li> SELECT </li>
+            <li> INSERT </li>
+            <li> UPDATE </li>
+            <li> DELETE </li>
+            <li> TRUNCATE </li>
+            <li> REFERENCES </li>
+            <li> TRIGGER </li>
+            <li> CREATE </li>
+            <li> CONNECT </li>
+            <li> TEMPORARY </li>
+            <li> EXECUTE </li>
+            <li> USAGE </li>
+            <li> SET </li>
+            <li> ALTER SYSTEM </li>
+            <li> MAINTAIN </li>
+        </ul>
+        <p>
+            La possibilité de détruire un objet, par contre, n'est disponible que pour le possesseur de l'objet (par
+            défaut, le créateur), les
+            super users ou tout rôle héritant du rôle du possesseur de l'objet. <br>
+            Il n'est pas possible d'attribuer ce privilège à un autre rôle qui est, par défaut, attribué au créateur de
+            l'objet... <br>
+            Il est par contre possible d'assigner un nouveau possesseur avec la commande <b>ALTER</b>
+        </p>
+        <pre class="sql code-snippet block">ALTER TABLE table_name OWNER TO new_owner;</pre>
+        <p>
+            Pour ce qui est des autres privilèges, vous pouvez les attribuer à un rôle grâce à la commande <b>GRANT</b>
+            ou les retirer avec la commande <b>REVOKE</b>
+        </p>
+        <pre class="sql code-snippet block">-- Attribuer un privilège
+GRANT UPDATE ON table_foo TO jon_doe;
+-- Retirer un privilège
+REVOKE UPDATE ON table_foo FROM jon_doe;
+</pre>
+        <p>
+            Deux mots-clefs spéciaux, <b>ALL</b> et <b>PUBLIC</b> permettent d'attribuer tout les privilèges pour l'un
+            et à tout les rôles pour l'autre et s'utilisent respectivement à la place du nom du privilège ou du rôle.
+        </p>
+        <p>
+            La plupart de ces privilèges sont très explicite (<b>SELECT</b> permet de réaliser des opérations de
+            <b>SELECT</b> sur les tables et colonnes, <b>UPDATE</b>..., <b>DELETE</b>... ) <br>
+            Néanmoins, certains vous semblent peut-être moins évident. Expliquons les : <br>
+        </p>
+        <p>
+            <b>EXECUTE</b>: permet d'appeler les fonctions et procédures stockées.
+        </p>
+        <p>
+            <b>USAGE</b> : différent selon les objets. <br>
+            Pour les langages installés, permet de les utiliser dans les fonctions, procédures stockées,... <br>
+            Pour les schémas, permet l'utilisation des objets contenu dans le schéma <br>
+            Pour les séquences, permet l'utilisation explicite des fonctions <b>currval</b> et <b>nextval</b>
+        </p>
+        <p>
+            <b>SET</b>, <b>ALTER SYSTEM</b> et <b>MAINTAIN</b> permettent des opérations sur lesquelles nous ne nous
+            étendrons pas dans ce cours comme par exemple, les <b>REINDEX</b>, <b>VACUUMING</b>... <br>
+            Ces opérations sortent du cadre de ce cours.
+        </p>
+        <p>
+            Mettons en place ce que nous venons de voir en créant un rôle et en lui ajoutant des privilèges sur notre
+            table <i>nageur</i>. <br>
+            D'abord, vérifions les privilèges actuellement disponibles sur cette table :
+        </p>
+        <pre class="sql block code-snippet">
+SELECT *
+FROM information_schema.role_table_grants 
+WHERE table_name='nageur'
+        </pre>
+        <p>
+            Dans la colonne <b>grantee</b>, vous pouvez voir quel rôle dispose d'un privilège. Accessoirement, vous
+            pouvez voir dans la colonne <b>grantor</b> qui a donné ce privilège <br>
+            La colonne <b>privilege_type</b> permet de savoir lequel des privilèges (parmis la liste plus haut) a été
+            donné au rôle. <br>
+            Pour l'instant, vous ne devriez voir que votre super user que ce soit en tant que grantee ou grantor. <br>
+            Il devrait aussi avoir tout les privilèges possibles pour ce type d'objet.
+        </p>
+        <p>
+            Créons un nouveau rôle et laissons lui la possibilité de <br>
+            Se connecter <br>
+            Lire les données de la table nageur
+        </p>
+        <pre class="sql code-snippet block">
+CREATE ROLE mon_role LOGIN;
+GRANT SELECT ON nageur to mon_role;
+SELECT *
+FROM information_schema.role_table_grants 
+WHERE table_name='nageur' 
+    AND grantee = 'mon_role';
+        </pre>
+        <p class="nota-bene info">Il est possible, selon la configuration de votre base de données, qu'il soit
+            nécessaire à votre rôle de disposer d'un mot de passe pour pouvoir se connecter. <br>
+            Si cela était le cas, ajouter l'attribut <b>PASSWORD</b> lors de la création de celui-ci (cf liste des
+            attributs)
+        </p>
+        <p>
+            À première vue, cela semble avoir marché. <br>
+            Essayons de nous connecter et de faire des opérations sur notre base de données... <br>
+            Nous pouvons effectivement faire des <b>SELECT</b> sur la table <i>nageur</i>. <br>
+            Mais essayer de modifier les données de celle-ci ou de lire les données d'une autre table nous retourne
+            l'erreur suivante :
+        </p>
+        <pre class="code-snippet block">ERROR:  droit refusé pour la table ...
+SQL state: 42501</pre>
+        <p>
+            L'erreur est on ne peut plus clair et, au besoin, le code d'erreur retourné correspond à
+            "insufficient_privilege"
+        </p>
+        <p>Reconnectons nous et supprimons cet utilisateur : </p>
+        <pre class="sql code-snippet block">DROP ROLE mon_role;</pre>
+        <p>Ici aussi, un message d'erreur. <br>
+            Ce dernier nous indique que des éléments dépendent de notre rôle. <br>
+            Dans notre cas, cela correspond aux privilèges attribués à celui-ci (comme suggéré dans la partie "hint" du
+            retour d'erreur) <br>
+            Supprimer ces privilèges permettra de supprimer ce rôle sans autres problèmes</p>
+        <pre class="sql code-snippet block">
+REVOKE ALL ON nageur FROM mon_role;
+DROP ROLE mon_role;
+        </pre>
+        <p class="nota-bene info">
+            Ajoutons à cela qu'un objet <b>doit avoir un propriétaire</b>. <br>
+            Dans le cas contraire, le rôle ne peut pas être <b>DROP</b> <br>
+            Une solution à ce problème est d'utiliser les commandes : <br>
+            REASSIGN OWNED BY mon_role TO autre_role;<br>
+            DROP OWNED BY mon_role;<br>
+            DROP ROLE mon_role;
+        </p>
+        <p>
+            Notez qu'il est possible d'ajouter plusieurs privilèges à la suite dans la même commande ou qu'il est
+            possible de spécifier les colonnes sur lesquelles on souhaite ajouter un droit
+        </p>
+        <pre class="sql code-snippet block">
+GRANT SELECT, UPDATE, INSERT ON nageur TO mon_role;
+GRANT SELECT (nom, equipe_id), UPDATE (equipe_id) ON nageur TO mon_role;
+        </pre>
+        <h2 id="groupes-de-roles">Groupes de rôles</h2>
+        <p>
+            Nous avons vu comment créer des rôles et comment donner des attributs aux rôles. <br>
+            Cela couvre déjà beaucoup de cas d'utilisations, mais peut vite devenir contraignant quand le nombre de
+            rôles nécessaires augmente. <br>
+            Pour palier à ce problème, allons utiliser la capacité des rôles à hériter les uns des autres pour
+            construire des "groupes".
+        </p>
+        <p class="nota-bene info">
+            La notion de "groupe" de rôle tout comme la notion "d'utilisateur" disposant de rôle n'existe plus dans
+            pgsql depuis les versions 8+ <br>
+            On ne parle plus maintenant que de rôle étant à la fois rôle, utilisateur, groupe... <br>
+            Gardez ceci en tête quand les termes de groupe ou utilisateur seront utilisés ici comme raccourcis.
+        </p>
+        <p>
+            Faire hériter un rôle à un autre se fait avec la commande <b>GRANT</b> tout comme pour l'ajout de
+            privilèges. <br>
+            Regardez plutôt l'exemple ci-dessous :
+        </p>
+        <pre class="code-snippet sql block">
+CREATE ROLE nageur_lecture_seule;
+CREATE ROLE nageur_lecture_seule_logs;
+CREATE ROLE nageur_full_access;
+
+GRANT SELECT ON nageur TO nageur_lecture_seule;
+GRANT SELECT ON log_nageur TO nageur_lecture_seule_logs;
+GRANT SELECT, UPDATE, DELETE ON nageur TO nageur_full_access;
+
+CREATE ROLE jon_doe LOGIN PASSWORD 'lapin';
+
+GRANT nageur_lecture_seule TO jon_doe WITH INHERIT TRUE;
+GRANT nageur_lecture_seule_logs TO jon_doe WITH INHERIT TRUE;
+GRANT nageur_full_access TO jon_doe WITH INHERIT FALSE;
+        </pre>
+        <p>
+            Ici, nous commençons par créer 3 rôles qui serviront de "groupes" : nageur_lecture_seule,
+            nageur_lecture_seule_logs et nageur_full_access <br>
+            Ces trois groupes ont pour but de gérer les droits pour les tables nageur et log_nageur. Nous attribuons les
+            privilèges correspondants avec dans les trois lignes suivantes. <br>
+            On crée maintenant un rôle dont le but sera de créer un utilisateur. <br>
+            Notez la différence ici entre les rôles de "groupe", fonctionnels et les rôles "d'utilisateur" <br>
+            Les premiers sont créés sans l'attribut <b>LOGIN</b>. <br>
+            Effectivement, ces rôles n'ont pas pour but de permettre de se connecter à la base de données directement,
+            mais uniquement de gérer les différents droits d'accès des autres rôles. <br>
+            Enfin, on fait hériter les droits des rôles de "groupe" à notre rôle "utilisateur". <br>
+            Ici, la commande <b>GRANT</b> est utilisée pour désigner un rôle attribué à un autre rôle. <br>
+            Notez que l'on peut faire hériter un rôle de plusieurs autres rôles. <br>
+            Remarquez qu'un attribut INHERIT est passé à <b>TRUE</b> dans les 2 premiers cas et à <b>FALSE</b> dans le
+            second. <br>
+            Testons la différence on nous connectant et en manipulant la table <i>nageur</i>
+        </p>
+        <p>
+            Après avoir fait nos tests, nous remarquons que l'on peut faire nos <b>SELECT </b> sans problèmes sur les
+            tables <i>nageur</i> et <i>log_nageur</i> <br>
+            Par contre, il nous est impossible de modifier ou supprimer les enregistrement de cette dernière. <br>
+            Ceci est dû au fait d'avoir spécifié <b>INHERIT FALSE</b>. <br>
+            Quand cet attribut est spécifié, les privilèges du rôle ne sont pas automatiquement transmis. <br>
+            Par contre, on peut les utiliser ponctuellement en utilisant la commande <b>SET</b> pour endosser
+            temporairement un de ces rôles
+        </p>
+        <pre class="sql code-snippet block">
+SET ROLE nageur_full_access;
+UPDATE nageur SET equipe_id = null;
+        </pre>
+        <p>
+            L'effet sera effectif jusqu'à la fin de la session de l'utilisateur connecté et peu, grâce à la commande
+            <b>RESET ROLE;</b> être interrompu prématurément.
+        </p>
+        <p>
+            Un dernier point à relevé sur les rôles utilisés comme "groupe" concerne la suppression de ceux-ci. <br>
+            Dans le cas précédent, supprimer l'un des rôles hérité par le rôle "utilisateur" (DROP ROLE
+            nageur_lecture_seule;, par exemple) aura pour effet de priver le rôle "utilisateur" des droits strictements
+            hérités du rôle supprimé. <br>
+            Il n'y a donc pas de suppression en chaîne entrainant la suppression du rôle "utilisateur" <br>
+            Si le rôle "utilisateur" disposait d'un privilège identique de la part de plusieurs rôles "groupes", il
+            disposera encore de son privilège... Via l'un des autres rôles "groupe".
+        </p>
+        <h2 id="security-definer">Security definer</h2>
+        <p>
+            Si vous aviez encore des triggers écrivant des logs lors de la modification de la table <i>nageur</i>, vous
+            avez certainement eu une erreur spécifiant que vous n'aviez pas le droit d'écrire dans cette table de log
+            <br>
+            Lors de l'appel d'une fonction, procédure stockée,... Il est nécessaire de définir quels rôles sont utilisés
+            pour l'exécution <br>
+            Par défaut et pour éviter tout accidents, les rôles de l'utilisateur courant sont utilisés. <br>
+            Néanmoins, ceci est modifiable avec l'attribut <b>SECURITY</b> qui pourra prendre l'une des deux valeurs
+            suivantes : <br>
+            <b>INVOKER</b>, par défaut, utilise les droits de l'utilisateur "invoquant" la procédure, la fonction...
+            <br>
+            <b>DEFINER</b>, en revanche, utilise les droits du créateur de l'objet. <br>
+            Ainsi, on pourra redéfinir notre trigger en spécifiant <b>SECURITY DEFINER</b> pour écrire dans la table de
+            log sans donner le droit d'écriture à l'utilisateur
+        </p>
+        <!-- <h2 id="row-level-security-rls">Row Level Security - RLS</h2>
+        <p>
+
+        </p> -->
+        <h2 id="exercices">Exercices</h2>
+        <h3>Inscription de patients</h3>
+        <p>
+            Créer une base de données <i>maison_medicale</i> <br>
+            Créer trois tables: <i>patient</i>, <i>info_personnelle</i> et <i>audits</i> <br>
+            Créer une procédure stockée : <i>ajout_patient</i> <br>
+            La table patient contient au moins le nom, prénom ainsi qu'un id numérique <br>
+            La table info_personnelle contiendra date de naissance, poids, taille, ... <br>
+            La table audits contiendra des logs pour les écritures, modifications et suppression réalisées sur l'une des
+            deux tables précédentes <br>
+            La procédure stockée permettra d'insérer un patient ainsi que les informations personelles de celui-ci <br>
+            Si nécessaire, créer un trigger pour la table d'audit <br>
+            Créer ensuite un ou plusieurs roles permettant à un utilisateur "reception" de se connecter et ayant
+            uniquement la possibilité de sélectionner un patient dans la table patient ou d'encoder un patient via la
+            procédure stockée
+        </p>
+        <h3>Prise de rendez-vous</h3>
+        <p>
+            Ajouter une table <i>praticien</i> et une table <i>rendez_vous</i> <br>
+            Un praticien peut prendre rendez-vous avec un patient pour peu qu'il n'ai pas de rendez-vous à ce moment.
+            <br>
+            Un rendez-vous dure strictement 30 minutes <br>
+            Un rendez-vous commence soit à l'heure exacte soit à l'heure et demie <br>
+            Un rendez-vous concerne 1 patient et 1 praticien à la fois. <br>
+            Un praticien peut prendre n'importe quel patient en rendez-vous <br>
+            Créer une vue permettant de reprendre uniquement les disponibilités d'un praticien sans spécifier les
+            rendez-vous déjà prévus (on donne les disponibilités, pas les rendez-vous) <br>
+            Créer une procédure stockée permettant de créer un rendez-vous entre un praticien et un patient <br>
+            Créer une fonction permettant de récupérer les prochains rendez-vous pour un utilisateur <br>
+            Ajuster vos droits pour que l'utilisatuer "reception" n'ai puisse pas consulter directement la table de
+            rendez-vous ou de praticiens, mais uniquement utiliser les la vue, procédure stockée ou fonction cité plus
+            haut. <br>
+            Attention, un rendez-vous ne peut pas être créé dans le passé.
+        </p>
+        <h3>Suppression de patients</h3>
+        <p>
+            On souhaite ajouter la possibilité de supprimer des patients ainsi que leurs données personnelles <br>
+            Pour éviter un éventuel accident, on ajoutera un flag dans la table patient permettant de spécifier que ce
+            dernier est activé ou désactivé <br>
+            Créer une procédure stockée permettant de désactiver un patient ainsi que de décommander ses rendez-vous à
+            venir. <br>
+            Mettre à jour les rôles de telle manière que l'utilisatuer "reception" ne puisse pas supprimer directement
+            les patients mais puisse passer par cette procédure stockée
+        </p>
+        <h3>RGPD</h3>
+        <p>
+            Dans le cadre des lois visant à protéger les données personnelles des utilisateurs, il est demandé aux
+            entreprises de pouvoir justifier de la mise en place de mesures permettant de détruire les informations
+            personnelles d'un utilisateur <br>
+            Pour se faire, il sera nécessaire de supprimer les informations d'un utilisateur ou d'obfusquer toute
+            information permettant de relier les données à une personne réelle <br>
+            Créer une procédure stockée capable de réaliser cette opération. <br>
+            Créer un rôle "securite" capable d'effectuer cette opération pour un utilisateur <br>
+            N'ajouter que les droits strictement nécessaire à cet utilisateur pour effectuer cette opération grâce à un
+            identifiant qu'il aurait récupéré avec un SELECT sur la table des patients <br>
+            Accessoirement, créer une fonction permettant au rôle "reception" de récupérer uniquement les utilisateurs
+            qui ne soient ni supprimés ni obfusqués. <br>
+            Retirer les droits de consultation directe de la table "patient" au rôle "reception"
+        </p>
+    </main>
+
+</body>
+
+</html>

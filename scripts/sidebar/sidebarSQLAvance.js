@@ -3,14 +3,19 @@ import { getConfig } from "../../config/config.js";
 
 const { ROOT_PATH } = getConfig();
 const path = "/advanced_sql/chapters/";
+const exoPath = "/exercices";
+const exoTitle = "Exercices";
 
 const _linkDefinitions = [
-  { name: "Home", url: `${ROOT_PATH}` },
-  { name: "1) Fonctions", url: `${ROOT_PATH}${path}1` },
-  { name: "1') Exercices", url: `${ROOT_PATH}${path}1/exercices` },
-  { name: "2) Procédures", url: `${ROOT_PATH}${path}2` },
-  { name: "2') Exercices", url: `${ROOT_PATH}${path}2/exercices` },
-  { name: "3) Déclencheurs", url: `${ROOT_PATH}${path}3` },
+  { name: `Home`, url: `${ROOT_PATH}` },
+  { name: `1) Fonctions`, url: `${ROOT_PATH}${path}1` },
+  { name: `1') ${exoTitle}`, url: `${ROOT_PATH}${path}1${exoPath}` },
+  { name: `2) Procédures`, url: `${ROOT_PATH}${path}2` },
+  { name: `2') ${exoTitle}`, url: `${ROOT_PATH}${path}2${exoPath}` },
+  { name: `3) Déclencheurs`, url: `${ROOT_PATH}${path}3` },
+  { name: `3') ${exoTitle}`, url: `${ROOT_PATH}${path}3${exoPath}` },
+  { name: `4) Sécurité`, url: `${ROOT_PATH}${path}4` },
+  { name: `4') ${exoTitle}`, url: `${ROOT_PATH}${path}4${exoPath}` },
 ];
 
 function configure() {
