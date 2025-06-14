@@ -201,7 +201,7 @@ CALL ajout_patient('Doe','Jon', '09-01-1992')
 		INSERT INTO audits
 		(utilisateur, action_realisee, id_patient, nom_complet_patient)
 		VALUES 
-		((SELECT SESSION_USER), TG_OP, OLD (SELECT CURRENT_DATE), 'Ajout nageur ' || NEW.id);
+		((SELECT CURRENT_USER), TG_OP, OLD (SELECT CURRENT_DATE), 'Ajout nageur ' || NEW.id);
 	
 		RETURN NEW;
 		

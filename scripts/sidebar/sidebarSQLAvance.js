@@ -16,6 +16,9 @@ const _linkDefinitions = [
   { name: `3') ${exoTitle}`, url: `${ROOT_PATH}${path}3${exoPath}` },
   { name: `4) Sécurité`, url: `${ROOT_PATH}${path}4` },
   { name: `4') ${exoTitle}`, url: `${ROOT_PATH}${path}4${exoPath}` },
+  { name: `5) CTE et Window`, url: `${ROOT_PATH}${path}5` },
+  { name: `5') ${exoTitle}`, url: `${ROOT_PATH}${path}5${exoPath}` },
+  { name: `6) Full text search`, url: `${ROOT_PATH}${path}6` },
 ];
 
 function configure() {

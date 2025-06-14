@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Document</title>
+	<script type="module" src="../../../../scripts/syntaxHighlighting.js"></script>
+	<script type="module" src="../../../../scripts/navbar/addNavbar.js"></script>
+	<script type="module" src="../../../../scripts/sidebar/sidebarSQLAvance.js"></script>
+	<link rel="stylesheet" href="../../../../ressources/style.css" />
+</head>
+
+<body>
+	<main>
+		<h1>CTE et window function</h1>
+		<ol>
+			<li>Introduction</li>
+			<li>Fonction fenêtrée</li>
+			<li>CTE</li>
+			<li>CTE récursive</li>
+			<li>Exercices</li>
+		</ol>
+		<hr />
+		<h2 id="introduction">Introduction</h2>
+		<p>
+			Dans le cours d'introduciton au SQL, vous avez au l'occasion de manipuler requêtes imbriquées et
+			groupements. <br>
+			Ceci permettant de récupérer de la donnée de plusieurs tables et d'utiliser des
+			fonctions d'agrégation. <br>
+			Si ces techniques fonctionnent, elles peuvent ne pas être le plus pertinentes d'un point de vue des
+			performances. <br>
+			Les fonctions fenêtrées ainsi que les CTE peuvent résoudre ces problèmes.
+		</p>
+		<h2>Base de données test</h2>
+		<p>
+			Ci-dessous, le code permettant de réaliser une base de données de test pour ce chapitre. <br>
+			Cette base de données représente des articles avec un prix qui sont arrangés en lot dans un espace de
+			stockage. <br>
+			Chaque lot dispose d'une date, d'une quantité et d'une quantité de vendu. <br>
+			Ce qui n'est pas vendu en fin de journée est perdu
+		</p>
+		<h2>Fonction fenêtrée</h2>
+		<p>
+			Si nous souhaitons récupérer le total pour chaque article, nous aurions certainement utilisé la fonction
+			d'agrégation
+		<pre class="code-snippet line sql">SUM()</pre> <br>
+		Néanmoins, cette approche nous forcerait à grouper nos lignes de telle manière qu'il serait complexe de
+		récupérer les données de l'article en plus de cette somme. <br>
+		Rappelons nous :
+		</p>
+		<pre class="code-snippet block sql">
+SELECT a.nom, id_article, SUM(quantite) FROM lot as l
+LEFT JOIN article AS a 
+	ON l.id_article = a.id
+GROUP BY id_article;
+		</pre>
+		<p>Cette requête résulterait en une erreur. Il est impossible de récupérer le nom de l'article vu que celui-ci
+			n'est pas repris dans la clause "GROUP BY". <br>
+			Il faudrait donc transformer cette requête de telle sorte : </p>
+		<pre class="code-snippet block sql">
+SELECT 
+	a.nom, 
+	id_article, 
+	SUM(quantite) 
+FROM lot as l
+LEFT JOIN article AS a 
+	ON l.id_article = a.id
+GROUP BY id_article, a.nom;
+		</pre>
+		<p>
+			Mais dans notre contexte, récupérer la somme de tout les articles ne nous intéresse sans doute pas. <br>
+			Il faudrait sans doute grouper aussi les colonnes par emplacement de lot ainsi que par date. <br>
+			En bref, la complexité de notre requête va aller croissant.
+		</p>
+		<p>
+			L'utilisation d'une fonction fenêtrée permettra de réécrire cette requête comme ci-dessous :
+		</p>
+		<pre>
+SELECT 
+	a.nom, 
+	l.*, 
+	SUM(quantite) OVER (PARTITION BY id_article)  
+FROM lot AS l
+LEFT JOIN article AS a 
+	ON l.id_article = a.id;
+		</pre>
+		<p>
+			Cette requête n'est pas encombrée des contraintes liées à la clause GROUP BY. <br>
+			Le résultat est néanmoins différent et je vous invite à comparer les deux résultats sur nos données de test
+		</p>
+		<p>
+			Dans le premier cas, nous pouvons voir que nous disposont d'une unique ligne par article (vu qu'elles sont
+			groupées sur la colonne article_id) <br>
+			Dans le deuxième cas, nous avons autant de résultat que de lot. <br>
+			Néanmoins, la somme, elle, est bien identique dans les deux requêtes.
+		</p>
+		<p>
+			Nous pouvons voir dans notre requête l'utilisation d'un nouveau mot-clé :
+		<pre class="sql code-snippet line">OVER</pre>. <br>
+		Ce mot-clé permet d'indiquer sur quelles données appliquer notre fonction et permet de différencier une fonction
+		fenêtrée d'une fonction d'agrégat avec GROUP BY. <br>
+		Plus loin, le mot clé
+		<pre class="sql code-snippet line">PARTITION BY</pre> permet de grouper les données sur une série de critères
+		comme la clause GROUPE BY <br>
+		À noter que seul ce premier mot-clé est requis. <br>
+		Si nous ne créons pas de partitions sur lesquelles exécuter la fonction, elle s'exécutera sur toutes les lignes
+		retournées :
+		</p>
+		<pre class="sql code-snippet block">
+SELECT 
+	a.nom, 
+	l.*, 
+	SUM(quantite) OVER (PARTITION BY id_article)  
+FROM lot AS l
+LEFT JOIN article AS a 
+	ON l.id_article = a.id;
+		</pre>
+		<p>
+			N'étant pas limité par les contraintes d'un group by, nous pourrions réaliser ce genre de requête :
+
+		</p>
+		<pre class="sql code-snippet block">
+SELECT 
+	a.nom, 
+	l.*, 
+	SUM(quantite) OVER () AS total, 
+	SUM(quantite) OVER (PARTITION BY id_article) AS total_par_article,
+	(SUM(quantite) OVER () - SUM(quantite) OVER (PARTITION BY id_article)) AS difference 
+FROM lot AS l
+LEFT JOIN article AS a 
+	ON l.id_article = a.id;
+		</pre>
+		<p>
+			Nous avons ici plusieurs partitions différentes qui auraient été l'équivalent de plusieurs GROUP BY
+			différents. <br>
+			Nous pouvons donc comparer des résultats sur plusieurs partitions différentes. Ce qui aurait été plus
+			complexe avec des GROUP BY (plus complexe, pas impossible)
+		</p>
+		<p>
+			Une autre capacité des fonctions fenêtrées est la possibilité d'ordonner les résultats utilisés pour notre
+			partition. <br>
+			Comparer donc les résultats des deux requêtes suivantes :
+		</p>
+		<pre class="sql code-snippet block">
+SELECT a.nom, l.*, SUM(quantite) OVER (PARTITION BY a.id )  FROM lot AS l
+LEFT JOIN article AS a 
+	ON l.id_article = a.id
+WHERE a.id = 1;
+			
+SELECT a.nom, l.*, SUM(quantite) OVER (PARTITION BY a.id ORDER BY emplacement_x ASC)  FROM lot AS l
+LEFT JOIN article AS a 
+	ON l.id_article = a.id
+WHERE a.id = 1;
+		</pre>
+		<p>
+			La seconde nous présente le "rollup" des données. Ce qui pourrait être intéressant, dans nos données
+			d'exemple, de voir l'évolution des quantités vendues.
+		</p>
+		<h2>
+			CTE
+		</h2>
+		<p>
+			Les CTE ou Common Table Expression (aussi appelées, dans la documentation PGSQL, "WITH queries") permettent
+			de cibler un portion de notre base de données et de l'utiliser
+			dans nos requêtes <br>
+			À la différence des window function, ces données n'ont pas forcement de liens avec les lignes récupérées
+			<br>
+			On pourra plutôt les considérer comme une table temporaire résultant d'une query tout à fait différente.
+		</p>
+		<p>Prenons cet exemple : </p>
+		<pre class="sql code-snippet block">
+WITH qtt AS(
+	SELECT id_article, SUM(quantite) AS somme FROM lot
+	GROUP BY id_article
+)
+SELECT a.nom, qtt.somme FROM article AS a
+LEFT JOIN qtt ON qtt.id_article = a.id;
+		</pre>
+		<p>
+			Les résultats sont les mêmes que notre requête avec GROUP BY ou partition. <br>
+			Néanmoins, la démarche au niveau de la base de données est différente. <br>
+			Nous disposons de deux requêtes dont l'une est utilisable dans l'autre. <br>
+			Ceci permettant de nous libérer des contraintes d'un GROUP BY classique qui force à référencer et grouper
+			toutes les colonnes ou d'une fonction fenêtrée qui utilise les données récupérées par notre requête
+			principale
+		</p>
+		<p>
+			Un autre aspect des CTE est qu'il permet de réduire la difficulté de requêtes qui peuvent être lourdes ou
+			complexes en séparant une partie de la logique dans un premier résultat... Ou 2, 3,... <br>
+			Car il est tout à fait possible d'enchainer les CTE les unes avec les autres comme dans cet exemple :
+		</p>
+		<pre class="sql code-snippet block">
+WITH qtt_1 AS(
+	SELECT id_article, SUM(quantite) AS somme FROM lot
+	WHERE emplacement_y = 1
+	GROUP BY id_article
+), qtt_2 AS
+(
+	SELECT id_article, SUM(quantite) AS somme FROM lot
+	WHERE emplacement_y = 2
+	GROUP BY id_article
+),qtt_3 AS
+(
+	SELECT id_article, SUM(quantite) AS somme FROM lot
+	WHERE emplacement_y = 3
+	GROUP BY id_article
+),qtt_4 AS
+(
+	SELECT id_article, SUM(quantite) AS somme FROM lot
+	WHERE emplacement_y = 4
+	GROUP BY id_article
+)
+SELECT a.nom, 
+	qtt_1.somme AS emplacement_1, 
+	qtt_2.somme AS emplacement_2,
+	qtt_3.somme AS emplacement_3,
+	qtt_4.somme AS emplacement_4 FROM article AS a
+LEFT JOIN qtt_1 ON qtt_1.id_article = a.id
+LEFT JOIN qtt_2 ON qtt_2.id_article = a.id
+LEFT JOIN qtt_3 ON qtt_3.id_article = a.id
+LEFT JOIN qtt_4 ON qtt_4.id_article = a.id;
+		</pre>
+		<p class="nota-bene danger">
+			Si le code ci-dessus est compréhensible, il est peu optimisé pour ce qu'il souhaite faire et ne sert qu'à
+			démontrer l'enchainement des CTE. <br>
+			Gardez en tête que chaque CTE correspond a une requête dans un monde séparé et ne profite pas des autres
+			récupérations de lignes à la différence d'une fonction fenêtrée.
+		</p>
+		<h2> CTE récursive </h2>
+		<p>
+			Un autre point d'intérêt avec les CTE est la possibilité d'utiliser la récursivité avec ce genre de
+			nomenclature :
+		</p>
+		<pre class="sql code-snippet block">
+WITH RECURSIVE foo(n) AS (
+    VALUES (1)
+  UNION ALL
+    SELECT n+1 FROM foo WHERE n < 100
+)
+SELECT sum(n) FROM foo;
+		</pre>
+		<p>
+			Analysons ensemble ce code. <br>
+			Comme dans une CTE, nous avons le mot-clé WITH, le nom de la CTE (foo) et un alias référençant une requête
+			<br>
+			Par contre, nous avons un élément supplémentaire : le mot-clé RECURSIVE qui va permettre à notre requête de
+			référencer son propre résultat.
+		</p>
+		<p>
+			Cette requête n'étant pas la plus explicite, analysons celle-ci :
+		</p>
+		<pre class="sql code-snippet block">
+
+CREATE TABLE tache(
+  id INTEGER PRIMARY KEY,
+  id_parent INTEGER,
+  description VARCHAR(64),
+  temps_requis INTEGER
+);
+
+INSERT INTO tache
+(id, id_parent, description, temps_requis)
+VALUES
+(1, null, 'A', 1),
+(2, 1, 'B', 2),
+(3, 2, 'C', 3),
+(4, null, 'L', 4),
+(5, 4, 'M', 5),
+(6, 5, 'N', 6);
+
+SELECT * FROM tache;
+
+WITH RECURSIVE taches(id, id_parent, description, temps_requis) AS (
+	SELECT id, id_parent, description || '', temps_requis FROM tache WHERE id = 6
+  UNION ALL
+  	SELECT tt.id, tt.id_parent, (t.description || tt.description), tt.temps_requis + t.temps_requis
+  	FROM taches AS t, tache as tt
+  	WHERE tt.id = t.id_parent
+) SELECT id, temps_requis, description FROM taches;
+		</pre>
+		<p>
+			Ici, nous disposons d'une table de tâche. <br>
+			Chaque tâche peut avoir une tâche enfant. <br>
+			Pour réaliser A, je dois réaliser B pour lequel je dois réaliser C. <br>
+			Si je veux réaliser C, je prendrais un temps de 3h <br>
+			Pour réaliser B, un temps de 2h inhérent à la tâche B, ainsi que 3h de la tâche C pour un total de 5h <br>
+			A me demanderais 6h en tout. <br>
+			Notre CTE récursive va d'abord faire un premier SELECT qui sera utilisé après dans une seconde requête <br>
+			Les résultats de cette seconde requête sont ajoutés aux résultats de la première avec un UNION <br>
+			Les résultats de la première sont utilisées dans la seconde pour sommer les temps requis ainsi que pour
+			réaliser la condition du WHERE <br>
+			Enfin, une fois que cette CTE est réalisée, elle est consommée dans la requête en dehors des parenthèses
+		</p>
+		<h2>Exercices</h2>
+		<p>
+			Sur base de la table de tâche, réaliser l'opération inverse pour récupérer toutes les tâches en ordre
+			descendant plutôt qu'ascendant <br>
+			Cad A-1, AB-3, ABC-6 plutôt que C-3, CB-5, CBA-5
+		</p>
+		<p>
+			Créer un arbre de données en ajoutant les informations suivantes :
+		</p>
+		<pre class="sql code-snippet block">
+INSERT INTO tache
+(id, id_parent, description, temps_requis)
+VALUES
+(7, 1, 'D', 2),
+(8, 7, 'E', 3);
+		</pre>
+		<p> Récupérez toutes les données pour la branche ABC uniquement de l'arbre</p>
+		<p>
+			Récupérez toutes les données pour l'arbre A-BC A-DE en ayant le temps requis le plus faible sur A et le
+			total de chaque branche sur le noeud le plus profond
+		</p>
+		<p>
+			Récupérez toutes les données pour l'arbre A-BC A-DE en ayant le temps requis total sur A
+		</p>
+
+		<!-- <pre>
+CREATE DATABASE cte_window_function;
+
+CREATE TABLE article(
+id SERIAL PRIMARY KEY,
+nom VARCHAR(64) NOT NULL,
+prix_unitaire DECIMAL(8,2) NOT NULL
+);
+
+CREATE TABLE lot(
+id SERIAL PRIMARY KEY,
+id_article INTEGER NOT NULL,
+emplacement_x INTEGER,
+emplacement_y INTEGER,
+qantite INTEGER,
+date_lot DATE,
+vendu INTEGER
+);
+
+ALTER TABLE lot
+ADD CONSTRAINT lot_article_fk FOREIGN KEY (id_article)
+    REFERENCES article (id)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT;
+
+	INSERT INTO article(
+nom,
+prix_unitaire
+)
+VALUES
+('pain chocolat', 2.00),
+('croissant', 1.80),
+('huit à la crème', 2.20),
+('pain chocolat vanille', 2.30);
+
+INSERT INTO lot(
+id_article,
+emplacement_x,
+emplacement_y,
+quantite,
+date_lot
+)
+VALUES
+(1, 1, 1, 10, '10-01-2025'),
+(1, 1, 2, 10, '10-01-2025'),
+(1, 1, 3, 10, '10-01-2025'),
+(1, 1, 4, 10, '10-01-2025'),
+(2, 2, 1, 10, '10-01-2025'),
+(2, 2, 2, 10, '10-01-2025'),
+(2, 2, 3, 10, '10-01-2025'),
+(2, 2, 4, 8, '10-01-2025'),
+(3, 3, 1, 8, '10-01-2025'),
+(3, 3, 2, 8, '10-01-2025'),
+(3, 3, 3, 8, '10-01-2025'),
+(3, 3, 4, 8, '10-01-2025'),
+(4, 4, 1, 10, '10-01-2025'),
+(4, 4, 2, 10, '10-01-2025'),
+(4, 4, 3, 10, '10-01-2025'),
+(1, 5, 1, 10, '10-01-2025'),
+(1, 5, 2, 10, '10-01-2025'),
+(1, 5, 3, 10, '10-01-2025'),
+(1, 5, 4, 10, '10-01-2025');
+		</pre> -->
+	</main>
+
+
+</body>
+
+</html>

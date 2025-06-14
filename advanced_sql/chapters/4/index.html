@@ -359,7 +359,7 @@ UPDATE nageur SET equipe_id = null;
             deux tables précédentes <br>
             La procédure stockée permettra d'insérer un patient ainsi que les informations personelles de celui-ci <br>
             Si nécessaire, créer un trigger pour la table d'audit <br>
-            Créer ensuite un ou plusieurs roles permettant à un utilisateur "reception" de se connecter et ayant
+            Créer ensuite un ou plusieurs roles permettant à un utilisateur "plateforme_web" de se connecter et ayant
             uniquement la possibilité de sélectionner un patient dans la table patient ou d'encoder un patient via la
             procédure stockée
         </p>
@@ -376,7 +376,7 @@ UPDATE nageur SET equipe_id = null;
             rendez-vous déjà prévus (on donne les disponibilités, pas les rendez-vous) <br>
             Créer une procédure stockée permettant de créer un rendez-vous entre un praticien et un patient <br>
             Créer une fonction permettant de récupérer les prochains rendez-vous pour un utilisateur <br>
-            Ajuster vos droits pour que l'utilisatuer "reception" n'ai puisse pas consulter directement la table de
+            Ajuster vos droits pour que l'utilisatuer "plateforme_web" n'ai puisse pas consulter directement la table de
             rendez-vous ou de praticiens, mais uniquement utiliser les la vue, procédure stockée ou fonction cité plus
             haut. <br>
             Attention, un rendez-vous ne peut pas être créé dans le passé.
@@ -388,7 +388,8 @@ UPDATE nageur SET equipe_id = null;
             dernier est activé ou désactivé <br>
             Créer une procédure stockée permettant de désactiver un patient ainsi que de décommander ses rendez-vous à
             venir. <br>
-            Mettre à jour les rôles de telle manière que l'utilisatuer "reception" ne puisse pas supprimer directement
+            Mettre à jour les rôles de telle manière que l'utilisatuer "plateforme_web" ne puisse pas supprimer
+            directement
             les patients mais puisse passer par cette procédure stockée
         </p>
         <h3>RGPD</h3>
@@ -402,9 +403,10 @@ UPDATE nageur SET equipe_id = null;
             Créer un rôle "securite" capable d'effectuer cette opération pour un utilisateur <br>
             N'ajouter que les droits strictement nécessaire à cet utilisateur pour effectuer cette opération grâce à un
             identifiant qu'il aurait récupéré avec un SELECT sur la table des patients <br>
-            Accessoirement, créer une fonction permettant au rôle "reception" de récupérer uniquement les utilisateurs
+            Accessoirement, créer une fonction permettant au rôle "plateforme_web" de récupérer uniquement les
+            utilisateurs
             qui ne soient ni supprimés ni obfusqués. <br>
-            Retirer les droits de consultation directe de la table "patient" au rôle "reception"
+            Retirer les droits de consultation directe de la table "patient" au rôle "plateforme_web"
         </p>
     </main>
 

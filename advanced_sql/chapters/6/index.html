@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Document</title>
+	<script type="module" src="../../../../scripts/syntaxHighlighting.js"></script>
+	<script type="module" src="../../../../scripts/navbar/addNavbar.js"></script>
+	<script type="module" src="../../../../scripts/sidebar/sidebarSQLAvance.js"></script>
+	<link rel="stylesheet" href="../../../../ressources/style.css" />
+</head>
+
+<body>
+	<main>
+		<h1>Full text search</h1>
+		<ol>
+			<li>Introduction</li>
+			<li>Avantages</li>
+			<li>Document</li>
+		</ol>
+		<hr />
+		<h2 id="introduction">Introduction</h2>
+		<p>
+			Le Full Text Search permet de récupérer des informations de manière plus souple et plus rapide en se basant
+			sur le contenu d'un texte. <br>
+			Ceci en utilisant des éléments sensiblement différents de ce qui serait utilisé pour comparer des varchar
+			plus courts <br>
+			Ces éléments spécifiques permettrons d'optimiser la recherche et récupération de données dans de grand
+			volume de texte <br>
+			Par exemple, pour récupérer un papier de recherche dans une base de données universitaire sans connaitre le
+			titre exacte ou sans pouvoir le discriminer avec un système de catégorie ou de balises
+
+		</p>
+		<h2 id="avantages">Avantages</h2>
+		<p>
+			Récupérer du texte dans votre base de données est déjà possible avec les mot-clés LIKE, ILIKE et autre
+			REGEXES <br>
+			Néanmoins, ces éléments ne disposent pas de certains avantages liés à l'utilisation du full text search.
+			<br>
+			Dans ce mode de récupération, il est possible, par exemple, de se baser sur des éléments linguistiques
+			dérivés de manière plus ou moins laxe. <br>
+			Une recherche sur le terme "animal" pouvant aussi récupérer des résultats contenant "animaux" <br>
+			De plus, une recherche full text pourra plus simplement utiliser des phrases ou collection de mot-clés
+			plutôt que de se baser sur un unique mot-clé ou regex contraignante <br>
+			Effectivement, une des capacités de la recherche full text est de donner des résultats partiels qui seront
+			triés par défaut par ordre de pertinance. <br>
+			Rechercher "The quick brown fox jumps over the lazy dog" permettra de récupérer des documents contenant de
+			grandes occurences de brown fox ou de lazy dog sans avoir la nécessité de faire matcher toute la phrase et
+			présentera ses résultats selon un mélange de pertinence du résultat et d'occurence des résultats (un
+			document contenant l'entièreté de la phrase recherchée étant prioritaire sur un document contenant juste le
+			mot "dog") <br>
+			Enfin, la recherche full text traitant le document à priori permet d'être beaucoup plus rapide que les
+			opérateurs classiques sur éléments qui ne seraient pas indexés ou demanderaient un traitement trop lourd de
+			la donnée. La recherche full text se basant sur la séparation du text en différent token plutôt que sur le
+			traitement réel de chaque document comme un varchar classique
+		</p>
+		<p class="nota-bene info">
+			Pour justifier cette différence de performance, imaginer l'algorithme que vous écriveriez à la main pour
+			valider une regex de type '%foo%'. <br>
+			L'approche la plus simple et directe sera de passer sur chaque caractère de votre texte jusqu'à trouver la
+			lettre "f", comparer la suivante au "o" et, si ça ne porte pas ses fruits, continuer avec les caractères
+			suivants <br>
+			Le full text search se basera plutôt, de manière simplifiée, sur un dictionnaire de lexème représentant le
+			document.
+		</p>
+		<h2 id="document">Document</h2>
+		<p>
+			Dans le contexte de la recherche full text, un <strong> document </strong> est considéré comme l'élément sur
+			lequel sera réalisé les recherches et est constitué <strong> d'un ou plusieurs champs textuel. </strong>
+			<br>
+			Nous pourrions avoir, par un exemple, un document reprennant des articles de magazine qui seraient composés,
+			non pas seulement du corps du texte de l'article ou du paragraphe d'entête, mais de la totalité du titre, de
+			l'entête, du corps du texte,... <br>
+		</p>
+		<p class="nota-bene info">
+			En réalité, les informations d'un <strong>document</strong> n'ont même pas besoin d'être conservées dans une
+			même table. <br>
+			Il est tout à fait possible d'avoir un document composé dynamiquement de données récupérées dans plusieurs
+			tables. <br>
+			Ceci permettant de gérer ces données et index de manière plus libre
+		</p>
+		<h2>tsvector et tsquery</h2>
+		<p>Ci-dessous, analysons quelques exemples d'utilisation et les mot-clés correspondants</p>
+		<pre class="code-snippet block sql">
+SELECT 'a fat cat sat on a mat and ate a fat rat'::tsvector @@ 'cat & rat'::tsquery;
+SELECT 'fat & cow'::tsquery @@ 'a fat cat sat on a mat and ate a fat rat'::tsvector;</pre>
+		<p>
+			Tiré de la <a href="https://www.postgresql.org/docs/current/textsearch-intro.html#TEXTSEARCH-MATCHING">
+				documentation officielle </a>, cet exemple
+			montre l'utilisation du <strong>match operator</strong> <code>@@</code> mettant en lien deux éléments de
+			type <strong> tsquery </strong> et <strong> tsvector </strong> <br>
+			Dans le cas d'une recherche full text, le tsvector est une représentation du document. La tsquery, elle,
+			représentera la recherche à effectuer sur le dit document. <br>
+			Notez que dans le second exemple, la tsquery est définie avant le tsvector. Ceci n'a pas d'importance comme
+			le montre les deux requêtes suivantes :
+		</p>
+		<pre class="code-snippet block sql">
+SELECT 'cat & rat'::tsquery @@ 'a fat cat sat on a mat and ate a fat rat'::tsvector ;
+SELECT 'a fat cat sat on a mat and ate a fat rat'::tsvector @@ 'fat & cow'::tsquery;</pre>
+		<p>Bien que les éléments aient une position différente dans la requête, le résultat est identique.</p>
+		<p>
+			Plus important que l'ordre des éléments dans cette requête, il faut bien comprendre que nous n'avons pas ici
+			deux <i>varchar</i>, <i>string</i> ou autre structure de donnée du même genre. <br>
+			Nous avons ici un tsvector et un tsquery. <br>
+			Ces deux éléments sont composés de lexèmes dit <i>normalisés</i> et, dans le cas de la tsquery, d'opérateurs
+			permettant de combiner ces lexèmes (l'esperluette &, par exemple) <br>
+			Ainsi, une recherche de ce genre ne va pas <i>traiter</i> le text fourni car celui-ci est déjà considéré
+			comme <i>normalisé</i>. <br>
+			Ainsi, nous ne disposons pas de la possibilité, comme citée plus haut, de faire correspondre des termes
+			singuliers et pluriels ensemble ou des verbes avec différentes formes de conjugaison. <br>
+			Voyez par vous même :
+		</p>
+		<pre class="code-snippet block sql">
+SELECT 'a fat cat sat on a mat and ate a fat rat'::tsvector @@ 'rat'::tsquery;
+SELECT 'a fat cat sat on a mat and ate a fat rat'::tsvector @@ 'rats'::tsquery;</pre>
+		<p>Il sera possible néanmoins d'utiliser des fonctions permettant de transformer proprement du text en tsquery
+			ou tsvector</p>
+		<pre class="code-snippet block sql">
+SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') @@ to_tsquery('rat');
+SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') @@ to_tsquery('rats');</pre>
+		<p>
+			Par ailleurs, vous pourrez éventuellement expérimentez un temps de requête significativement plus long avec
+			cet exemple la première fois que vous l'exécutez. Ceci correspondant aux opérations nécessaires pour
+			transformer ces valeurs texte en dictionnaires de lexèmes exploitables
+		</p>
+		<h2>Opérateur match</h2>
+		<p>
+			Nous avons vu ci-dessus que l'opérateur @@ (match operator) permet de vérifier la congruence des arguments
+			de recherche présents dans une tsquery vis-à-vis d'un tsvector. <br>
+			Vous aurez aussi très certainement noté l'utilisation de l'esperluette dans nos exemples pour spécifier que
+			deux mots doivents apparaîtres conjointement dans le vecteur. <br>
+			Il s'agit d'un des quelques opérateurs applicables dans les recherche avec l'opérateur match. <br>
+			En plus du & représentant un <strong>ET</strong> classique, nous disposons du <strong>|</strong>
+			représentant un <strong>OU</strong> <br>
+			Bien entendu, il est possible d'inverser ces opérateurs avec un <strong>!</strong>. <br>
+			Un opérateur beaucoup plus spécifique aux tsquery est l'opérateur <code> <-> </code>. <br>
+			Ce dernier permet de spécifier que deux lexèmes doivent se suivre <strong>directement</strong> <br>
+			Comparez ces exemples :
+		</p>
+		<pre class="code-snippet sql block">
+SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') @@ to_tsquery('cat <-> rat');
+SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') @@ to_tsquery('fat <-> cat');
+SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') @@ to_tsquery('slim <-> cat');
+SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') @@ to_tsquery('(fat <-> cat) | (slim <-> cat)');</pre>
+		<p>
+			La première requête retourne "false" : rat n'est pas directement après cat <br>
+			La seconde, par contre, retourne "true" : une des deux occurences de "fat" est suivie directement par "cat"
+			<br>
+			La troisième retourne "false" : le terme <i>slim</i> n'est pas utilisé et donc, n'est pas suivi par cat <br>
+			La dernière retourne "true" : bien que <i> slim cat </i> n'ai pas de match, la portion <i>fat cat</i>, elle,
+			match. L'opérateur <strong>|</strong> permettant de valider la correspondance
+		</p>
+		<p>
+			Comme dit précédement, cet opérateur <code><-></code> vérifie si les lexèmes sont directement adjacents.
+			<br>
+			Il s'agit en réalité d'un cas particulier de cet opérateur correspondant à un <code><1></code>. <br>
+			Lors de l'utilisation de cet opérateur, le trait d'union peut être remplacé par toute valeur numérique
+			supérieure ou égale à 0 pour spécifier la distance entre les deux lexèmes <br>
+			Il faut par contre bien garder en tête qu'il s'agit d'une distance stricte. Le code suivant résultant donc
+			en un "false" :
+		</p>
+		<pre class="code-snippet sql block">
+SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') @@ to_tsquery('fat <2> cat');</pre>
+		<p class="nota-bene info">
+			Comment faire pour accorder un espace illimité entre deux termes? <br>
+			Vous l'avez vu plus haut, il faudra simplement utiliser l'opérateur <strong>&</strong>... <br>
+			Si l'ordre des deux termes n'a pas d'importance... <br>
+			Si l'ordre est important dans votre recherche, vous devrez alors la combiner avec d'autres méthodes pour
+			filtrer vos résultats comme, par exemple, des regexes
+		</p>
+		<p class="nota-bene info">
+			Il peut sembler étrange de pouvoir utiliser l'opérateur <code><-></code> avec un entier supérieur <i> ou
+				égal</i> à 0 <br>
+			À quoi pourrait bien servir une recherche de type <code>(foo <0> bar)</code> ? <br>
+			Rappelez vous que nous ne travaillons pas sur des chaines de caractères, mais des lexèmes. <br>
+			Cette recherche permettra de valider des résultats pour lequel le même lexème correspond à la fois à foo et
+			bar. <br>
+			Par exemple, dans des recherches de synonymes
+		</p>
+		<p>
+			L'utilisation des opérateurs &, | et ! peut sembler moins intuitif quand utilisés conjointement à
+			l'opérateur <code><-></code> <br>
+			Par exemple, <code>!foo <-> bar</code> signifie qu'il doit y avoir une occurence de bar après une "non
+			occurence de foo". <br>
+			De la même manière, <code>foo <-> !bar</code> signifie qu'une occurence de foo doit être suivie d'une "non
+			occurence de bar" <br>
+			Si nous prenons les exemples suivants :
+		</p>
+		<pre class="code-snippet block sql">
+SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') @@ to_tsquery('!fat <-> rat');
+SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') @@ to_tsquery('!slim <-> cat');
+SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') @@ to_tsquery('fat <-> !rat');</pre>
+		<p>
+			Les requêtes résultent respectivement en false, true et true <br>
+			Rat suit une occurence de fat. Nous ne respectons pas le fait que rat doit suivre une "non occurence" de fat
+			<br>
+			Cat suit fat. Nous avons donc bien une "non occurence" de slim suivie de cat <br>
+			Enfin, si rat suit une occurence de fat, nous disposons aussi d'une occurence de fat suivie par cat (une
+			"non occurence" de rat). <br>
+			Il en va de même avec les opérateurs & ainsi que |. Faites attention à bien utiliser vos parenthèses
+		</p>
+		<p>
+			Une dernière chose sur l'opérateur <code><-></code>. <br>
+			Il semble particulièrement adapté pour chercher des phrases entières ou partielles. <br>
+			Par contre, écrire toute une phrase avec cet opérateur entre chaque mot semble plutôt pénible. <br>
+			Heureusement, une fonction phraseto_tsquery permet justement de remplire ce rôle. <br>
+			<code>phraseto_tsquery('a fat cat')</code> donnera le résultat <code>'a <-> fat <-> cat'::tsquery</code>
+		</p>
+		<h2>Stop words</h2>
+		<p>
+			Nous avons parlé des capacités de la recherche full text pour récupérer des mots dont les lexèmes sont
+			similaires. Par exemple, la capacité de récupérer des verbes conjugés ou pas, des synonymes (au sens
+			strict ou défini comme tels) <br>
+			Mais quand est-il du bruit? <br>
+			De ces mots parasites qui ne permettent pas de discriminer efficacement plusieurs textes? <br>
+			On parlera dans ce cas de "stop word".
+		</p>
+		<p>
+			On considère comme "stop word" les mots "trop présent" dans la langue qui pourrait parasiter les résultats
+			d'une recherche. <br>
+			Par exemple, des mots comme "le", "la", "les"... <br>
+			Ces mots seront très probablement présents dans des textes en langue française
+		</p>
+		<pre
+			class="code-snippet block sql">SELECT to_tsvector('Tu vois, le monde se divise en deux catégories, ceux qui ont un pistolet chargé et ceux qui creusent. Toi, tu creuses.')</pre>
+		<p>
+			Regardons le résultat de la requête ci-dessus : <br>
+			'tu', 'le', 'se' sont tous des mots extrat des résultats <br>
+			Dans le cadre de la langue française, il est fort à parier que ces mots ne n'aideraient pas à discriminer
+			efficacement des textes. <br>
+			Notez néanmoins que la position des lexèmes n'est pas impactée par le retrait de ces mots. <br>
+			Dans notre exemple, "vois" est en 2e place et non en première et ce, malgré le retrait du "tu"
+		</p>
+		<p class="nota-bene info">
+			Vous pouvez essayer cette requête en spécifiant l'utilisation de la configuration anglaise pour voir que ces
+			mots ne sont pas exclus du résultat. <br>
+			Pour utiliser une configuration anglaise, référez-vous au contenu plus bas.
+		</p>
+		<pre class="code-snippet sql block">SELECT to_tsquery('Tu & le & chargé');</pre>
+		<p>
+			Il en va de même pour cette requête transformant une string en ts_query et, si l'on regarde le résultat de
+			la requête suivante :
+		</p>
+		<pre
+			class="code-snippet sql block">SELECT to_tsvector('Tu vois, le monde se divise en deux catégories, ceux qui ont un pistolet chargé et ceux qui creusent. Toi, tu creuses.') @@ to_tsquery('Tu <-> vois');</pre>
+		<p>
+			Nous pouvons voir que le résultat est bien positif malgré le retrait du tu dans le vecteur comme dans la
+			requête
+		</p>
+		<p class="nota-bene info">
+			Beaucoup de mots semblent coupés dans le ts_vector? <br>
+			C'est normal. Un lexème n'a pas besoin d'être un mot réel pour regrouper le sens de plusieurs mots. <br>
+			Ce découpage est appelé, <a href="https://fr.wikipedia.org/wiki/Racinisation"> "racinanisation" ou encore
+				"désuffixation" </a> (en anglais, "stemming") et permet de
+			récupérer la racine ou radical ("stem") des mots. <br>
+			Ceci permet, dans beaucoup de langues dont la notre, de poser des règles de grammaire et, plus
+			particulièrement de conjugaison. <br>
+			Bon, dans notre cas, ce qui nous intéresse, c'est de garder un lexème.
+		</p>
+		<p>
+			Retenez simplement ce concept de "stop word" <br>
+			Bien qu'il soit laissé à chaque dictionnaire la liberté de les utiliser et ce, de la manière qu'ils le
+			souhaitent, le concept restera utilisé dans la plupart des cas.
+		</p>
+		<h2>Configuration</h2>
+		<p>
+			Nous venons de parler de dictionnaire? <br>
+			Et c'est normal. Pensez-y : depuis le début de ce chapitre, nous parlons de lexèmes et de regrouper les mots
+			par leurs sens plutôt que par leur forme stricte. <br>
+			Mais un mot n'a de sens qu'au sens d'une langue. <br>
+			Ainsi, "matcher" des synonymes ne pourra se faire qu'au sein d'une langue. Il en va de même pour des verbes
+			conjugués et autres lexèmes liés. <br>
+			Essayons :
+		</p>
+		<pre
+			class="code-snippet block sql">SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') @@ to_tsquery('rat');</pre>
+		<p>Rien à signaler, ça marche.</p>
+		<pre
+			class="code-snippet block sql">SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') @@ to_tsquery('rats');</pre>
+		<p>Chouette, nous pouvons récupérer les pluriels !</p>
+		<pre
+			class="code-snippet block sql">SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') @@ to_tsquery('mouse');</pre>
+		<p>
+			Pas de bol, ça ne marche pas. <br>
+			Mais mouse et rat ne sont pas de réels synonymes. <br>
+			Essayons autre chose :
+		</p>
+		<pre
+			class="code-snippet block sql">SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') @@ to_tsquery('sit');</pre>
+		<p>
+			Aïe... Toujours rien. <br>
+			Pourtant, sat, présent dans le vector, est une forme du verbe sit. <br>
+			Comment expliquer ceci? <br>
+			Exécutons la requête suivante :
+		</p>
+		<pre class="code-snippet block sql">
+SELECT cfgname as nom_configuration
+FROM pg_catalog.pg_ts_config;</pre>
+		<p>Vous devriez voir une série de configurations disponibles déjà installées sur votre sgbd <br>
+			Par défaut, une installation de pgsql incluera au moins quelques configuration comme l'anglais <br>
+			Si il manquait l'une ou l'autre configuration utile pour vos projets, il est toujours possible d'installer
+			de nouvelles configurations. <br>
+			Mais posons nous une autre question : "Comment savoir quel configuration est utilisée pour nos requêtes?"
+			<br>
+			Effectivement, si nous regardons aux différentes configurations, nous disposons du français, de l'allemand,
+			du grec... <br>
+			Bref, toute une série de langues dans lesquelles "sit" n'a aucun rapport avec "sat"... <br>
+			Vérifier la configuration utilisée avec cette requête :
+		</p>
+		<pre class="code-snippet block sql">SHOW default_text_search_config;</pre>
+		<p>
+			Vous devriez avoir, sauf cas particuliers, la configuration "french" utilisée. <br>
+			Et effectivement, en français, nous n'avons pas de lien entre "sit" et "sat"...
+		</p>
+		<p class="nota-bene">
+			Par défaut, la configuration utilisée dépend de la langue d'installation de votre pgsql
+		</p>
+		<p>
+			Nous savons maintenant pourquoi ça ne fonctionne pas. <br>
+			Mais ça ne nous avance pas pour résoudre notre problème de matching... <br>
+			Comment faire pour modifier cette configuration? <br>
+			Essayons ceci :
+		</p>
+		<pre
+			class="code-snippet block sql">SELECT to_tsvector('english','a fat cat sat on a mat and ate a fat rat') @@ to_tsquery('english', 'sit');</pre>
+		<p>
+			Et nous devrions avoir un résultat positif ! <br>
+			Non? <br>
+			Non... <br>
+			C'est ennuyeux... <br>
+			Faisons quelques tests supplémentaires pour résoudre notre problème :
+		</p>
+		<pre class="code-snippet block sql">SELECT to_tsvector('english', 'rat');
+SELECT to_tsvector('english', 'rats');</pre>
+		<p>
+			Cette requête, en l'état, nous donne le résultat de la transformation en lexèmes des différents éléments
+			dans le dictionnaire anglais utilisé. <br>
+			Nous voyons que, dans les deux cas, nous obtenons le résultat "rat" (et non une fois "rat" et une autre
+			"rats" avec s) <br>
+			Essayons maintenant avec sat et sit
+		</p>
+		<pre class="code-snippet block sql">SELECT to_tsvector('english', 'sat');
+SELECT to_tsvector('english', 'sit');</pre>
+		<p>
+			Nous voyons ici que le résultat est une fois "sit" et une fois "sat"... <br>
+			Pourtant, je ne vous ai pas menti. <br>
+			Essayez la requête suivante et voyez :
+		</p>
+		<pre
+			class="code-snippet block sql">SELECT to_tsvector('english', 'sitting') @@ to_tsquery('english', 'sit');</pre>
+		<p>
+			Ici, ça match ! <br>
+			Pourquoi ça n'a pas fonctionné précédement? <br>
+			"sat" est une conjugaison irrégulière ! <br>
+			Nous disposons de plusieurs règles pour transformer en lexèmes les différents termes et, malheureusement,
+			les verbes irréguliers ne fonctionnent pas par défaut. <br>
+			Les conjugaisons simples comme sitting et sit, par contre, fonctionnent. <br>
+			Ceci grâce au dictionnaire "snowball".
+		</p>
+		<p>
+			Le dictionnaire snowball se base sur un algorithme du même nom et, s'il a été pensé pour l'anglais, des
+			variantes ont été créées pour les différentes langues disponibles. <br>
+			Nous ne travaillerons pas sur ce sujet dans ce cours. <br>
+			Mais pour plus d'informations, vous pouvez consulter
+			<a href="https://snowballstem.org/"> le site officiel de snowballstem </a>
+		</p>
+		<p class="nota-bene info">
+			Pardon, le "dictionnaire" snowball? <br>
+			Nous avons effectivement parlé de "configurations" anglaise ou française et pas de dictionnaire anglais ou
+			français. <br>
+			Le terme dictionnaire représentant autre chose
+		</p>
+		<h2>Dictionnaires</h2>
+		<p>
+			Nous venons de voir que plusieurs configurations étaient disponibles pour faire nos recherches full text
+			<br>
+			Nous avons vu que ces configuration dépendraient du dictionnaire snowball? <br>
+			En réalité, elles dépendent de plus de dictionnaires que ce dernier. <br>
+			Ces dictionnaires disposent tous de leur propre logique et algorithmes et sont utilisés conjointements pour
+			transformer nos textes en collection de lexèmes. <br>
+			Ainsi, on pourra configurer chaque dictionnaire pour traiter les différents mots de telle manière à
+			retourner : <br>
+			Un lexème => Si le mot est connu par le dictionnaire <br>
+			Un lexème "filtre" => disposant d'un flag TSL_FILTER, ce lexème est passé au dictionnaire suivant avec cette
+			information de tri <br>
+			Un tableau vide => le mot a été reconnu comme un stop word. Ce dernier est alors éliminé <br>
+			Un résultat null => Le mot n'a pas été reconnu. Le prochain dictionnaire pourra peut-être le résoudre <br>
+			Les logiques algorithmiques empruntant plus ou moins de concepts de linguistique dépassent le cadre de notre
+			cours. <br>
+			Notons quand même les différents dictionnaires en jeu et leurs rôles dans la recherche full text pour
+			pouvoir les configurer et en tirer le maximum
+		</p>
+		<p class="nota-bene info">
+			L'information qui n'a pas été transformée en lexème "ruisselle" vers les dictionnaires suivants <br>
+			On fera donc attention à utiliser les dictionnaires du plus précis au moins précis pour ne pas avoir trop de
+			"faux" positifs
+		</p>
+		<ul>
+			<li>Dictionnaire simple</li>
+			<li>Dictionnaire de synonymes</li>
+			<li>Dictionnaire thésaurus</li>
+			<li>Dictionnaire "Ispell"</li>
+			<li>Dictionnaire "Snowball"</li>
+		</ul>
+		<h3>Dictionnaire simple</h3>
+		<p>
+			Permet de filtrer les stop words configurés <br>
+			Le reste de mots sera soit transformé en lexème sans plus de travail qu'en les passant en minuscule, soit
+			passé au prochain dictionnaire <br>
+		</p>
+		<h3>Dictionnaire de synonymes</h3>
+		<p>
+			Permettra de récupérer des lexèmes identiques pour deux mots configurés comme "synonymes". <br>
+			Par exemple, pour n'avoir qu'un lexème généré pour les termes "pgsql" et "postgresql"
+		</p>
+		<h3>Dictionnaire thésaurus</h3>
+		<p>
+			Variante du dictionnaire de synonyme, il permet de mettre en relation des "groupes" de mots ensembles. <br>
+			Permettant, par exemple, de faire correspondre "sgdb" et "système de gestion de base de données"
+		</p>
+		<h3>Dictionnaire Ispell</h3>
+		<p>Ce dictionnaire permet de gérer des différences d'écritures de même termes. <br>
+			Dans une moindre mesure, ceci permet déjà de gérer des conjugaisons différentes. <br>
+			Mais il permettrait aussi de faire correspondre des termes comme "clef" et "clé" ou bien "évènement" et
+			"événement" <br>
+			Par défaut, PGSQL ne dispose pas de dictionnaire Ispell. Il suggère néanmoins d'aller sur <a
+				href="https://www.cs.hmc.edu/~geoff/ispell.html">ce site</a> pour plus d'informations... La version
+			fraçaise de ce site semble néanmoins hors d'usage
+		</p>
+		<p>
+			Cette différence de comportement est configuré au préalable. <br>
+			Pour voir si un dictionnaire simple est installé et pour voir sa configuration, nous pouvons utiliser cette
+			requête :
+		</p>
+		<h3>Dictionnaire "Snowball"</h3>
+		<p>
+			Ce dictionnaire utilise le principe de racinisation cité plus haut en se basant sur l'algorithme snowball.
+			<br>
+			Il est important de noter que ce dictionnaire ne laisse passer aucun mot. <br>
+			Soit, il s'agit d'un stop word et le mot est retiré, soit il est "racinisé" et donc, transformé en lexème
+			qui n'est pas retourné au prochain dictionnaire. <br>
+			Ainsi, on évitera de commencer par ce dictionnaire dans nos configurations.
+		</p>
+		<h2>Créer une configuration</h2>
+		<p>
+			Toute recherche full text, que ce soit pour la transformation en vecteur ou en query, nécessite une
+			configuration. <br>
+			Nous avons déjà utilisé quelques configuratioons de base "livrées" avec notre installation de pgsql :
+			"french" et "english".<br>
+			Il est aussi possible de créer ses propres configurations (ou modifier les existantes) et ce n'est pas très
+			compliqué... <br>
+			Voyons les quelques étapes nécessaires :
+		</p>
+		<pre
+			class="sql code-snippet block">CREATE TEXT SEARCH CONFIGURATION public.my_ts_config ( COPY = pg_catalog.french );</pre>
+		<p>
+			Cette requête permet de créer une nouvelle configuration nommée "my_ts_config" en se basant sur la
+			configuration déjà existante "french". <br>
+			Il est maintenant possible de la voir avec cette requête :
+		</p>
+		<pre class="sql code-snippet block">SELECT * FROM pg_catalog.pg_ts_config</pre>
+		<p>
+			Ensuite, créons notre propre fichier de synonymes. <br>
+			Pour se faire, allez au niveau de votre installation de postgre et chercher un dossier nommé tsearch_data
+			<br>
+			Ce dossier devrait contenir les différents dictionnaires disponibles pour vos recherche full text
+		</p>
+		<p class="nota-bene info">
+			N'hésitez pas à en ouvrir l'un ou l'autre pour voir comment ils sont construit. <br>
+			Je vous suggère par contre de ne pas modifier ces dictionnaires de base <br>
+			Accessoirement, comparer <a
+				href="https://www.postgresql.org/docs/current/textsearch-dictionaries.html#TEXTSEARCH-DICTIONARIES">
+				la documentation officielle
+			</a>
+			à ce que vous lisez vous aidera sans doute à comprendre
+			plus simplement le contenu de ces dictionnaires
+		</p>
+		<p>
+			Une fois dans ce dossier, nous pouvons créer un nouveau fichier. <br>
+			Le nom est libre, dans notre exemple, nous utiliserons pg_dict.syn <br>
+			L'extension signifiant qu'il s'agit d'un dictionnaire de synonyme
+			Enfin, ajoutons un peu de contenu dans ce fichier :
+		</p>
+		<pre class="code-snippet block">
+postgres    pg
+pgsql       pg
+postgresql  pg
+		</pre>
+		<p>
+			Nous venons de définir un dictionnaire permettant de faire matcher "pg" avec postgres, pgsql et postgresql
+			<br>
+			Il n'est cependant pas, en l'état, disponible dans notre base de données. <br>
+			Cette requête devrait résoudre notre problème :
+		</p>
+		<pre class="code-snippet block sql">CREATE TEXT SEARCH DICTIONARY pg_dict (
+				TEMPLATE = synonym,
+				SYNONYMS = pg_dict
+				);</pre>
+		<p>
+			Enfin, il nous reste encore à l'ajouter à notre configuration custom :
+		</p>
+		<pre class="code-snippet block sql">ALTER TEXT SEARCH CONFIGURATION my_ts_config
+ALTER MAPPING FOR asciiword, asciihword, hword_asciipart,
+					word, hword, hword_part
+WITH pg_dict, english_stem;
+		</pre>
+		<p>
+			Cette requête permet de modifier notre configuration de recherche (elle se basait sur une configuration
+			existante) <br>
+			Nous pouvons maintenant la tester avec cet extrait tiré du site d'oracle :
+		</p>
+		<pre class="sql block code-snippet">
+select to_tsvector('french', 'PostgreSQL est un 
+système de gestion de base de données relationnelle orienté objet
+puissant et open source 
+qui est capable de prendre en charge en toute sécurité 
+les charges de travail de données les plus complexes
+') @@ to_tsquery('french','pg');
+select to_tsvector('my_ts_config', 'PostgreSQL est un 
+système de gestion de base de données relationnelle orienté objet
+puissant et open source 
+qui est capable de prendre en charge en toute sécurité 
+les charges de travail de données les plus complexes
+') @@ to_tsquery('my_ts_config','pg');
+		</pre>
+		<p>
+			Dans le texte fourni, le terme "PostgreSQL" est utilisé alors que la query utilise le terme "pg" <br>
+			Nous pouvons voir que dans un premier cas, notre recherche utilise la configuration 'french' qui ne
+			reconnait pas ces deux termes comme des synonymes et retourne un résultat "false" <br>
+			Notre configuration personelle, elle, permet par contre de faire matcher ces deux termes.
+		</p>
+		<h2>Création d'index</h2>
+		<p>
+			Nos requêtes précédentes ont fonctionnées sur des string passées en argument sans travail préalable. <br>
+			Néanmoins, nous venons de voir les différentes transformations qu'impliquent la recherche full text. <br>
+			Il est par conséquent d'autant plus important de créer ses index à l'avance sur nos documents
+		</p>
+		<p>
+			Nous utilisons deux type d'index sensiblement différent pour les recherches full text comparé aux recherches
+			classiques : les index <b>GIN</b> et <b>GiST</b> <br>
+			Le premier permettant de gérer des vecteurs tandis que le second permet aussi de gérer des
+
+		</p>
+
+	</main>
+
+
+</body>
+
+</html>
