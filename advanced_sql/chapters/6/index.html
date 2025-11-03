@@ -223,7 +223,8 @@ SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') @@ to_tsquery('fa
 			Ces mots seront très probablement présents dans des textes en langue française
 		</p>
 		<pre
-			class="code-snippet block sql">SELECT to_tsvector('Tu vois, le monde se divise en deux catégories, ceux qui ont un pistolet chargé et ceux qui creusent. Toi, tu creuses.')</pre>
+			class="code-snippet block sql">SELECT 
+to_tsvector('Tu vois, le monde se divise en deux catégories, ceux qui ont un pistolet chargé et ceux qui creusent. Toi, tu creuses.')</pre>
 		<p>
 			Regardons le résultat de la requête ci-dessus : <br>
 			'tu', 'le', 'se' sont tous des mots extrat des résultats <br>
@@ -242,8 +243,9 @@ SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') @@ to_tsquery('fa
 			Il en va de même pour cette requête transformant une string en ts_query et, si l'on regarde le résultat de
 			la requête suivante :
 		</p>
-		<pre
-			class="code-snippet sql block">SELECT to_tsvector('Tu vois, le monde se divise en deux catégories, ceux qui ont un pistolet chargé et ceux qui creusent. Toi, tu creuses.') @@ to_tsquery('Tu <-> vois');</pre>
+		<pre class="code-snippet sql block">SELECT 
+to_tsvector('Tu vois, le monde se divise en deux catégories, ceux qui ont un pistolet chargé et ceux qui creusent. Toi, tu creuses.') 
+@@ to_tsquery('Tu <-> vois');</pre>
 		<p>
 			Nous pouvons voir que le résultat est bien positif malgré le retrait du tu dans le vecteur comme dans la
 			requête
@@ -256,7 +258,8 @@ SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') @@ to_tsquery('fa
 			récupérer la racine ou radical ("stem") des mots. <br>
 			Ceci permet, dans beaucoup de langues dont la notre, de poser des règles de grammaire et, plus
 			particulièrement de conjugaison. <br>
-			Bon, dans notre cas, ce qui nous intéresse, c'est de garder un lexème.
+			Bon, dans notre cas, ce qui nous intéresse, c'est de garder un lexème. <br>
+			Mais si vous avez un peu de temps libre, il s'agit d'un sujet réellement intéressant !
 		</p>
 		<p>
 			Retenez simplement ce concept de "stop word" <br>
@@ -322,8 +325,9 @@ FROM pg_catalog.pg_ts_config;</pre>
 			Comment faire pour modifier cette configuration? <br>
 			Essayons ceci :
 		</p>
-		<pre
-			class="code-snippet block sql">SELECT to_tsvector('english','a fat cat sat on a mat and ate a fat rat') @@ to_tsquery('english', 'sit');</pre>
+		<pre class="code-snippet block sql">SELECT 
+to_tsvector('english','a fat cat sat on a mat and ate a fat rat') 
+@@ to_tsquery('english', 'sit');</pre>
 		<p>
 			Et nous devrions avoir un résultat positif ! <br>
 			Non? <br>
@@ -539,8 +543,135 @@ les charges de travail de données les plus complexes
 		<p>
 			Nous utilisons deux type d'index sensiblement différent pour les recherches full text comparé aux recherches
 			classiques : les index <b>GIN</b> et <b>GiST</b> <br>
-			Le premier permettant de gérer des vecteurs tandis que le second permet aussi de gérer des
-
+			Le premier permettant de gérer des vecteurs tandis que le second permet aussi de gérer des tsquery <br>
+			En plus de cette différence, il faut noter que le fonctionnement et donc, le résultat fourni est
+			sensiblement différent entre ces deux types d'index.
+		</p>
+		<h3> GIN </h3>
+		<pre class="code-snippet block sql">CREATE INDEX mon_index ON table_foo USING GIN (column_bar);</pre>
+		<p>
+			En ce qui concerne le GIN, un résultat <i> similaire </i> à celui d'un ts_vector est concervé. <br>
+			Les différents lexèmes, leurs positions et nombre d'occurences sont récupérables assez facilement. <br>
+			Ainsi, une requête demandant des "match" (opérateur @@) fonctionnent particulièrement bien avec ce type
+			d'index. <br>
+			Par priorité de résolution, les éléments sont vérifiés. <br>
+			Si le premier terme est présent, on vérifie le second et ainsi de suite jusqu'à considérer la row comme un
+			"match" ou pas <br>
+			Dès qu'un terme n'est pas présent, on élimine la row et on vérifie la suivante. <br>
+			Il s'agit du procédé classique des requêtes "match" avec cet avantage que la donnée est pré traitée.
+		</p>
+		<h3> GiST </h3>
+		<pre class="code-snippet block sql">CREATE INDEX mon_index 
+ON ma_table 
+USING GIST (ma_colonne [ { DEFAULT | tsvector_ops } (longueur_choisie) ] )</pre>
+		<p>
+			En ce qui concerne les GiST, le procédé est différent <br>
+			Ici, chaque lexème est d'abord hashé et classé dans un arbre <br>
+			On ne vérifie pas qu'un lexème match exactement la requête car on vérifie que le résultat du hash d'un
+			lexème correspond au résultat du hash du terme traité. <br>
+			Ainsi, comme toute structure de donnée de ce genre, cette vérification s'expose à des risques de
+			<i>collision</i> <br>
+			Ceci implique qu'il est parfois possible d'obtenir de faux positifs lors de nos requêtes. <br>
+			Il faudra alors revérifier le résultat de cette requête (ce qui est géré automatiquement par postgre quand
+			<i>requis</i>) <br>
+			Ceci peut être minimisé en modifiant la longueur, en bytes, utilisé pour ces index lors de la création de
+			celui-ci (argument lors de la création). <br>
+			Il faudra, selon les cas, peser les pours et les contres et considérer s'il est plus important d'obtenir une
+			réponse précise ou un stockage plus léger (pour ordre de grandeur, la valeur par défaut est de 124 bytes
+			contre une valeur max de 2024 soit 16 fois plus élevé)
+		</p>
+		<p class="nota-bene danger">
+			On pourrait penser qu'un GiST avec une longueur de signature plus courte apporterait de résultats plus
+			rapides. <br>
+			Mais, une fois un match fait, accéder à l'enregistrement effectif pour vérifier la validité de ce match peut
+			apporter des ralentissements notables
+		</p>
+		<p class="nota-bene info">
+			Mais pourquoi utiliser un index GiST plutôt que GIN? <br>
+			Je vous en ai parlé plus tôt sans vous le démontrer : il est possible de récupérer des résultats triés sur
+			leur pertinence. <br>
+			Ce genre de requête profitera des index de type GiST, mais pas GIN. <br>
+			(Les index de type GIN étant parfaitement qualifié pour les opérations de match pour lesquelles un résultat
+			de type true/false est attendu)
+		</p>
+		<h2>Classement des résultats</h2>
+		<p>
+			Comme précisé précédement, il est possible de classer la pertinence des résultats des recherches full text
+			<br>
+			Pour se faire, nous disposons de plusieurs outils comme, par exemple, l'utilisation de la fonction
+			<i>ts_rank</i> <br>
+			Voyons comment cela fonctionne et le type de résultat récupéré. <br>
+			Pour commencer, ajoutons quelques données dans notre base de données avec l'aide de <a
+				href="./data/data_fts.sql"> ce fichier</a> reprennant des extraits de page tirée au hasard de wikipédia
+		</p>
+		<p class="nota-bene danger">
+			Ces extraits sont tirés complètement au hasard, si certains sujets vous semble
+			"limite" dans le cadre de ce cours, prévenez-moi
+		</p>
+		<p>
+			Exécutons ensuite cette requête.
+		</p>
+		<pre class="code-snippet block sql">SELECT id, 
+	to_tsvector('french',content) @@ to_tsquery('french','france') AS document_chauvin 
+FROM wiki
+WHERE to_tsvector('french',content) @@ to_tsquery('french','france') = true;</pre>
+		<p>
+			Cette requête permet de retrouver les documents parlant de la France et devrait vous retourner quelques
+			résultats à positifs <br>
+			Mais parmis ces documents, lesquels sont les plus chauvins? <br>
+			C'est ici que rentre en jeu notre nouvel outils, la fonction "rank"
+		</p>
+		<pre class="code-snippet block sql">SELECT id AS id_document_chauvin, 
+	ts_rank(to_tsvector('french',content), 
+	to_tsquery('french','france')) AS poids FROM wiki
+WHERE to_tsvector('french',content) @@ to_tsquery('french','france') = true
+ORDER BY poids  DESC;</pre>
+		<p>
+			Comme vous pouvez le voir, cette fonction ne nous retourne pas un boolean (match / pas match), mais un
+			score correspondant à la densité des occurences du terme recherche dans le document traité. <br>
+			De la même manière, une fonction ts_rank_cd offre une démarche similaire, mais prend aussi en considération
+			l'espace entre les différents termes. <br>
+			L'idée derrière ses fonctions est la suivante : plus un document est grand, plus il est probable de faire
+			correspondre un lexème bien que potentiellement peu pertinent. <br>
+			Ainsi, un document de quelques lignes avec trois occurences du lexème recherché aura un score beaucoup plus
+			élevé qu'un document de plusieurs pages avec une unique occurence. <br>
+			Tout du moins, c'est ce qu'il serait logique de penser. <br>
+			Mais ce comportement n'est pas présent pas défaut ! <br>
+			Ces fonctions utilisent en réalité un argument de "normalisation" : un entier de 0 à 32 permettant de
+			spécifier comment calculer l'importance de ce facteur <br>
+			Voici les différentes options :
+		</p>
+		<ul>
+			<li>
+				0 (valeur par défaut) ne prend pas en considération la longueur du document
+			</li>
+			<li>
+				1 division du score par 1 + logarithme de la taille du document
+			</li>
+			<li>
+				2 division du score par la taille du document
+			</li>
+			<li>
+				4 divise le score par la moyenne harmonique de la distance entre les mots (ceci est implémenté seulement
+				par ts_rank_cd)
+			</li>
+			<li>
+				8 divise le score par le nombre de mots uniques dans le document
+			</li>
+			<li>
+				16 divise le score par 1 + le logarithme du nombre de mots uniques dans le document
+			</li>
+			<li>
+				32 divise le score par lui-même + 1
+			</li>
+		</ul>
+		<p class="info nota-bene">
+			Remarquez-vous quelque chose de particulier pour les valeurs de ces arguments? <br>
+			Essayer de les écrires en binaire pour voir... <br>
+			Il s'agit en réalité d'une série de flag pouvant tous être levé de façon individuelle <br>
+			Dans le cas ou plusieurs flages seraient levés, les calculs sont réalisés à la suite <br>
+			Accessoirement, petit rappel de l'opérateur "binary or" => | <br>
+			Vous pourriez par exemple utiliser un argument (2|8)
 		</p>
 
 	</main>
