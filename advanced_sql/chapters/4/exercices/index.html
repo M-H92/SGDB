@@ -41,6 +41,102 @@
 			uniquement la possibilité de sélectionner un patient dans la table patient ou d'encoder un patient via la
 			procédure stockée
 		</p>
+		<pre class="code-snippet block sql">
+
+CREATE DATABASE maison_medicale_2526;
+
+CREATE TABLE patient(
+    id SERIAL PRIMARY KEY,
+    nom varchar(64) NOT NULL,
+    prenom varchar(64) NOT NULL
+);
+
+CREATE TABLE info_personnelle(
+    id_patient INT PRIMARY KEY,
+    naissance date NOT NULL, 
+    poids decimal(5,2) NOT NULL, 
+    taille decimal(3,2) NOT NULL
+); 
+
+CREATE TABLE audits(
+    type_action varchar(32), -- DELETE, UPDATE, INSERT
+    table_action varchar(32),
+    utilisateur varchar(32),
+    date_action date
+);
+
+-- FK
+ALTER TABLE info_personnelle 
+    ADD CONSTRAINT fk_info_personnelle_patient
+        FOREIGN KEY (id_patient)
+        REFERENCES patient(id);
+
+-- CALL ajout_patient('jon', 'doe');
+-- CALL ajout_patient('jon', 'doe', '10-10-2010');
+-- CALL ajout_patient('jon', 'doe', '10-10-2010', 50.00);
+-- CALL ajout_patient('jon', 'doe', '10-10-2010', 50.00, 1.60);
+CREATE PROCEDURE ajout_patient(
+    p_nom varchar(64),
+    p_prenom varchar(64),
+    p_naissance date = NULL, 
+    p_poids decimal(5,2) = NULL, -- ajout contrainte
+    p_taille decimal(3,2) = NULL
+)
+AS
+$$ 
+DECLARE
+    id_temp INT := 0;
+BEGIN
+    
+    -- valider les cas limites et lancer une exception
+
+    INSERT INTO patient
+    (nom, prenom)
+    VALUES
+    (p_nom, p_prenom) returning patient.id INTO id_temp;
+
+    INSERT INTO info_personnelle
+    (id_patient, naissance, poids, taille)
+    VALUES
+    (id_temp, COALESCE(p_naissance,'01-01-01'), COALESCE(p_poids, 0), COALESCE(p_taille, 0));
+END
+$$
+LANGUAGE PLPGSQL
+SECURITY DEFINER; -- droits du créateur de la stored proc seront utilisés
+
+
+CREATE FUNCTION t_audit()
+RETURNS trigger
+AS
+$$
+BEGIN
+    INSERT INTO audits
+    (type_action, table_action, utilisateur, date_action)
+--    (type_action, table_action, utilisateur, date_action, ancienne_val, nouvelle_val)
+    VALUES
+    (tg_op, tg_table_name, SESSION_USER, CURRENT_DATE);
+--    (tg_op, tg_table_name, SESSION_USER, CURRENT_DATE, OLD.toJSONB(), NEW.toJSONB());
+RETURN NEW;
+END
+$$
+LANGUAGE PLPGSQL
+
+CREATE TRIGGER on_crud_patient
+    AFTER INSERT OR UPDATE OR DELETE
+    ON patient
+    FOREACH ROW EXECUTE FUNCTION t_audit();
+
+CREATE TRIGGER on_crud_info_perso
+    AFTER INSERT OR UPDATE OR DELETE
+    ON info_personnelle
+    FOREACH ROW EXECUTE FUNCTION t_audit();
+
+
+CREATE ROLE plateforme_web login password 'plateforme_web';
+
+GRANT SELECT ON patient TO plateforme_web;
+GRANT EXECUTE ON PROCEDURE ajout_patient(varchar, varchar, date, decimal, decimal) TO plateforme_web;
+		</pre>
 		<h2>Prise de rendez-vous</h2>
 		<p>
 			Ajouter une table <i>praticien</i> et une table <i>rendez_vous</i> <br>
@@ -84,6 +180,7 @@
 			qui ne soient ni supprimés ni obfusqués. <br>
 			Retirer les droits de consultation directe de la table "patient" au rôle "reception"
 		</p>
+
 		<!-- <section>
 CREATE DATABASE maison_medicale;
 
