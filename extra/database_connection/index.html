@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script type="module" src="../../../scripts/syntaxHighlighting.js"></script>
+    <script type="module" src="../../../scripts/navbar/addNavbar.js"></script>
+    <!-- <script type="module" src="../../../scripts/sidebar/sidebarSQLAvance.js"></script> -->
+    <link rel="stylesheet" href="../../../ressources/style.css" />
+</head>
+
+<body>
+    <main>
+        <h1>Connexion à la base de données</h1>
+        <ol>
+            <li>Introduction</li>
+            <li>Application console .net</li>
+            <li>connexion à la base de données</li>
+            <li>réaliser une requête</li>
+            <li>appeler une fonction ou une procédure stockée</li>
+            <li>solutions, projets et séparation des couches</li>
+            <li>Exercices</li>
+            <li>Conclusion</li>
+        </ol>
+        <hr />
+        <h2 id="introduction">Introduction</h2>
+        <p>
+            Dans ce chapitre, nous allons sortir du domaine des bases de données pour réaliser un court programme
+            permettant de communiquer avec une base de données. <br>
+            Le but de ce chapitre n'est pas d'aller en profondeur dans cette voie, mais simplement d'avoir un premier
+            aperçu de ce que cela implique. <br>
+            Vous irez plus loin dans ce domaine dans vos prochains cours de web et projets. <br>
+            Au terme de ce cours, vous aurez connecté une base de données à un programme, réalisé des requêtes depuis la
+            couche applicative ainsi qu'appelé vos fonctions et procédures stockées. <br>
+            Ceci vous permettra de tester votre base de données de façon plus automatisée.
+        </p>
+        <p class="nota-bene info">
+
+            Pour le suivi de ce chapitre, il est attendu que l'étudiant dispose d'une base de données postgresql. <br>
+            Il est nécessaire que l'étudiant ai abordé les bases de la programmation et dispose de visual studio ou d'un
+            autre moyen d'écrire et de compiler des programmes en .net <br>
+            Il est admis que les étudiants auront des connaissances variées en C# et .net. Ainsi, ce cours est écrit
+            avec l'intention d'accommoder ces différences de niveau.
+        </p>
+
+        <h2 id="application-console-.net">Application console .net</h2>
+        <p>
+            Notre programme sera réalisée avec le framework .net en utilisant le langage de programmation C#. <br>
+            Commençons par créer, comme le souhaite la tradition, un Hello world.
+        </p>
+        <img src="./ressources/creation_projet_01.jpg" alt="écran sélection de projet" style="max-width: 100%;">
+        <img src="./ressources/creation_projet_02.jpg" alt="option créer un projet" style="max-width: 100%;">
+        <p>
+            Sur l'écran de sélection de projet, se diriger vers la section de droite et sélectionner "Créer un projet"
+        </p>
+        <img src="./ressources/creation_projet_03.jpg" alt="sélection type de projet" style="max-width: 100%;">
+        <p>Si nécessaire, utilisez la recherche pour sélectionner le type de projet "Application console" <br>
+            Attention à bien prendre le type de projet utilisant le C# et ne comportant pas la mention ".net framework"
+            (ancien framework)</p>
+        <img src="./ressources/creation_projet_04.jpg" alt="configuration du projet" style="max-width: 100%;">
+        <p>
+            Configurez votre projet pour utiliser .NET 8.0 (d'autres versions pourraient avoir des différences mineures
+            à majeures par rapport au code présenté) et, sur l'écran suivant, donnez un nom à votre projet.
+        </p>
+        <img src="./ressources/projet_0.jpg" alt="hello world" style="max-width: 100%;">
+        <p>Voilà! Vous devriez avoir votre Hello world déjà codé dans votre éditeur et semblable à ceci : </p>
+        <pre class="code-snippet block cs">Console.WriteLine("Hello, World!");</pre>
+        <p>Notez la différence avec votre cours de C. <br>
+            Ici, nous n'utilisons pas la fonction printf, mais une méthode de la classe Console disponible par défaut
+            dans les applications consoles en .net <br>
+            En argument, une string "Hello world" est donnée. <br>
+            Nous utiliserons le même principe pour afficher les résultats de notre connexion à la base de données.
+        </p>
+        <p>Lançons le programme en mode débug avec cette icône ou la touche F5</p>
+        <img src="./ressources/projet_1.jpg" alt="lancement de programme" style="max-width: 100%;">
+        <p>
+            Attention que la touche juste à droite, une flèche verte vide, lance l'application sans mode debug. <br>
+            Si vous désirez atteindre un break point, ce ne sera pas possible si vous lancez l'application de cette
+            manière.
+        </p>
+        <h2 id="connexion-a-la-base-de-donnees">Connexion à la base de données</h2>
+        <p>Pour nous connecter à une base de données, la première étape, cruciale... Est d'avoir une base de données.
+            <br>
+            Dans ce chapitre, nous allons rester sur quelque chose de très simple avec peu de tables et peu de
+            configurations.
+        </p>
+        <pre class="code-snippet block sql">CREATE DATABASE test_connexion;</pre>
+        <p>Ceci suffira pour notre base de données. <br>
+            Ajoutons une table ainsi qu'un record pour vérifier que ton fonctionne comme prévu</p>
+        <pre class="code-snippet block sql">CREATE TABLE utilisateur(
+pseudo varchar(7) PRIMARY KEY,
+prenom varchar(64) NOT NULL,
+nom varchar(64) NOT NULL,
+animal_prefere varchar(64)
+);
+
+INSERT INTO utilisateur
+(pseudo, prenom, nom, animal_prefere)
+VALUES
+('JOSM001', 'John', 'Smith', 'Chat'),
+('JOSM002', 'Joseph', 'Smith', NULL);</pre>
+        <p>Normalement, rien qui doit vous surprendre à ce niveau. <br>
+            Deux particularités : le pseudo est composé des deux premières lettres du nom et prénom plus un entier
+            incrémental et l'animal préféré est nullable
+        </p>
+        <p>Maintenant, il va falloir configurer votre projet C# pour pouvoir se connecter à cette nouvelle base de
+            données.</p>
+        <p>Tout d'abord, nous allons avoir besoin d'un data provider. <br>
+            Dans notre cas, il s'agira du package Npgsql qui nous permettra de nous connecter et de communiquer avec la
+            base de données. <br>
+            Pour ajouter un package, sur visual studio, vous pouvez allez dans le menu "Projet/Gérer les packages NuGet"
+            et rechercher le package Npgsql</p>
+        <img src="./ressources/projet_02.jpg" alt="menu nuget" style="max-width: 100%;">
+        <img src="./ressources/projet_03.jpg" alt="recherche package" style="max-width: 100%;">
+        <img src="./ressources/projet_04.jpg" alt="installation package" style="max-width: 100%;">
+        <p>
+            Maintenant que le package est téléchargé, nous allons devoir le configurer en lui donnant toutes les
+            informations nécessaires pour se connecter à notre base de données. <br>
+            Pour cela, nous allons utiliser une "connection string" : Une chaine de caractère formatée de telle manière
+            a être lue par le data provider pour y trouver les informations nécessaire de connexion. <br>
+            Pour l'instant, faisons ça en dur dans notre code.
+        </p>
+        <p class="nota-bene danger">Ne jamais faire ça en dur dans votre code. <br>
+            Ici, l'idée est de présenter rapidement un code fonctionnel. <br>
+            Avoir ces informations de connexion dans votre code vous expose à des risques de sécurité.
+        </p>
+        <pre class="code-snippet block cs">
+//Création d'une variable de type string
+//Il s'agit de notre connection string disposant des paramètres de connexion
+string connectionString = "Host=localhost;Username=postgres;Password=toor;Database=test_connexion";
+</pre>
+        <p>
+            Ce code est la version minimal nécessaire pour créer une connection string. <br>
+            Elle présente l'adresse de l'host (avec le port si nécessaire), <br>
+            L'utilisateur pour la connexion, <br>
+            Le mot de passe qui sera utilisé, <br>
+            La base de données sur laquelle se connecter. <br>
+            Il est possible de renseigner plus d'informations lors de la connexion. Pour cela, se référencer à <a
+                href="https://www.npgsql.org/doc/connection-string-parameters.html">la documentation du package
+                utilisé</a>
+        </p>
+        <p>
+            Une fois que cette connection string est prête, nous allons créer une instance de notre provider qui sera
+            configuré avec notre connection string.
+        </p>
+        <pre class="code-snippet block cs">//D'abord, nous importons le package pour pouvoir en utiliser les classes
+using Npgsql;
+
+//Création d'une variable de type string
+//Il s'agit de notre connection string disposant des paramètres de connexion
+string connectionString = "Host=localhost;Username=postgres;Password=toor;Database=test_connexion";
+
+//On crée une instance de NpgsqlDataSourceBuilder avec, en argument, notre connection string
+//Il ne s'agit pas de notre provider, uniquement d'un objet permettant de créer correctement celui-ci
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+
+//Une fois ce builder créé, nous pourrions l'utiliser pour ajouter des options supplémentaires
+//Et finaliser son instanciation avec sa méthode Build();
+//Par exemple, comme ceci
+//dataSourceBuilder
+//    .ConfigureJsonOptions(default)
+//    .EnableParameterLogging()
+//    .EnableDynamicJson()
+//    .Build();
+
+//Pour notre exemple, nous n'avons pas besoin de configuration supplémentaire.
+await using var dataSource = dataSourceBuilder.Build();
+</pre>
+        <p>Nous sommes maintenant capable de nous connecter à notre base de données <br>
+            Mais avant de continuer, notez deux mot-clés utilisés sur la dernière ligne de notre code C# : await et
+            using</p>
+        <p>
+            await permet de gérer du code asynchrone. <br>
+            Dans une exécution normale de notre code, comme dans vos cours de C, nous avançons ligne par ligne et nous
+            exécutons, jusqu'à sa complétion, chaque ligne. <br>
+            Ceci a normalement un effet "bloquant". Les ressources sont utilisées pour cette opération et ne sont pas
+            disponible pour autre chose tant que cette opération n'est pas terminée. <br>
+            Ici, la méthode dataSourceBuilder.Build(); est dite "asynchrone". <br>
+            Le code asynchrone n'est pas "bloquant". Nous allons réaliser une opération, souvent plutôt longue,
+            éventuellement avec des moments d'attentes (feedback lors de connexion, par exemple) et, pendant ce temps,
+            nous pouvons allouer des ressources à d'autres choses <br>
+            Si nous n'utilisons pas le mot clé "await", la prochaine ligne de code est donc exécutée "sans attendre" la
+            complétion de la ligne asynchrone. <br>
+            Ceci permet, par exemple, de réaliser des appels à des serveurs en parallèle. Vous savez qu'obtenir les
+            réponses du serveur va prendre du temps. Mais ce temps ne vous prend pas de ressources. Alors autant les
+            allouer à d'autres opérations. Vous commencez par lancer les appels au serveur, vous réaliser vos propres
+            opérations et, quand le serveur vous aura répondu, il sera toujours temps d'utiliser le résultat. <br>
+            Imaginez vous en train de faire un petit déjeuner avec oeuf à la coque et café. <br>
+            Lancer la machine à café, mettre l'eau à chauffer pour les oeufs... Sont des opérations asynchrones que vous
+            ne souhaitez probablement pas attendre sans rien faire. Vous pourriez plutôt préparer vos mouillettes
+            pendant ce temps. <br>
+            Mais alors, si le but est de lancer plusieurs opérations en même temps, pourquoi utiliser le mot-clé await?
+            <br>
+            Vous pourriez ne pas en avoir besoin ! Dans l'improbable cas que tout se déroule comme prévu à chaque fois.
+            <br>
+            Si votre eau est bouillante quand vous avez terminés vos mouillettes, vous pouvez mettre vos oeufs à cuir
+            sans attendre. Mais dans le cas ou votre eau ne serait pas encore prête, vous attendriez. <br>
+            C'est pareil ici. <br>
+            Vous n'avez besoin d'utiliser await qu'au moment auquel vous savez que vous avez vraiment besoin d'attendre
+            le résultat avant de réaliser la suite. <br>
+            Il s'avère que dans le très petit bout de code que nous allons réaliser, ce sera systématiquement à l'appel
+            de la méthode asynchrone.
+        </p>
+        <p>
+            Pour ce qui est du "using", dans ce cas, il permet de libérer automatiquement des ressources. <br>
+            Souvenez-vous, en première année, vous deviez allouer et libérer la mémoire utilisée. <br>
+            Ici, using permet d'automatiser ce processus. <br>
+            Si votre objet implémente l'interface IDisposable, le mot clé using ajouté à la création de la ressource
+            aura pour effet de libérer les ressources à la sortie du bloc de code courant. (dans notre cas, cette fin de
+            bloc représente aussi la fin de notre programme) <br>
+            Lors de la manipulation de connexions aux base de données, il sera important de correctement libérer les
+            ressources une fois qu'elles ne sont plus utilisées.
+        </p>
+        <h2 id="realiser-une-requete">Réaliser une requête</h2>
+        <p>
+            Nous y sommes presque, nous avons tout ce qui est nécessaire pour se connecter à notre base de données et la
+            dite db <br>
+            Il nous suffit d'ajouter quelques lignes :
+        </p>
+        <pre class="code-snippet block cs">
+//Création d'une commande. À ce stade, la db n'a pas encore reçue la requête.
+await using var command = dataSource.CreateCommand("SELECT * FROM utilisateur");
+//Ici, nous exécutons la requête. Mais pour en exploiter les résultats, nous allons devoir manipuler le reader
+await using var reader = await command.ExecuteReaderAsync();
+
+//Et lire chaque ligne du dataset retourné.
+//Pour ce faire, la méthode ReadAsync (et read) va faire deux choses
+//Elle va retourner un boolean permettant de savoir si nous avons encore des lignes à lire (true) ou pas (false)
+while (await reader.ReadAsync())
+{
+    //Elle va aussi déplacer le reader sur la prochaine ligne du dataset.
+    //Permettant de récupérer les valeurs correspondantes
+    Console.Write(reader.GetString(0));
+    Console.Write(" ");
+    Console.Write(reader.GetString(1));
+    Console.Write(" ");
+    Console.WriteLine(reader.GetString(2));
+}
+</pre>
+        <p>
+            Exécutez ce code et voyez le résultat. <br>
+            Chaque ligne de votre table est lue et affichée dans la console. <br>
+        </p>
+        <p>C'est fait? Modifiez maintenant le code en ajoutant ces lignes dans le while</p>
+        <pre class="code-snippet block cs">
+Console.Write(" ");
+Console.WriteLine(reader.GetString(3));
+</pre>
+        <p>Aïe, que s'est-il passé?</p>
+        <p>Souvenez-vous, dans notre table, nous avons spécifié que les 3 premiers champs étaient non nullable. <br>
+            Nous avons par contre laissé le champ "animal préféré" comme nullable et nous avons pris soin d'ajouter une
+            valeur nulle pour l'un des enregistrements. <br>
+            Ici, en utilisant la méthode GetString() du reader, nous nous exposons a un risque d'erreur si la valeur est
+            nulle.
+        </p>
+        <p>
+            Pour résoudre ce problème, nous allons devoir traiter correctement les types de retour de nos requêtes. <br>
+            Une première chose va être de spécifier explicitement les colonnes récupérées (plutôt que d'utiliser le
+            joker *) dans notre requête. <br>
+            Ainsi, nous pourrons au moins savoir à quoi nous attendre.
+        </p>
+        <pre class="code-snippet block cs">
+await using var command = dataSource.CreateCommand("SELECT pseudo, prenom, nom, animal_prefere, 4 FROM utilisateur");
+</pre>
+        <p>
+            Maintenant que nous savons quelles colonnes sont récupérées et dans quel ordre, nous allons pouvoir
+            spécifier le type attendu. <br>
+            Et vous aurez bien entendu remarqué le "4" qui s'est glissé dans ma requête. Pourquoi à votre avis? <br>
+            Modifiez la récupération des valeurs 3 et 4 avec ces lignes et prenez soin de plancer un breakpoint à ce
+            niveau pour prendre connaissance de la valeur de retour
+        </p>
+        <pre class="code-snippet block cs">
+var animalPrefere = reader.GetValue(3);
+var entier = reader.GetValue(4);
+</pre>
+        <p>
+            GetValue, à la différence de GetString, retourne un objet. <br>
+            On parlera ici de boxing (de box, la boite. Pas le sport boxe) <br>
+            La valeur retournée est une string ou un entier ou un autre type... Mais englobé dans un objet. <br>
+            Il faudra d'ailleurs réaliser un "unboxing" pour manipuler le type primitif boxé. Essayez d'ajouter cette
+            ligne de code et lisez l'erreur que vous donne le compilateur
+
+        </p>
+        <pre class="code-snippet block cs">entier = entier + 1; </pre>
+        <p>
+            Et qu'est-ce qu'il se passe quand on dispose d'un null? <br>
+            Pareil, un objet. Mais cette fois-ci, de type DBNull... Ce qui n'était pas compatible avec la méthode
+            "GetString". <br>
+            Alors rassurez-vous, il est tout à fait possible d'utiliser le GetString ainsi que le GetBoolean,
+            GetDecimal,... Tant que vous êtes certains de ne pas tomber sur un null.
+        </p>
+        <p class="nota-bene danger">Il s'agit bien du type DBNull et pas simplement de la valeur "null". Un test de ce
+            genre ne fonctionnera donc pas "if(reader.GetValue(x) == null)"</p>
+    </main>
+</body>
+
+</html>

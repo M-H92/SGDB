@@ -7,6 +7,7 @@ const _linkDefinitions = [
   { name: "Home", url: `${ROOT_PATH}` },
   { name: "Intro SQL", url: `${ROOT_PATH}/introduction_sql/chapters/1` },
   { name: "SQL avancé", url: `${ROOT_PATH}/advanced_sql/chapters/1` },
+  { name: "Extra", url: `${ROOT_PATH}/extra/database_connection` },
   { name: "News", url: `${ROOT_PATH}/what_s_new` },
   { name: "Todo", url: `${ROOT_PATH}/todo` },
 ];
