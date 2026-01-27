@@ -13,7 +13,7 @@
 
 <body>
     <main>
-        <h1>Fonctions - Exercices</h1>
+        <h1>Procédures - Exercices</h1>
         <ol>
             <li>Introduction</li>
             <li>Gestion client</li>
@@ -141,7 +141,8 @@ END
 $$
 LANGUAGE PLPGSQL;
 
-CREATE OR REPLACE PROCEDURE update_client_phone_mail(t_numcli int,t_num int,t_mail varchar(255))
+CREATE OR REPLACE PROCEDURE 
+    update_client_phone_mail(t_numcli int,t_num int,t_mail varchar(255))
 AS
 $$
 BEGIN
@@ -171,7 +172,8 @@ BEGIN
 END
 $$
 LANGUAGE PLPGSQL;
-CREATE OR REPLACE PROCEDURE update_client_name(t_numcli int,t_pren varchar(255),t_nom varchar(255))
+CREATE OR REPLACE PROCEDURE 
+    update_client_name(t_numcli int,t_pren varchar(255),t_nom varchar(255))
 AS
 $$
 BEGIN
@@ -222,9 +224,9 @@ BEGIN
 		last_inserted := 400001;
 	ELSIF last_inserted >= 409999
 	THEN
-		RAISE EXCEPTION SQLSTATE '22003'
-			USING MESSAGE = 'Le numéro de compte ne peut pas dépasser 40999',
-			HINT = 'Vérifier avec votre responsable CRM si le compte max est atteint';
+      RAISE EXCEPTION SQLSTATE '22003'
+        USING MESSAGE = 'Le numéro de compte ne peut pas dépasser 40999',
+        HINT = 'Vérifier avec votre responsable CRM si le compte max est atteint';
 	ELSE
 		last_inserted := last_inserted+1;
 	END IF;

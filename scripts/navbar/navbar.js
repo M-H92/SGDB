@@ -12,6 +12,7 @@ class Navbar {
     nav.id = "the-nav-bar";
     nav.classList.add("container");
     nav.classList.add("flex-center");
+    nav.classList.add("print-hide");
     this.element = nav;
   }
   attach(element = "body") {

@@ -96,9 +96,15 @@ BEGIN
     (p_nom, p_prenom) returning patient.id INTO id_temp;
 
     INSERT INTO info_personnelle
-    (id_patient, naissance, poids, taille)
+    	(id_patient, 
+		naissance, 
+		poids, 
+		taille)
     VALUES
-    (id_temp, COALESCE(p_naissance,'01-01-01'), COALESCE(p_poids, 0), COALESCE(p_taille, 0));
+		(id_temp, 
+		COALESCE(p_naissance,'01-01-01'), 
+		COALESCE(p_poids, 0), 
+		COALESCE(p_taille, 0));
 END
 $$
 LANGUAGE PLPGSQL
@@ -135,7 +141,12 @@ CREATE TRIGGER on_crud_info_perso
 CREATE ROLE plateforme_web login password 'plateforme_web';
 
 GRANT SELECT ON patient TO plateforme_web;
-GRANT EXECUTE ON PROCEDURE ajout_patient(varchar, varchar, date, decimal, decimal) TO plateforme_web;
+GRANT 
+	EXECUTE 
+ON 
+	PROCEDURE ajout_patient(varchar, varchar, date, decimal, decimal) 
+TO 
+	plateforme_web;
 		</pre>
 		<h2>Prise de rendez-vous</h2>
 		<p>

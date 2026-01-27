@@ -178,15 +178,15 @@ RETURNS TRIGGER
 AS 
 $$
 BEGIN
-	INSERT INTO log_nageur
-	(utilisateur, type_action, date_action, description)
-	VALUES 
-		((SELECT CURRENT_USER), 
-		'UPDATE', 
-		(SELECT CURRENT_DATE), 
-		'UPDATE nageur ' || OLD.id || ' SET nom FROM ' || OLD.nom || ' TO ' || NEW.nom);
+  INSERT INTO log_nageur
+  (utilisateur, type_action, date_action, description)
+  VALUES 
+    ((SELECT CURRENT_USER), 
+    'UPDATE', 
+    (SELECT CURRENT_DATE), 
+    'UPDATE nageur ' || OLD.id || ' SET nom FROM ' || OLD.nom || ' TO ' || NEW.nom);
 
-	RETURN NEW;
+  RETURN NEW;
 
 END;
 $$

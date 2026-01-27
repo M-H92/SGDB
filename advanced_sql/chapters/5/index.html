@@ -148,7 +148,11 @@ LEFT JOIN article AS a
 	ON l.id_article = a.id
 WHERE a.id = 1;
 			
-SELECT a.nom, l.*, SUM(quantite) OVER (PARTITION BY a.id ORDER BY emplacement_x ASC)  FROM lot AS l
+SELECT 
+	a.nom, 
+	l.*, 
+	SUM(quantite) OVER (PARTITION BY a.id ORDER BY emplacement_x ASC)  
+FROM lot AS l
 LEFT JOIN article AS a 
 	ON l.id_article = a.id
 WHERE a.id = 1;
@@ -272,11 +276,20 @@ VALUES
 SELECT * FROM tache;
 
 WITH RECURSIVE taches(id, id_parent, description, temps_requis) AS (
-	SELECT id, id_parent, description || '', temps_requis FROM tache WHERE id = 6
+  SELECT 
+    id, 
+  	id_parent, 
+	description || '', 
+	temps_requis 
+  FROM tache WHERE id = 6
   UNION ALL
-  	SELECT tt.id, tt.id_parent, (t.description || tt.description), tt.temps_requis + t.temps_requis
-  	FROM taches AS t, tache as tt
-  	WHERE tt.id = t.id_parent
+  SELECT 
+    tt.id, 
+	tt.id_parent, 
+	(t.description || tt.description), 
+	tt.temps_requis + t.temps_requis
+  FROM taches AS t, tache as tt
+  WHERE tt.id = t.id_parent
 ) SELECT id, temps_requis, description FROM taches;
 		</pre>
 		<p>

@@ -5,16 +5,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Première DB</title>
-  <script
-    type="module"
-    src="./../../../scripts/sidebar/addSidebar.js"
-  ></script>
-  <script
-    type="module"
-    src="./../../../scripts/syntaxHighlighting.js"
-  ></script>
-    <script type="module" src="./../../../scripts/navbar/addNavbar.js"></script>
-    <link rel="stylesheet" href="./../../../ressources/style.css" />
+  <script type="module" src="./../../../scripts/sidebar/addSidebar.js"></script>
+  <script type="module" src="./../../../scripts/syntaxHighlighting.js"></script>
+  <script type="module" src="./../../../scripts/navbar/addNavbar.js"></script>
+  <link rel="stylesheet" href="./../../../ressources/style.css" />
 </head>
 
 <body>
@@ -45,7 +39,23 @@
       <br />
       Ceux-ci seront détaillés plus avant dans la suite de ce cours.
     </p>
+    <p class="nota-bene info">
+      Nous utiliserons Postgres et PGAdmin dans ce cours. <br>
+      Il n'est pas nécessaire d'utiliser un outil comme PGAdmin pour utiliser une base de données Postgres. <br>
+      Nous pourrions directement utiliser la console mais, par simplicité, ce ne sera pas fait dans ce cours.
+    </p>
     <h2 id="creation-db">Créer une base de données</h2>
+    <p>
+      Mettons nous en situation : la dernière fois que vous avez été chez le vétérinaire avec votre animal de companie,
+      il vous a mis en garde sur le poids de votre chat et vous a demandé de le garder à l'oeil. <br>
+      Vous décidez de mettre en place une base de données qui contiendra les différentes pesées (date et poids) de votre
+      chat.
+    </p>
+    <p class="nota-bene info">
+      Créer une base de données pour si peu est, très clairement, une solution déraisonnable. <br>
+      Vous seriez tout aussi bien logé avec un crayon et du papier... <br>
+      Mais comme beaucoup d'exemples dans ce cours, il faudra savoir mettre ces détails de côté.
+    </p>
     <p>
       Lancez le programme pgAdmin et connectez-vous. <br />
       À gauche se situe <strong>l'object explorer</strong> avec lequel vous pourrez facilement naviguer entre vos bases
@@ -53,15 +63,17 @@
       Naviguez dans celui-ci en ouvrant l'élément <strong>database</strong>.
       <br />
       Là, vous devriez voir une première base de données nommée
-      <strong>postgre</strong> <br />
+      <strong>postgres</strong> <br />
       À l'aide d'un clique droit sur cette dernière, ouvrez le menu contextuel et sélectionnez l'option <strong>Query
         Tool</strong> <br />
       Le query tool vous permet d'écrire vos
       <strong title="requêtes" class="tooltip">queries</strong>
       <strong>SQL</strong> et ainsi de communiquer avec votre système de gestion de base de données.
     </p>
+    <img src="./ressources/query_tool.jpg" alt="ouverture query tool">
     <p>Dans le query tool, entrez la ligne de code suivante pour créer votre première base de données</p>
     <pre class="code-snippet block sql">CREATE DATABASE fat_cat_clinic;</pre>
+    <img src="./ressources/create_database.jpg" alt="écriture d'une query dans le query tool">
     <p>
       Pour ceux qui parlent un peu anglais, vous comprendrez rapidement ce dont il est question ici. <br />
       Nous <i>créons</i> une <i>base de données</i> dont le nom est fat_cat_clinic. Le <kbd>;</kbd> signifiant la fin de
@@ -77,19 +89,26 @@
       <kbd>F5</kbd> ou en utilisant le bouton d'exécusion de requête représenté par un petit triangle et situé juste au
       dessus du query tool.
     </p>
+    <img src="./ressources/execute_script.jpg" alt="exécution d'une query dans le query tool">
     <p>
       Faites un clique droit sur l'objet <strong>database</strong> de <strong>l'explorateur d'objet</strong> et
       sélectionnez l'option <strong>refresh</strong> pour voir s'affichez votre première
       base de données. <br />
       Félicitations
     </p>
+    <img src="./ressources/created_database.jpg" alt="base de données créée">
     <h2 id="creation-table">Crée une table</h2>
     <p>
-      Pour fonctionner, votre
+    </p>
+    <p>
+      Vous avez maintenant votre base de données, mais vous ne pouvez pas encore en faire grand chose. Pour
+      fonctionner correctement, votre
       <abbr class="db-tooltip" title="DataBase => Base de données">DB</abbr> va avoir besoin de <strong>tables</strong>.
     </p>
-    <p>Une table est une <strong>collection de données structurées</strong>. C'est à dire, un tableau dans lequel ranger
-      vos données selon une structure définie en amont.</p>
+    <p>
+      Une table est une <strong>collection de données structurées</strong>. C'est à dire, un tableau dans lequel ranger
+      vos données selon une structure définie en amont.
+    </p>
     <p>
       Dans une table, on pourra parler de <strong>colonnes</strong> qui seront nommées et définiront, entre autre, le
       <strong>type de donnée</strong>
@@ -97,6 +116,12 @@
       et de <strong>rangées</strong> représentant chacunes un enregistrement de données au format précisé par les
       colonnes.
     </p>
+    <p>
+      Pour ceux qui utiliseraient des programmes comme excel, imaginez une base de données comme un classeur excel. <br>
+      Tant que vous n'y ajoutez pas de pages, vous ne pouvez pas faire grand chose avec. <br>
+      Les tables des bases de données peuvent d'ailleur sembler similaire à un tableau réalisé sur excel.
+    </p>
+    <img src="./ressources/comparaison_excel.jpg" alt="comparaison avec excel">
     <p>
       Pour bien comprendre, nous allons créer une table dans la base de données fat_cat_clinic. Le but de cette table
       sera d'enregistrer régulièrement les pesées de notre animal. Nous allons donc
@@ -120,12 +145,14 @@
       <a href="https://www.postgresql.org/docs/current/datatype.html"> ce lien vers la documentation officielle </a>.
     </p>
     <p>
-      Pour l'instant, vous pouvez vous contentez de lire, comprendre, copier et éxecuter le code ci-dessous dans le
+      Pour l'instant, vous pouvez vous contentez de lire, comprendre, copier et exécuter le code ci-dessous dans le
       <strong>query tool</strong> de
       <strong>pgAdmin</strong>
     </p>
+    <p class="nota-bene info">Attention à bien être connecté sur votre nouvelle base de données pour exécutrer ce code
+      ! (cette information est disponible au dessus de l'éditeur de requête)</p>
+    <img src="./ressources/connexion_bonne_db.jpg" alt="connexion à la bonne base de données">
     <pre class="code-snippet block sql">
-USE fat_cat_clinic; 
 CREATE TABLE weight( 
   weight decimal(3,1), 
   date date 
@@ -133,19 +160,10 @@ CREATE TABLE weight(
     <p>
       Détaillons ensemble ce code : <br />
     </p>
-    <pre class="code-snippet block sql">USE fat_cat_clinic;</pre>
-    <p>
-      permet de spécifier quelle base de données utiliser. Si vous ouvrez le <strong>query tool</strong> via la base de
-      données ciblée, cette portion de
-      code n'est pas nécessaire. Néanmoins, n'étant pas problèmatique et permettant de se prémunir d'éventuelles
-      erreurs, il sera de bon goût de l'utiliser <br />
-    </p>
     <pre class="code-snippet block sql">CREATE TABLE weight(</pre>
     <p>
       permet, vous l'aurez compris, de créer une <strong>table</strong> dont le nom sera <i>weight</i> la parenthèse
-      permet de
-      spécifier ce que
-      contiendra cette table <br />
+      permet de spécifier ce que contiendra cette table <br />
     </p>
     <pre class="code-snippet block sql">weight decimal(3,1)</pre>
     <p>
@@ -163,12 +181,20 @@ CREATE TABLE weight(
       de type date <br />
       N'oubliez pas de fermer la parenthèse et d'ajouter un <kbd>;</kbd>
     </p>
+    <p class="nota-bene info">
+      Dans l'outils pgadmin, les tables de votre base de données peuvent sembler un peu cachées la première fois que
+      vous souhaitez y accéder. <br>
+      Pour voir le résultat de votre travail, allez dans les points de menu suivants :
+      databases/votre_db/schemas/public/tables <br>
+      Si ce point de menu est encore vide, pensez à rafraichir le point de menu.
+    </p>
     <h2 id="insert-record">Ajouter des enregistrements</h2>
     <p>
-      Maintenant que notre <srong>table</srong> weight est créée, nous allons la
-      <span title="Du wiktionnaire : (Bases de données) Alimenter (une table, une base de données) en informations.">
-        populer </span>
-      avec quelques informations.
+      Maintenant que notre <srong>table</srong> weight est créée, nous pouvons commencer à ajouter des données pour le
+      poids de notre chat. <br>
+      Nous allons la <span
+        title="Du wiktionnaire : (Bases de données) Alimenter (une table, une base de données) en informations.">
+        "populer" </span> avec quelques informations.
     </p>
     <p>Comme pour le point précédent, lisez attentivement ce code et exécutez le</p>
     <pre class="code-snippet block sql">
@@ -232,11 +258,13 @@ INSERT INTO weight (weight, date)
       Pratique pour les tests, mais à ne pas utiliser de manière systématique dans vos projets de développement. Nous en
       reparlerons plus tard.
     </p>
+    <h3>Order by</h3>
     <p>
-      Pour voir l'évolution dans le temps du poids du chat observé, il serait intéressant de trier les résultats par
-      date. <br />
+      Avant de retourner voir notre vétérinaire, il serait intéressant de récupérer nos données "triées" par date pour
+      pouvoir
+      visualiser plus facilement l'évolution du poids du chat. <br />
       Bonne nouvelle, c'est possible avec la paire de mots clés
-      <code lang="sql">ORDER BY</code>.
+      <code lang="sql">"ORDER BY"</code>.
     </p>
     <pre class="code-snippet block sql">
 SELECT * FROM weight
@@ -252,11 +280,186 @@ SELECT * FROM weight
 ORDER BY date DESC;</pre>
     <p>Pratique ! Et cela ne s'applique pas qu'aux dates ! Même si dans notre cas, trier par poids semble moins
       pertinent, je vous invite à essayer.</p>
+    <h3>Poids max, min et moyen</h3>
+    <p>De la même manière, d'autres informations seraient intéressantes à récupérer avant d'aller chez notre
+      vétérinaire. <br>
+      Par exemple, le poids maximum ou minimum de notre chat.
+    </p>
+    <p>
+      Pour ce faire, nous pourrions utiliser plusieurs techniques. <br>
+      Par exemple, trier sur le poids en ascendant ou descendant et ne conserver qu'un unique résultat retourné par la
+      base de données. <br>
+      Cela fonctionnerait, mais il y a mieux. <br>
+      Nous avons vu qu'il était possible de spécifier les colonnes souhaitées dans la valeur de retour attendue. <br>
+      Il est en réalité possible d'appliquer des modifications à ces résultats avec, par exemple, des petits calculs
+      comme ceci :
+    </p>
+    <pre class="code-snippet block sql">
+SELECT weight + 10, date FROM weight
+ORDER BY date;</pre>
+    <p>
+      Certe, pas très utile dans notre cas... Mais comme dans vos cours de programmations, notez qu'il est aussi
+      possible d'utiliser des fonctions! <br>
+      Celles qui nous intéressent ici sont les suivantes : MAX, MIN et AVG
+    </p>
+    <pre class="code-snippet block sql">SELECT MAX(weight), MIN(weight) FROM weight;</pre>
+    <p>Après exécution, nous remarquons une particularité : plutôt que d'avoir toutes les pesées de notre table, nous ne
+      disposons que d'une unique réponse. <br>
+      Ceci est dû à l'utilisation de fonctions dites "d'agrégation". <br>
+      Une fonction d'agrégation, comme son nom l'indique, va agréger les résultats en une unique réponse. <br>
+      Ceci crée un problème... Il n'est "plus possible" d'ajouter la date au résultat... Essayons : </p>
+    <pre class="code-snippet block sql">SELECT MAX(weight), MIN(weight), date FROM weight;</pre>
+    <p>Nous obtenons l'erreur suivante : </p>
+    <img src="./ressources/erreur_aggregat.jpg" alt="erreur de colonne non reprise dans l'agrégat">
+    <p>Qu'est-ce que ça veut dire? <br>
+      Comme dit précédement, nous avons "gommés" les différentes lignes de résultat de tel manière à obtenir un unique
+      résultat. <br>
+      Pour cette raison, on ne peut plus récupérer les données spécifiques des différentes lignes. <br>
+      Si je souhaitais récupérer la date, ici, laquelle devrais-je prendre? <br>
+      Celle de la plus petite pesée? De la plus grande? La première date récupérée? Ça n'aurait pas beaucoup de sens.
+      <br>
+      Ainsi, on ne peut plus la récupérer.
+    </p>
+    <p>
+      Il existe néanmoins une solution que le message d'erreur nous invite à explorer : "la colonne doit apparaître
+      dans la clause GROUP BY" <br>
+      Qu'est-ce que ça veut dire? <br>
+      Il est possible quand on souhaite faire des agrégats, d'utiliser une clause "GROUP BY". <br>
+      Cette close va permettre, en référençant une colonne, de sectionner les éléments d'une tables en plus petites
+      portions sur laquelle exécuter
+      nos opérations. <br>
+      Essayons :
+    </p>
+    <pre class="code-snippet block sql">
+SELECT MAX(weight), MIN(weight), date FROM weight
+GROUP BY date;
+    </pre>
+    <p>
+      Le résultat semble... Peut satisfaisant... <br>
+      Ce qu'il serait intéressant, c'est d'avoir aussi le poids à la date de pesée. <br>
+      Ainsi, nous pourrions faire la différence entre le poids max et le poids courant. <br>
+      Mais si nous essayons :
+    </p>
+    <pre class="code-snippet block sql">
+SELECT MAX(weight), MIN(weight), weight, date FROM weight
+GROUP BY date;
+    </pre>
+    <p>
+      Même erreur qu'avant... <br>
+      Nous pouvons tenter de résoudre le problème avec la même solution qu'avant :
+    </p>
+
+    <pre class="code-snippet block sql">
+SELECT MAX(weight), MIN(weight), weight, date FROM weight
+GROUP BY date, weight;
+    </pre>
+    <p>
+      Et à première vue, ça semble fonctionner... <br>
+      Sauf si on regarde les valeurs des max et min... <br>
+      Avec cette requête, ce que nous faisons réellement, c'est de séparer les données récupérées en petits groupes
+      (GROUP BY). Petits groupes qui se basent sur la date et le poids... <br>
+      On cherche donc, pour chaque groupe, le min et le max. Mais en séparant les données en autant de groupe que de
+      données... Pas très pratique (dans notre cas)... <br>
+      Nous verons comment résoudre ceci au prochain chapitre.
+    </p>
+    <p class="nota-bene info">
+      En vrac, voici quelques fonctions d'aggrégation : MIN, MAX,
+      <abbr title="Average => moyenne">AVG</abbr>, <abbr title="Somme">SUM</abbr>, COUNT. <br />
+      Une liste plus complète est disponible
+      <a href="https://www.postgresql.org/docs/16/functions-aggregate.html"> ici </a>
+    </p>
+    <h2>Exercices</h2>
+    <h3>Création de table - 1</h3>
+    <p>
+      En vous basant sur <a href="https://www.postgresql.org/docs/current/datatype.html">la documentation
+        officielle</a>, rechercher les types les plus adéquats pour créer une table dont le but est de contenir le nom
+      et le prénom d'une personne. <br>
+      Justifiez votre choix
+    </p>
+    <h3>Création de table - 2</h3>
+    <p>
+      En vous basant sur <a href="https://www.postgresql.org/docs/current/datatype.html">la documentation
+        officielle</a>, rechercher les types les plus adéquats pour créer une table dont le but est de contenir les
+      résultats d'examen d'un étudiant. <br>
+      Justifiez votre choix
+    </p>
+    <h3>Création de table - 3</h3>
+    <p>
+      En vous basant sur <a href="https://www.postgresql.org/docs/current/datatype.html">la documentation
+        officielle</a> et des recherches internet, rechercher les types les plus adéquats pour créer une table dont le
+      but est de récupérer le nom et l'âge d'un animal de companie. <br>
+      Justifiez votre choix
+    </p>
+    <h3>Création de table - 4</h3>
+    <p>
+      Créer une table "article" capable de faire fonctionner la requête suivante :
+    </p>
+    <pre class="code-snippet block sql">
+INSERT INTO article
+	(nom, prix)
+VALUES
+	('pain au chocolat', 2.00),
+	('croissant au beurre', 2.00),
+	('croissant au chocolat', 2.50);
+    </pre>
+    <h3>Création de table - 5</h3>
+    <p>Est-ce que le code suivant compile? Expliquez</p>
+    <pre class="code-snippet block sql">
+CREATE livre(
+  titre, 
+  isbn
+);
+    </pre>
+    <h3>Création de table - 6</h3>
+    <p>Est-ce que la requête suivante fonctionne? Corrigez au besoin</p>
+    <pre class="code-snippet block sql">
+CREATE livre(
+  titre, 
+  isbn
+);
+    </pre>
+    <h3>Création de table - 7</h3>
+    <p>Est-ce que la requête suivante fonctionne? Corrigez au besoin</p>
+    <pre class="code-snippet block sql">
+CREATE chaussure(
+  marque text, 
+  modele text, 
+  pointure decimal(3.2)
+);
+    </pre>
+    <h3>Récupération de données - 1</h3>
+    <p>Insérez ces données supplémentaires et récupérez le poids moyen</p>
+    <pre class="code-snippet block sql">
+INSERT INTO
+    weight (weight, date)
+VALUES
+    (3.7, '2025-12-03'),
+    (3.8, '2025-11-03'),
+    (3.9, '2025-10-03'),
+    (3.9, '2025-09-03'),
+    (3.8, '2025-08-03'),
+    (3.7, '2025-07-06'),
+    (3.8, '2025-06-01'),
+    (3.7, '2025-05-04'),
+    (3.6, '2025-04-06'),
+    (3.5, '2025-03-02'),
+    (3.5, '2025-02-03'),
+    (3.5, '2025-01-02');
+    </pre>
+
     <h2 id="conclusion">Conclusion</h2>
-    <p>Dans cette section, vous avez eu appris à créer une base de données, créer une table, insérer des enregistrements
-      et enfin, lire des enregistrements.</p>
-    <p>Vous avez appris comment définir les types des données lors de la création de tables et aussi comment modifier
-      une requête de lecture .</p>
+    <p>
+      Dans cette section, vous avez eu appris à créer une base de données, créer une table, insérer des enregistrements
+      et enfin, lire des enregistrements.
+    </p>
+    <p>
+      Nous avons vu que la récupération de données pouvait être modulée par exemple, avec des calculs, des fonctions,
+      des tris, ...
+    </p>
+    <p>
+      Vous avez appris comment définir les types des données lors de la création de tables et aussi comment modifier
+      une requête de lecture .
+    </p>
     <p>Ces différents concepts seront approfondis dans les prochaines sections</p>
   </main>
 </body>

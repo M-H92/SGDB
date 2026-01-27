@@ -84,8 +84,16 @@ END IF;
 INSERT INTO nageur (id, nom, prenom, equipe_id)
 VALUES ((SELECT get_next_value('id_nageur')), nom_nageur, prenom_nageur, null);
 
-INSERT INTO log_nageur (utilisateur, type_action, date_action, description)
-VALUES ((SELECT CURRENT_USER), 'INSERT', (SELECT CURRENT_DATE), 'Ajout du nageur '||nom_nageur||' '||prenom_nageur );
+INSERT INTO log_nageur 
+    (utilisateur, 
+    type_action, 
+    date_action, 
+    description)
+VALUES 
+    ((SELECT CURRENT_USER), 
+    'INSERT', 
+    (SELECT CURRENT_DATE), 
+    'Ajout du nageur '||nom_nageur||' '||prenom_nageur );
 
 END;
 $$
@@ -398,12 +406,13 @@ $$
 BEGIN
 RAISE NOTICE 'Hello';
 CALL throw();
-    EXCEPTION
-        WHEN OTHERS THEN
-        RAISE NOTICE 'Exception capturée';
-        WHEN SQLSTATE '22000' THEN
-        RAISE NOTICE 'Data exception capturée';
-        
+    BEGIN
+        EXCEPTION
+            WHEN OTHERS THEN
+            RAISE NOTICE 'Exception capturée';
+            WHEN SQLSTATE '22000' THEN
+            RAISE NOTICE 'Data exception capturée';
+    END
 RAISE NOTICE 'World';
 END
 $$

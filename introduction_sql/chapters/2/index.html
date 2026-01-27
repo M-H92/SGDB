@@ -5,24 +5,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Relations</title>
-  <script
-    type="module"
-    src="./../../../scripts/sidebar/addSidebar.js"
-  ></script>
-  <script
-    type="module"
-    src="./../../../scripts/syntaxHighlighting.js"
-  ></script>
-    <script type="module" src="./../../../scripts/navbar/addNavbar.js"></script>
-    <link rel="stylesheet" href="./../../../ressources/style.css" />
+  <script type="module" src="./../../../scripts/sidebar/addSidebar.js"></script>
+  <script type="module" src="./../../../scripts/syntaxHighlighting.js"></script>
+  <script type="module" src="./../../../scripts/navbar/addNavbar.js"></script>
+  <link rel="stylesheet" href="./../../../ressources/style.css" />
 </head>
 
 <body>
   <main>
-    <h1 id="relations">Relations</h1>
+    <h1 id="identite">Identité</h1>
     <ol>
       <li>Introduction</li>
-      <li>Fonctions</li>
       <li>ALTER et UPDATE</li>
       <li>WHERE</li>
       <li>Conclusion</li>
@@ -32,67 +25,48 @@
     <p>Dans ce chapitre, nous allons étendre les possibilités de récupération de données avec l'utilisation de fonctions
       ainsi que nous confronter à un problème d'identité de données au fur et à mesure que nous ajoutons des données
       dans notre table <br>
-      Nous verrons comment résoudre se problème en ajoutant une série de mot clés à notre boite à outils SQL
-    </p>
-    <h2 id="fonctions">Fonctions</h2>
-    <p>
-      Le simple fait de récupérer des données rend déjà les
-      <abbr class="db-tooltip" title="DataBase => Base de données">DB</abbr>
-      très puissantes. Mais elles peuvent faire plus que ça. Entre autres, elles peuvent déjà <i> traiter </i> la donnée
-    </p>
-    <p>
-      Dans notre cas, nous allons essayer de récupérer le poids maximal de notre chat dans la table weight de la
-      <abbr class="db-tooltip" title="DataBase => Base de données">DB</abbr>
-      fat_cat_clinic. <br />
-      Pour ce faire, nous allons utiliser une <strong>fonction</strong>.
-    </p>
-    <p>
-      Vous avez certainement déjà entendu parler de
-      <strong>fonctions</strong> dans votre cours de programmation. <br>
-      Si ce n'est le cas, voyez ça pour l'instant commme
-      des moyens d'obtenir de nouvelles fonctionnalités. <br>
-      Le concept sera détaillé dans le cours adéquat.
-    </p>
-    <p>
-      Une fonction s'utilise en l'appelant par son nom et en spécifiant entre parenthèses, des
-      <strong>arguments</strong>.
-    </p>
-    <p>
-      Selon la fonction, les arguments disposent de rôles différents. Ici, nous allons utiliser la fonction
-    <pre class="code-snippet line sql">MAX(argument)</pre> <br />
-    Cette fonction est une <strong>fonction d'aggrégation</strong> et permet de retourner le "maximum" pour les
-    données d'une colonnes spécifiées en argument
-    </p>
-    <p>Essayez le code suivant</p>
-    <pre class="code-snippet block sql"> SELECT MAX(weight) FROM weight; </pre>
-    <p>
-      Vous devriez obtenir le poids maximum de notre chat. <br />
-      Notez que la colonne retournée ne dispose pas d'un nom très explicite. <br />
-      Vous pouvez la renommer avec un <strong>alias</strong> grâce au mot clé
-    <pre class="code-snippet line sql">AS</pre>. Essayez donc ceci :
-    </p>
-    <pre class="code-snippet block sql"> SELECT MAX(weight) AS max_weight FROM weight</pre>
-    <p>Le résultat est tout de même plus clair !</p>
-    <p>
-      En vrac, voici quelques autres fonctions d'aggrégation : MIN, MAX,
-      <abbr title="Average => moyenne">AVG</abbr>, <abbr title="Somme">SUM</abbr>, COUNT. <br />
-      Une liste plus complète est disponible
-      <a href="https://www.postgresql.org/docs/16/functions-aggregate.html"> ici </a>
-    </p>
-    <p>
-      Essayez donc d'afficher le poids moyen de notre chat avant de passer au prochain point. Quelque chose devrait vous
-      gêner dans l'affichage des résultats et je vous conseille vivement d'aller
-      voir le lien cité plus haut pour résoudre ce problème
+      Nous verrons comment résoudre ce problème en ajoutant une série de mot clés à notre boite à outils SQL
     </p>
     <h2 id="alter">Alter</h2>
     <p>
-      Pour l'instant, tout fonctionne comme prévu. Mais nous allons rapidement changer ça en ajoutant quelques
-      enregistrement de poids pour un autre chat dans notre base de données. <br />
-      Pas de problèmes. Vous savez déjà comment faire ! Un petit coup d'
-    <pre class="code-snippet line sql">INSERT</pre> et le tour est joué... <br />
-    Sauf qu'il s'agit d'un maine coon pouvant atteindre jusqu'à 8kg en temps normal. <br />
-    D'un seul coup plus moyen de distinguer un enregistrement suspect en rapport avec le poids de votre chat
-    d'un enregistrement tout à fait normal pour un maine coon...
+      Pour l'instant, tout fonctionne comme prévu. <br>
+      Nous avons pu stocker les pesées de notre chat entre nos rendez-vous chez le vétérinaire <br>
+      Nous avons pu récupérer ces pesées ainsi que les trier et nous avons pu les en tirer des informations tel que
+      poids moyen, max... <br>
+      Heureux de votre travail, vous expliquez à une amie tout les avantages de l'utilisation de votre base de données
+      et elle profite de l'occasion pour vous demander d'ajouter les pesées de son chat. <br>
+      Effectivement, son maine coon est, lui, un peu trop gros et elle voudrait surveiller son poids. <br>
+      En tant normal, cette race peut atteindre jusqu'à 10kg. Mais son chat en fait 12 <br />
+      Pas de problèmes. Vous savez déjà comment faire pour ajouter des données avec un
+      <code class="code-snippet line sql">INSERT</code> <br />
+    </p>
+    <pre class="code-snippet block sql">
+INSERT INTO weight (weight, date) 
+  VALUES (12.6, '2024-08-03'),
+    (12.7, '2024-07-06') ,
+    (12.8, '2024-06-01') ,
+    (12.7, '2024-05-04') ,
+    (12.7, '2024-04-06') ,
+    (12.8, '2024-03-02') ,
+    (12.8, '2024-02-03'),
+    (12.7, '2025-12-03'),
+    (12.8, '2025-11-03'),
+    (12.8, '2025-10-03'),
+    (12.9, '2025-09-03'),
+    (12.8, '2025-08-03'),
+    (12.9, '2025-07-06'),
+    (12.8, '2025-06-01'),
+    (12.7, '2025-05-04'),
+    (12.6, '2025-04-06'),
+    (12.4, '2025-03-02'),
+    (12.3, '2025-02-03'),
+    (12.2, '2025-01-02');</pre>
+    <p>
+      Mais d'un seul coup plus moyen de distinguer un enregistrement suspect en rapport avec le poids de votre chat...
+      Si ce n'est la différence de poids évidente entre les deux chats <br>
+      Néanmoins, ça reste ennuyeux... Si vous souhaitez rajouter plus de pesées de plus de chats, vous n'allez plus être
+      capable de faire ces distinctions. <br>
+      Essayez de réfléchir à une solution avant de continuer votre lecture.
     </p>
     <p>
       Si nous avions pensé à ce problème avant de créer notre table, nous aurions certainement ajouté une colonne
@@ -129,78 +103,232 @@ UPDATE weight
 SET cat = 'Monza';</pre>
     <p>
       Pour ceux qui ont fait un peu d'anglais, vous comprendrez vite que le mot clé
-    <pre class="code-snippet line sql">UPDATE</pre>
-    permet de <strong>modifier</strong> les valeurs contenues dans une table. <br />
-    Le mot clé
-    <pre class="code-snippet line sql">SET</pre> permet de spécifier la colonne ainsi que la valeur à attribuer à
-    celle-ci.
-    <br />
-    Notez encore la mention <i>Monza</i> écrite entre des <kbd>'</kbd>. <br />
-    Il s'agit du nom de mon chat et est écrit entre apostrophes car il s'agit d'une <span class="tooltip"
-      title="chaine de caractère">string</span>.
-    <br />
-    D'une manière générale, vous croiserez souvent les textes entourés par des
-    <kbd>'</kbd> ou bien <kbd>"</kbd>
+      <code class="code-snippet line sql">UPDATE</code>
+      permet de <strong>modifier</strong> les valeurs contenues dans une table. <br />
+      Le mot clé
+      <code class="code-snippet line sql">SET</code> permet de spécifier la colonne ainsi que la valeur à attribuer à
+      celle-ci.
+      <br />
+      Notez encore la mention <i>Monza</i> écrite entre des <kbd>'</kbd>. <br />
+      Il s'agit du nom de mon chat et est écrit entre apostrophes car il s'agit d'une <span class="tooltip"
+        title="chaine de caractère">string</span>.
+      <br />
+      D'une manière générale, vous croiserez souvent les textes entourés par des
+      <kbd>'</kbd> ou bien <kbd>"</kbd>
     </p>
     <p> Sélectionnez à nouveau les informations de la table <i>weight</i> pour voir que chaque enregistrement est
-      maintenant au nom de <i>Monza</i></p>
+      maintenant au nom de <i>Monza</i>... <br>
+      Ça ne nous aide pas beaucoup
+    </p>
     <h2>WHERE</h2>
     <p>
-      Nous pouvons maintenant insérer des enregistrements pour le chat de ma belle-soeur. Plume, le maine coon. <br>
-    </p>
-    <pre class="code-snippet block sql">
-INSERT INTO weight (weight, date, cat) 
-  VALUES (6.6, '2024-08-05', 'plume')
-    ,(6.7, '2024-07-03', 'plume') 
-    ,(6.5, '2024-06-02', 'plume') 
-    ,(6.6, '2024-05-10', 'plume') 
-    ,(6.4, '2024-04-02', 'plume') 
-    ,(6.4, '2024-03-06', 'plume') 
-    ,(6.5, '2024-02-03', 'plume');</pre>
-    <p>
-      Sélectionnons toutes les données de notre table weight. <br>
-      Plus moyen de se tromper. Les records disposent chacun d'un nom de chat. Soit Monza, soit Plume <br>
-    </p>
-    <p>
-      Par contre, au fur et à mesure que le nombre de records augmente, il va devenir de plus en plus complexe
-      d'analyser ceux qui nous intéressent. <br>
-      Si je dois récupérer les pesées sur 1 an de mon chat, je ne dois regarder que 12 valeurs. <br>
-      Si j'ai une dizaine de chat dans ma base de données, je dois maintenant analyser 120 valeurs en faisant attention
-      à bien discerner celles qui m'intéressent <br>
-      Pour nous faciliter la tâche, nous allons déléguer ce problème de discernement des valeurs à la base de données
-      grâce au mot clé <strong>WHERE</strong>
+      La commande <strong>UPDATE</strong> a impacté tout les enregistrements de notre table. <br>
+      Heureusement, nous disposons d'une solution pour ce problème : un nouveau mot clé <code
+        class="code-snippet line sql">WHERE</code> <br>
+      Ce mot clé va nous permettre de spécifier des critères de récupération de données. <br>
+      Imaginez un <code class="code-snippet line c">if</code> dans votre cours de programmation que vous utiliseriez sur
+      chaque enregistrement de la table souhaitée. <br>
+      Selon le résultat de cette condition, les enregistrements sont retournés ou non dans les résultats. <br>
+      Essayons ces deux requêtes :
     </p>
     <pre class="code-snippet block sql">
 SELECT * FROM weight
-WHERE cat = 'Monza'</pre>
+WHERE weight <= 5;
+
+SELECT * FROM weight
+WHERE weight > 5;</pre>
+
+    <p>
+      La première nous retourne tout les enregistrements de la table weight pour lesquels les valeurs des pesées sont
+      inférieure ou égales à 5 <br>
+      La seconde nous retourne, au contraire, tout les enregistrements pour lesquels les pesées sont strictement
+      supérieure à 5 <br>
+      Ceci a été possible grâce au mot clé <strong>WHERE</strong> ainsi qu'aux opérateurs "supérieur à" et "inférieur à"
+      similaire à ceux que vous avez déjà rencontré au cours de C <br>
+      Et ce mot clé nous arrange bien car il est possible de l'utiliser en combinaison au mot clé
+      <strong>UPDATE</strong> vu plus tôt. <br>
+      Ainsi, nous pouvons corriger nos données avec cette requête :
+    </p>
+    <pre class="code-snippet block sql">
+UPDATE weight
+SET
+    cat = 'Plume'
+WHERE
+    weight > 5;</pre>
+
+    <p>
+      Sélectionnons toutes les données de notre table weight. <br>
+      Plus moyen de se tromper. Les records disposent chacun d'un nom de chat. Soit Monza, soit Plume. <br>
+      Si je souhaite uniquement les pesées de l'un de ces deux chats ou de tout autre chat ajouté à ma base de données,
+      je peux maintenant les discriminer selon leurs noms comme ceci :
+    </p>
+    <pre class="code-snippet block sql">
+SELECT * FROM weight
+WHERE cat = 'Monza';</pre>
+
     <p>
       Une rapide lecture des résultats permettra de comprendre que nous n'avons plus que les résultats pour lesquels la
       colonne 'cat' contient la valeur 'Monza' <br>
-      Le mot clé <strong>WHERE</strong> permettant de mettre des conditions sur nos queries. <br>
+      Nous retiendrons que le mot clé <strong>WHERE</strong> permet de mettre des conditions sur nos queries. <br>
       Que ce soit sur les <strong>SELECT</strong>, mais aussi sur les <strong>UPDATE</strong> <br>
-      Et justement, si vous avez copié le code proposé ci-dessus, vous remarquerez que "Plume" est écrit avec une
-      minuscule dans chaque record. <br>
-      Essayez d'utiliser le mot clé <strong>UPDATE</strong> dans une <strong>query</strong> de type
-      <strong>UPDATE</strong> pour rectifier le tir et utiliser correctement "Plume" plutôt que "plume".
+      Nous retiendrons que le mot clé <strong>WHERE</strong> s'utiliser avec des opérateurs similaires à ceux utilisés
+      dans votre cours de C
+      <code class="code-snippet line sql"> < </code>
+      <code class="code-snippet line sql"> > </code>
+      <code class="code-snippet line sql"> = </code> <br>
+      Ce dernier devrait vous intriguer. Il ne s'agit pas d'une erreur dans ce document, l'opérateur de comparaison pour
+      les égalités est bien
+      <code class="code-snippet line sql"> = </code> et non
+      <code class="code-snippet line sql"> == </code> <br>
+      Nous n'avons pas, dans ce contexte, de variable à laquelle attribuer une valeur. <br>
+      Il n'y a donc pas besoin de distinger un opérateur d'égalité ou d'attribution de valeur. Ainsi, nous utiliserons
+      un simple
+      <code class="code-snippet line sql"> = </code> dans nos conditions <strong>WHERE</strong>. <br>
+      Essayons maintenant de récupérer les pesées de 'plume' avec cette requête :
     </p>
+    <pre class="code-snippet block sql">
+SELECT * FROM weight
+WHERE cat = 'plume';</pre>
+
     <p>
-      Tant que vous êtes dans l'expérimentation, essayez de modifier les requêtes récupérant le poids maximum, minimum
-      ou moyen à l'aide d'une clause <strong>WHERE</strong> <br>
-      Tout simplement en limitant la recherche aux chats dont le nom est 'Monza' ou 'Plume'. <br>
-      Essayez aussi la fonction <strong>COUNT</strong> qui a maintenant d'autant plus de sens que vous pouvez l'utilisez
-      en combinaison avec un <strong>WHERE</strong> <br>
-      Je vous suggère aussi de tester les limites de l'opérateur <kbd>=</kbd> lors de la comparaison de noms avec des
-      recherches sur 'Monza' et 'monza' et de le confronter à l'opérateur <strong>LIKE</strong> ou
-      <strong>ILIKE</strong> (attention, ce dernier est spécifique à
-      PGSQL)
+      Étrangement, nous n'obtenons pas de résultats... <br>
+      Ceci provient du fonctionnement de l'opérateur de comparaison qui réalise une comparaison stricte en respectant la
+      casse. <br>
+      Les résultats de 'Plume' ne sont donc pas accessible avec un
+      <code class="code-snippet line sql"> = </code>. Nous aurons besoin de l'opérateur
+      <code class="code-snippet line sql"> ILIKE </code>
+    </p>
+    <pre class="code-snippet block sql">
+SELECT * FROM weight
+WHERE cat ILIKE 'plume';</pre>
+
+    <p>
+      Cet opérateur est <i>presque</i> spécifique à postgresql et ne répond pas aux standards SQL. <br>
+      Dans d'autres SGDB, sql server par exemple, vous disposez de l'opérateur <code
+        class="code-snippet line sql"> LIKE </code>
+      qui dispose du même comportement. <br>
+      Pourquoi alors avoir introduit un mot clé <strong>ILIKE</strong> ? <br>
+      Pour le distinguer du mot clé <strong>LIKE</strong> aussi existant en PGSQL... <br>
+      La différence principale étant principalement une considération de la casse pour <strong>LIKE</strong> alors
+      qu'<strong>ILIKE</strong> ne la prend pas en considération. <br>
+      Mais si LIKE correspond uniquement à un ILIKE qui prend la casse en considération, vous pourriez alors vous
+      demander alors quelle est la différence entre
+      <code class="code-snippet line sql"> LIKE </code> et
+      <code class="code-snippet line sql"> = </code>... <br>
+      Ce serait légitime, mais uniquement car nous n'avons pas encore exploré toutes les possibilités qu'offrent
+      l'opérateur <strong>LIKE</strong>. <br>
+      Ce dernier n'a pas pour but de réaliser une comparaison stricte, mais de réaliser du "pattern matching". <br>
+      Dans vos cours d'OS, vous avez pu rechercher des fichiers en utilisant un "joker" sous la forme d'une
+      <code class="code-snippet line sql"> * </code>. Vous n'êtes pas certain de ce que vous voulez récupérer, mais ce
+      n'est pas grave car le joker permet de récupérer "n'importe quoi" à cet endroit. <br>
+      Vous aurez la possibilité de faire pareil avec <strong>LIKE</strong> et <strong>ILIKE</strong> en utilisant le
+      joker
+      <code class="code-snippet line sql"> % </code>. <br>
+      Essayons donc :
+    </p>
+
+    <pre class="code-snippet block sql">
+-- récupère les données de plume
+SELECT * FROM weight
+WHERE cat ILIKE '%me';
+
+SELECT * FROM weight
+WHERE cat ILIKE 'p%e';
+
+SELECT * FROM weight
+WHERE cat ILIKE 'plu%';
+
+SELECT * FROM weight
+WHERE cat ILIKE '%l%m%';
+
+-- récupère les données de plume ainsi que de monza
+SELECT * FROM weight
+WHERE cat ILIKE '%m%';</pre>
+
+    <p>
+      Pour plus d'informations sur le pattern matchnig, je vous invite à consulter
+      <a href="https://www.postgresql.org/docs/7.3/functions-matching.html"> cette page de la documentation officielle
+      </a> <br>
+      Pour plus d'informations sur les opérateurs disponibles, .
+      <a href="https://www.postgresql.org/docs/7.3/functions-comparison.html"> ce lien devrait vous intéresser
+      </a>
+    </p>
+    <h2>Identités</h2>
+    <p>
+      Avant de passer aux exercices, prenez le temps de réfléchir à la résolution que nous avons apporté au problème de
+      distinction des enregistrements. <br>
+      Quand nous n'avions que deux colonnes, une pesée dépendait d'une date. <br>
+      Un poids n'avait de sens que lié à une date. Il ne s'agissait pas de n'importe quelle pesée. Il s'agissait de la
+      pesée du 1/1/2024, du 12/2/2024, ... (en partant de l'à priori qu'il n'y aurait pas de sens d'avoir plusieurs
+      pesées sauvegardée pour une unique date)<br>
+      Nous allons définir le lien entre ces deux colonnes comme une <i>dépendance fonctionnelle</i> <br>
+      Quand nous avons ajouté des pesées d'un autre chat, nous avons rompu ce contrat de dépendance fonctionnelles. <br>
+      Définir une pesée comme la pesée du 12/2/2024 n'est plus suffisant car nous pourrions avoir deux pesées pour cette
+      date. L'une pour Plume et l'autre pour Monza. <br>
+      Pour résoudre ce problème, nous avons introduit une 3e colonne et, ainsi, modifié ces dépendances fonctionnelles.
+      <br>
+      Une pesée est maintenant dépendante d'une date <strong>ET</strong> d'un chat. <br>
+      À partir de maintenant, vous devriez systématiquement essayer de déceler ces dépendances fonctionnelles. <br>
+      Nous reviendrons <i>très vite</i> sur ce concept
+    </p>
+    <h2>Exercices</h2>
+    <h3>Exercice 1</h3>
+    <p>
+      Récupérer le poids max et le poids moyen du chat Monza
+    </p>
+    <h3>Exercice 2</h3>
+    <p>
+      Récupérer le poids max pour tout les chats dans un même result set
+    </p>
+    <h3>Exercice 3</h3>
+    <p>
+      Récupérer le poids max du chat Monza sur l'année 2024
+    </p>
+    <h3>Exercice 4</h3>
+    <p>
+      Récupérer le poids max du chat Monza sur l'année 2024 ainsi que sur l'année 2025
+    </p>
+    <h3>Exercice 5</h3>
+    <p>
+      Récupérer le poids max pour tout les chats sur l'année 2024 ainsi que sur l'année 2025 dans le même dataset
+    </p>
+    <h3>Exercice 6</h3>
+    <p>
+      Créer une table permettant d'enregistrer les articles d'un magasin. <br>
+      Ces articles doivent disposer d'un code barre (une chaine de caractère alphanumérique de 8 char), d'un nom, d'une
+      description (texte libre) et un prix <br>
+      Insérez les éléments suivants dans cette table :
+    </p>
+    <pre class="code-snippet block sql">
+INSERT INTO article
+(code_barre, nom, description, prix)
+VALUES
+('4D5F88D4','Pain au chocolat','Artisanal',3.50),
+('88D5S4F2','Pain au chocolat', NULL, 3.00),
+('1QS544D6','Chocolatine', 'Artisanal', 3.00),
+('14DD4S5Q','Paris-Brest', NULL, 5),
+('JY4S5F8S','Baba au rhum', NULL, NULL),
+('98URR75V','Chausson au pommes', NULL, 3.5),
+('1S2D66FE','Moelleux au chocolat', 'Artisanal', 5),
+('45S7777D','Madelaine', NULL, 2.00),
+('S444D5ZP','Financier', NULL, NULL),
+('APL68DKC','Tartelette aux fraises', NULL, 7),
+('AA1D4F88','Croissant', 'Artisanal', 3.00);</pre>
+    <p>Décrivez les dépendances fonctionnelles de cette table</p>
+    <p>Récupérez tout les articles pour lesquels la description est nulle</p>
+    <p>Modifier toutes les valeurs nulles pour les descriptions. Remplacez les par des chaines de caractère vide</p>
+    <p>
+      Vous ne disposez plus de valeurs NULL pour les descriptions, mais certains articles ne disposent toujours pas de
+      descriptions. <br>
+      Pourriez-vous appliquer le même traitement aux prix? <br>
+      Expliquez pourquoi<br>
     </p>
     <h2 id="conclusion">Conclusion</h2>
     <p>
-      Dans ce chapitre, nous avons appris comment profiter des fonctions pour améliorer les résultats de nos recherches.
+      Dans ce chapitre, nous avons aussi vu comment modifier une table existante en ajoutant des colonnes et modifier
+      des records déjà existant. <br>
+      Nous avons aussi appris comment limiter les résultats de nos recherches avec le mot clé <strong>WHERE</strong>
       <br>
-      Nous avons aussi vu comment modifier une table existante en ajoutant des colonnes et modifier des records déjà
-      existant. <br>
-      Enfin, nous avons appris comment limiter les résultats de nos recherches avec le mot clé <strong>WHERE</strong>
     </p>
   </main>
 </body>

@@ -24,7 +24,7 @@
       <li>Structures de controlles : if - case - loop</li>
       <li>Erreurs et exceptions</li>
       <li>Exercices</li>
-      <li>Conclusion</li>
+      <!-- <li>Conclusion</li> -->
     </ol>
     <hr />
     <h2 id="introduction">Introduction</h2>
@@ -702,7 +702,8 @@ SELECT * FROM get_praticien_table('JDOE');
     </p>
     <pre class="code-snippet block sql">
             CREATE OR REPLACE FUNCTION get_praticien_table_faux(id varchar) 
-            --Ici, returns table avec une définition de table équivalent à la définition lors d'une création de table
+            --Ici, returns table avec une définition de table équivalent à 
+            -- la définition lors d'une création de table
             RETURNS TABLE (
                 identifiant_interne varchar(32),
                 debut_contrat date,
@@ -718,7 +719,8 @@ SELECT * FROM get_praticien_table('JDOE');
             $$
             LANGUAGE SQL;
             
-            ERROR:  L'instruction finale renvoie character varying au lieu de date pour la colonne 2.le type de retour ne correspond pas à la fonction déclarant renvoyer record 
+            -- ERROR:  L'instruction finale renvoie character varying au lieu de date pour la colonne 2.
+            -- le type de retour ne correspond pas à la fonction déclarant renvoyer record 
 
 -- ERREUR:  le type de retour ne correspond pas à la fonction déclarant renvoyer record
 -- SQL state: 42P13
@@ -767,11 +769,16 @@ SELECT * FROM get_praticien_table('JDOE');
     <pre class="code-snippet block sql">
             DROP FUNCTION IF EXISTS foo(arguments) CASCADE
             -- DROP FUNCTION pour supprimer une fonction
-            -- IF EXISTS. Pas requis. Permet de ne pas lever une exception si la fonction n'existe pas (on aura juste un warning)
+            -- IF EXISTS. Pas requis. Permet de ne pas lever une exception 
+              -- si la fonction n'existe pas (on aura juste un warning)
             -- foo(arguments) le nom de la fonction avec la liste des arguments
-            -- la liste des arguments permet de supprimer explicitement cet exemplaire de la fonction mais n'est pas nécessaire si il n'existe qu'un exemplaire de la fonction
+            -- la liste des arguments permet de supprimer explicitement 
+              -- cet exemplaire de la fonction mais n'est pas nécessaire
+              -- si il n'existe qu'un exemplaire de la fonction
             -- DROP FUNCTION foo; -- fonctionnera aussi
-            -- CASCADE permet aussi de supprimer toutes les views, fonctions, stored proc etc etc qui utilisent la fonction en train d'être supprimé
+            -- CASCADE permet aussi de supprimer toutes les views, 
+              -- fonctions, stored proc etc etc qui utilisent 
+              -- la fonction en train d'être supprimé
             -- Dangereux
             -- La variante "RESTRICT" existe et empêchera la suppression de la fonction
         </pre>
@@ -791,8 +798,8 @@ SELECT * FROM get_praticien_table('JDOE');
       Pareil pour retourner une valeur d'aggrégat (vente_totale(article_id))
       <br />
     </p>
-    <h2 id="conclusion">Conclusion</h2>
-    <p></p>
+    <!-- <h2 id="conclusion">Conclusion</h2>
+    <p></p> -->
   </main>
 </body>
 

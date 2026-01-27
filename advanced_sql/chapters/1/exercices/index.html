@@ -242,13 +242,16 @@ SELECT * FROM fizz_buzz(36);
 CREATE OR REPLACE FUNCTION l33t(foo text) RETURNS text AS $$
 DECLARE
     bar text;
--- Attention, pour pouvoir concat les strings avec :=, il faut au préalable initialiser la variable (sinon, null)
+-- Attention, pour pouvoir concat les strings avec :=, il faut au préalable initialiser 
+-- la variable (sinon, null)
     f00 text := '';
 BEGIN
 -- Il faut itérer sur chaque caractère de l'argument. Il faut donc utiliser une boucle
--- Plusieurs types de boucle existent. Une boucle "for each" permet de faire une action pour "tout élément"
+-- Plusieurs types de boucle existent. Une boucle "for each" 
+-- permet de faire une action pour "tout élément"
 -- Le foreach ne fonctionnant pas nativement sur les strings
--- Une regex est utilisée pour récupérer un tableau de caractères depuis la chaine de caractères
+-- Une regex est utilisée pour récupérer un tableau de caractères depuis la chaine 
+-- de caractères
     FOREACH bar IN ARRAY regexp_split_to_array(foo, '')
 -- Mot clé loop permettant de terminer, plus bas, la boucle avec END LOOP
     LOOP
@@ -264,7 +267,8 @@ BEGIN
         CASE bar
         -- a 4
             WHEN 'a', 'A' THEN
--- On récupère la valeur de f00 et on lui ajoute la valeur correspondante au leet de la lettre courante
+-- On récupère la valeur de f00 et on lui ajoute la valeur correspondante au leet de 
+-- la lettre courante
                 f00 := f00 || '4';
         -- b 8
             WHEN 'b', 'B' THEN
@@ -284,7 +288,8 @@ BEGIN
         -- l 1
 -- Possibilité de mettre les cas I et L dans la même clause. 
 -- Le résultat final serait le même.
--- Par clarté et pour pouvoir modifier aisément un des éléments, garder chaque lettre séparée a aussi du sens
+-- Par clarté et pour pouvoir modifier aisément un des éléments, garder chaque lettre 
+-- séparée a aussi du sens
             WHEN 'l', 'L' THEN
                 f00 := f00 || '1';
         -- o 0
@@ -550,10 +555,12 @@ BEGIN
 		END IF;
 	IF isdesc = false THEN
 		RETURN QUERY EXECUTE format(
-  				'SELECT * FROM nageur ORDER BY %I ASC LIMIT $1 OFFSET($1 * ($2-1))',col) USING nbrecord,page;
+  				'SELECT * FROM nageur ORDER BY %I ASC LIMIT $1 OFFSET($1 * ($2-1))',col) 
+                USING nbrecord,page;
 	ELSE
 		RETURN QUERY EXECUTE format(
-			'SELECT * FROM nageur ORDER BY %I DESC LIMIT $1 OFFSET($1 * ($2-1))',col)USING nbrecord,page;
+			'SELECT * FROM nageur ORDER BY %I DESC LIMIT $1 OFFSET($1 * ($2-1))',col)
+            USING nbrecord,page;
 	END IF;
 END
 $$

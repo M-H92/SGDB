@@ -139,10 +139,14 @@ SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') @@ to_tsquery('ra
 			Comparez ces exemples :
 		</p>
 		<pre class="code-snippet sql block">
-SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') @@ to_tsquery('cat <-> rat');
-SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') @@ to_tsquery('fat <-> cat');
-SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') @@ to_tsquery('slim <-> cat');
-SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') @@ to_tsquery('(fat <-> cat) | (slim <-> cat)');</pre>
+SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') 
+	@@ to_tsquery('cat <-> rat');
+SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') 
+	@@ to_tsquery('fat <-> cat');
+SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') 
+	@@ to_tsquery('slim <-> cat');
+SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') 
+	@@ to_tsquery('(fat <-> cat) | (slim <-> cat)');</pre>
 		<p>
 			La première requête retourne "false" : rat n'est pas directement après cat <br>
 			La seconde, par contre, retourne "true" : une des deux occurences de "fat" est suivie directement par "cat"
@@ -222,9 +226,9 @@ SELECT to_tsvector('a fat cat sat on a mat and ate a fat rat') @@ to_tsquery('fa
 			Par exemple, des mots comme "le", "la", "les"... <br>
 			Ces mots seront très probablement présents dans des textes en langue française
 		</p>
-		<pre
-			class="code-snippet block sql">SELECT 
-to_tsvector('Tu vois, le monde se divise en deux catégories, ceux qui ont un pistolet chargé et ceux qui creusent. Toi, tu creuses.')</pre>
+		<pre class="code-snippet block sql">SELECT 
+to_tsvector('Tu vois, le monde se divise en deux catégories, ceux 
+qui ont un pistolet chargé et ceux qui creusent. Toi, tu creuses.')</pre>
 		<p>
 			Regardons le résultat de la requête ci-dessus : <br>
 			'tu', 'le', 'se' sont tous des mots extrat des résultats <br>
@@ -244,7 +248,8 @@ to_tsvector('Tu vois, le monde se divise en deux catégories, ceux qui ont un pi
 			la requête suivante :
 		</p>
 		<pre class="code-snippet sql block">SELECT 
-to_tsvector('Tu vois, le monde se divise en deux catégories, ceux qui ont un pistolet chargé et ceux qui creusent. Toi, tu creuses.') 
+to_tsvector('Tu vois, le monde se divise en deux catégories, ceux 
+qui ont un pistolet chargé et ceux qui creusent. Toi, tu creuses.') 
 @@ to_tsquery('Tu <-> vois');</pre>
 		<p>
 			Nous pouvons voir que le résultat est bien positif malgré le retrait du tu dans le vecteur comme dans la
