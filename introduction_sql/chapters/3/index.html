@@ -5,16 +5,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Identités</title>
-  <script
-    type="module"
-    src="./../../../scripts/sidebar/addSidebar.js"
-  ></script>
-  <script
-    type="module"
-    src="./../../../scripts/syntaxHighlighting.js"
-  ></script>
-    <script type="module" src="./../../../scripts/navbar/addNavbar.js"></script>
-    <link rel="stylesheet" href="./../../../ressources/style.css" />
+  <script type="module" src="./../../../scripts/sidebar/addSidebar.js"></script>
+  <script type="module" src="./../../../scripts/syntaxHighlighting.js"></script>
+  <script type="module" src="./../../../scripts/navbar/addNavbar.js"></script>
+  <link rel="stylesheet" href="./../../../ressources/style.css" />
 </head>
 
 <body>
@@ -32,13 +26,18 @@
     <hr />
     <h2 id="contraintes">Contraintes</h2>
     <p>
-      Quand nous avions ajouté le nom de l'animal à notre table, nous avions eu un problème de <i>null</i>. <br />
+      Quand notre amie nous a demandé d'ajouter les pesées de son animal dans notre base de données, nous avons décidé,
+      pour distinguer les pesées des différents animeaux,
+      d'ajouter le nom de l'animal à notre table <br>
+      Nous avions alors eu un problème de <i>null</i>. <br />
+    </p>
+    <p class="nota-bene info">
       Petit rappel, null représente, pour un colonne d'un record, qu'il n'y a pas de données
     </p>
     <p>
       Ceci nous avais contraint à modifier nos données via une requête
-      <i>UPDATE</i> avec l'utilisation d'un <i>WHERE</i> et, heureusement, la différence de poids entre mon chat et
-      celui de ma belle soeur était telle qu'une clause where sur le poids de nos animaux avait suffit à les discerner.
+      <i>UPDATE</i> avec l'utilisation d'un <i>WHERE</i> et, heureusement, la différence de poids entre notre chat et
+      celui de notre amie était telle qu'une clause where sur le poids de nos animaux avait suffit à les discerner.
     </p>
     <p>Néanmoins, à l'avenir, avec plus de chats ou de pesées, cela pourrait ne plus suffire.</p>
     <p>
@@ -191,7 +190,7 @@
       <div style="margin-right: 64px; border: solid 1px lightgray; padding: 16px; height: fit-content;">
         <strong>weight</strong>
         <ul>
-          <li>name</li>
+          <li>cat</li>
           <li>weight</li>
           <li>date</li>
         </ul>
@@ -199,7 +198,7 @@
       <div style="margin-right: 64px; border: solid 1px lightgray; padding: 16px; height: fit-content;">
         <strong>cat</strong>
         <ul>
-          <li>name</li>
+          <li>cat</li>
           <li>race</li>
           <li>is_male</li>
           <li>age</li>
@@ -218,14 +217,14 @@
       En attendant, mettons en place ces deux tables avec le code suivant :
     </p>
     <pre class="code-snippet block sql">
-CREATE TABLE weighting(
-  name varchar(32),
+CREATE TABLE weight(
+  cat varchar(32),
   date date,
   weight numeric(3,1)
 );
 
 CREATE TABLE cat(
-  name varchar(32),
+  cat varchar(32),
   race varchar(32),
   is_male boolean,
   age int,
@@ -234,7 +233,7 @@ CREATE TABLE cat(
 )</pre>
     <p>Et ajoutons quelques données</p>
     <pre class="code-snippet block sql">
-INSERT INTO weighting (weight, date, name) 
+INSERT INTO weight (weight, date, cat) 
 VALUES (3.6, '2024-08-03', 'Monza')
   ,(3.7, '2024-07-06', 'Monza') 
   ,(3.5, '2024-06-01', 'Monza') 
@@ -421,8 +420,8 @@ ADD PRIMARY KEY (name, weight);</pre>
       existant dans la table <i>cat</i>
     </p>
     <pre class="code-snippet block sql">
-ALTER TABLE cat
-ADD CONSTRAINT cat_fk FOREIGN KEY (name) REFERENCES cat (name);</pre>
+ALTER TABLE weight
+ADD CONSTRAINT cat_weight_fk FOREIGN KEY (cat) REFERENCES cat (cat);</pre>
     <p>
       La nomenclature est plus complexe que pour les <strong>PK</strong>. Regardons-y ensemble. <br>
     <pre class="code-snippet line sql">ADD CONSTRAINT cat_fk FOREIGN KEY </pre> permet d'ajouter une contrainte de type
