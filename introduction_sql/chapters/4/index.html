@@ -60,12 +60,11 @@
       cuisine qui aurait plusieurs ingrédients ou encore, un dictionnaire avec plusieurs mots et chacun de ces mots avec
       plusieurs définitions
     </p>
-    <h2 id="many-to-many">Relation many to many</h2>
     <p>
       Bien, maintenant que nous avons éclairci ce point, continuons. <br>
       Avec les améliorations de notre base de données, nous pouvons maintenant réaliser quelques calculs intéressants
       et, avec une petite interface graphique autours, nous disposerions presque d'un véritable programme intéressant
-      pour toute personne soucieuse du poids de son animal. <br>
+      pour toute personne soucieuse de la santé de son animal. <br>
       Avec l'ajout d'un poids idéal par chat, on pourrait, par exemple, envoyer une notification sur le smartphone de
       l'utilisateur si une pesée dépasse un certain seuil limite. <br>
       Nous pourrions aussi régler des alarmes pour prévoir les dates de pesées, afficher des graphiques intéressant sur
@@ -76,9 +75,60 @@
       de votre base de données à plus d'utilisateurs. <br>
       Par contre, si vous souhaitez gérer plus d'utilisateurs, des notifications, des mails,... Il devient aussi
       intéressant d'ajouter ces utilisateurs à votre base de données. <br>
-
+      Comment ajouter cette table et comment la mettre en relation avec le reste de nos données? <br>
+      Facile, on vient de voir les relations <i>one to many</i> et ça semble particulièrement adapté dans le cas d'un
+      utilisateur pouvant disposer de plusieurs animaux de companies.
+    </p>
+    <h2 id="many-to-many">Relation many to many</h2>
+    <p>
+      Votre application commence à prendre forme. vous arrivez même à envoyer des notifications aux utilisateurs quand
+      votre chat arrive en surpoids. <br>
+      Mais si l'idée de notifications sur votre smartphone, adresse email, ... était attirante, elle était en réalité
+      assez peu utile. <br>
+      Une fois le système mis en place et après quelques tests, vous vous rendez-compte que ces notifications arrivent
+      après avoir utilisé votre smartphone pour encoder la pesée de votre chat et avoir déjà eu l'information qu'il
+      était en surpoids. Pas très utile... <br>
+      Mais le système étant déjà en place, ce serait dommage de le mettre à la poubelle. Et ça vous donne une idée :
+      gérer des rappels pour les vaccinations de votre animal. <br>
+      Mais cette fois-ci, vous n'allez pas refaire la même erreur qu'au début et ne pas ajouter les données de vaccin
+      dans la table <i>cat</i>. <br>
+      Si c'était le cas, vous devriez dupliquer les informations de votre chat pour chaque vaccin réalisé. <br>
+      Vous décidez de faire une table à part et d'utiliser le principe de relation <i>one to many</i> pour lier votre
+      table <i>vaccin</i> à votre table <i>cat</i> <br>
+      Vous ajoutez quelques colonnes pour les vaccins : <i>name</i> (text),<i>description</i> (text),
+      <i>innoculation</i> (date), <i>next_scheduled_appointment</i> (date), ... <br>
+      Et avec soin, ajoutez une colonne <i>catName</i> pour référencer la colonne <i>name</i> de la table <i>cat</i><br>
+      Vous encodez quelques données pour votre chat, testez dans votre application et, ça fonctionne nickel. <br>
+      Vous proposez la version à jour de votre application à votre amie pour qu'elle puisse ajouter les informations de
+      son maine coon et là, même problème que la dernière fois... Les informations sont dupliquées... <br>
+      Pire encore, pour pouvoir gérer des notifications de rendez-vous, vous avez ajouté la date d'innoculation ainsi
+      que la date du prochain rendez-vous. Ces informations ont pour effet de dupliquer encore plus chaque record. <br>
+      Pourtant, vous avez utilisé une relation <i>one to many</i> dans le but d'éviter ces problèmes... <br>
+      Peut-être l'avez-vous mal réalisée? Cette fois-ci, vous décidez de retirer la colonne <i>catName</i> de la table
+      <i>vaccin</i> et plutôt d'ajouter la colonne <i>vaccinName</i> dans la table chat. <br>
+      C'est pire... <br>
+      Dès que vous encodez un vaccin pour votre chat, le maine coon de votre amie ne peut plus être inscrit pour ce même
+      vaccin... <br>
+      En regardant au problème, vous vous rendez-compte qu'idéalement, il serait nécessaire d'avoir une relation <i>
+        one to many </i> dans un sens : un chat peut avoir plusieurs vaccins, <br>
+      Mais aussi dasn l'autre sens : un vaccin peut être innoculé à plusieurs chats <br>
+      C'est exactement le cas d'utilisation des relations <strong>many to many</strong>. <br>
+      Dans une relation <i>many to many</i>, vous n'avez pas un rapport de force aussi clair entre vos deux éléments.
+      <br>
+      Je n'ai pas seulement une recette contenant plusieurs ingrédients, j'ai une recette contenant des ingrédients qui
+      eux-même peuvent être présents dans plusieurs recettes. <br>
+      J'ai des ingrédients qui peuvent avoir des allergènes qui peuvent tout à fait être commun à plusieurs ingrédients.
+      <br>
+      J'ai un étudiant qui peut suivre plusieurs cours et des cours qui peuvent être suivi par plusieurs étudiants. <br>
+      Je me retrouve avec une liste d'éléments dans un sens, mais aussi dans l'autre et il est indispensable de bien
+      saisir cette nuance. <br>
     </p>
     <p>
+      C'est bien beau tout ça, mais comment mettre ceci en place? <br>
+      Si je mets le nom de mon vaccin dans ma table de chat et le nom de mon chat dans ma table de vaccin, je vais quand
+      même avoir des duplicata. Ce qu'on souhaitait
+    </p>
+    <!-- <p>
       Marabout souhaite éditer une version en ligne de son jeu battle box
       bluff.
       <br />
@@ -155,7 +205,7 @@
           <td>En stock</td>
         </tr>
       </tbody>
-    </table>
+    </table> -->
     <!-- <h2>Gestion de stock</h2>
     <p>
       Le même entrepreneur a vu sa part de revenu entre la vente et le service évoluer de telle sorte qu'il fasse

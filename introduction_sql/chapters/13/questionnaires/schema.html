@@ -1,44 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <script type="module" src="../../../scripts/sidebar/addSidebar.js"></script>
-    <script type="module" src="../../../scripts/syntaxHighlighting.js"></script>
-    <link rel="stylesheet" href="../../../ressources/style.css" />
-  </head>
 
-  <body>
-    <main id="mainElement">
-      <div style="display: flex; justify-content: space-between">
-        <div>
-          <div>Nom :</div>
-          <div>Prénom :</div>
-        </div>
-        <div>Examen de base de données - Diagramme de base de données</div>
-        <div>14/03/2025</div>
-      </div>
-      <h2 id="diagramme-de-base-de-donnees">Diagramme</h2>
-      <img
-        src="../../../ressources/img/cliniqueDuPoids.png"
-        alt="database-diagram"
-        style="width: 100%"
-      />
-      <p class="nota-bene info">
-        On considère que toute colonne disposent d'une contrainte empêchant les
-        valeurs nulles
-      </p>
-      <h4>Liste des clés étrangères</h4>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <script type="module" src="../../../scripts/sidebar/addSidebar.js"></script>
+  <script type="module" src="../../../scripts/syntaxHighlighting.js"></script>
+  <link rel="stylesheet" href="../../../ressources/style.css" />
+</head>
+
+<body>
+  <main id="mainElement">
+    <div style="display: flex; justify-content: space-between">
       <div>
-        De info_personnelle.id_patient vers patient.id <br />
-        De objectif.id_patient vers patient.id <br />
-        De pesee.id_patient vers patient.id <br />
-        De repas.id_patient vers patient.id <br />
-        De praticien_patient.id_patient vers patient.id <br />
-        De praticien_patient.id_praticien vers praticien.id <br />
-        De repas.id_ingredient vers ingredient.id <br />
+        <div>Nom :</div>
+        <div>Prénom :</div>
       </div>
-    </main>
-  </body>
+      <div>Examen de base de données - Diagramme de base de données</div>
+      <div>14/03/2025</div>
+    </div>
+    <h2 id="diagramme-de-base-de-donnees">Diagramme</h2>
+    <img src="../../../../ressources/img/cliniqueDuPoids.png" alt="database-diagram" style="width: 100%" />
+    <p class="nota-bene info">
+      On considère que toute colonne disposent d'une contrainte empêchant les
+      valeurs nulles
+    </p>
+    <h4>Liste des clés étrangères</h4>
+    <div>
+      De info_personnelle.id_patient vers patient.id <br />
+      De objectif.id_patient vers patient.id <br />
+      De pesee.id_patient vers patient.id <br />
+      De repas.id_patient vers patient.id <br />
+      De praticien_patient.id_patient vers patient.id <br />
+      De praticien_patient.id_praticien vers praticien.id <br />
+      De repas.id_ingredient vers ingredient.id <br />
+    </div>
+  </main>
+</body>
+
 </html>
