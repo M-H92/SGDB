@@ -29,12 +29,12 @@ const _linkDefinitions = [
     url: `${ROOT_PATH}/${PATH}/chapters/7`,
   },
   { name: "10) Northwind", url: `${ROOT_PATH}/${PATH}/chapters/10` },
-  { name: "12) QCM", url: `${ROOT_PATH}/${PATH}/chapters/12` },
-  { name: "13) QCM +", url: `${ROOT_PATH}/${PATH}/chapters/13` },
-  {
-    name: "x) Liens et références externes",
-    url: `${ROOT_PATH}/${PATH}/chapters/x`,
-  },
+  // { name: "12) QCM", url: `${ROOT_PATH}/${PATH}/chapters/12` },
+  // { name: "13) QCM +", url: `${ROOT_PATH}/${PATH}/chapters/13` },
+  // {
+  //   name: "x) Liens et références externes",
+  //   url: `${ROOT_PATH}/${PATH}/chapters/x`,
+  // },
 ];
 
 function configure() {
